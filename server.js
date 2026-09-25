@@ -3,8 +3,9 @@ const fs = require('fs');
 const path = require('path');
 const os = require('os');
 
-const PORT = 8080;
-const BASE_DIR = __dirname;
+const PORT = process.env.PORT || 8080;
+const BASE_DIR = process.env.VERCEL ? process.cwd() : __dirname;
+
 
 const MIME_TYPES = {
   '.html': 'text/html; charset=utf-8',
@@ -161,27 +162,30 @@ const server = http.createServer((req, res) => {
   });
 });
 
-server.listen(PORT, '0.0.0.0', () => {
-  const ifaces = os.networkInterfaces();
-  const lanIps = [];
-  for (const name in ifaces) {
-    for (const iface of ifaces[name]) {
-      if (iface.family === 'IPv4' && !iface.internal) {
-        lanIps.push({ name, ip: iface.address });
+if (!process.env.VERCEL) {
+  server.listen(PORT, '0.0.0.0', () => {
+    const ifaces = os.networkInterfaces();
+    const lanIps = [];
+    for (const name in ifaces) {
+      for (const iface of ifaces[name]) {
+        if (iface.family === 'IPv4' && !iface.internal) {
+          lanIps.push({ name, ip: iface.address });
+        }
       }
     }
-  }
 
-  console.log(`\n==========================================================`);
-  console.log(`🚀 TIS Lab Computer - Modern School Server (HostImg Pro)`);
-  console.log(`🌐 Localhost:  http://localhost:${PORT}/`);
-  lanIps.forEach(net => {
-    console.log(`📱 LAN/Wi-Fi:  http://${net.ip}:${PORT}/  (${net.name})`);
+    console.log(`\n==========================================================`);
+    console.log(`🚀 TIS Lab Computer - Modern School Server (HostImg Pro)`);
+    console.log(`🌐 Localhost:  http://localhost:${PORT}/`);
+    lanIps.forEach(net => {
+      console.log(`📱 LAN/Wi-Fi:  http://${net.ip}:${PORT}/  (${net.name})`);
+    });
+    console.log(`⚡ API Upload: http://localhost:${PORT}/api/upload`);
+    console.log(`⏰ Telegram:   7:00 PM Daily Attendance Summary Scheduler Active`);
+    console.log(`==========================================================\n`);
   });
-  console.log(`⚡ API Upload: http://localhost:${PORT}/api/upload`);
-  console.log(`⏰ Telegram:   7:00 PM Daily Attendance Summary Scheduler Active`);
-  console.log(`==========================================================\n`);
-});
+}
+
 
 // ---------------------------------------------------------------------------
 // 7:00 PM Daily Attendance Summary Auto-Scheduler
@@ -357,8 +361,13 @@ process.on('unhandledRejection', (reason) => {
   console.warn('[Server unhandledRejection]', reason);
 });
 
-setInterval(checkServerDailyAttendance, 60000);
-setTimeout(checkServerDailyAttendance, 5000);
+if (!process.env.VERCEL) {
+  setInterval(checkServerDailyAttendance, 60000);
+  setTimeout(checkServerDailyAttendance, 5000);
+}
 
-module.exports = server;
+module.exports = (req, res) => {
+  server.emit('request', req, res);
+};
+
 

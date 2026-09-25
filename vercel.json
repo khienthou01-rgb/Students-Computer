@@ -1,5 +1,28 @@
 {
+  "functions": {
+    "server.js": {
+      "includeFiles": "{index.html,manifest.json,sw.js,css/**,js/**,assets/**}"
+    }
+  },
   "headers": [
+    {
+      "source": "/sw.js",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/manifest.json",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        }
+      ]
+    },
     {
       "source": "/(.*)",
       "headers": [
