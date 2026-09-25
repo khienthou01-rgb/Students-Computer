@@ -359,3 +359,6 @@ process.on('unhandledRejection', (reason) => {
 
 setInterval(checkServerDailyAttendance, 60000);
 setTimeout(checkServerDailyAttendance, 5000);
+
+module.exports = server;
+
