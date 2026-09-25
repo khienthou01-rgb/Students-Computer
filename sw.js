@@ -3,8 +3,9 @@
  * Fast, reliable caching with Network-First strategy for HTML and smooth auto-updates
  */
 
-// NOTE: CACHE_NAME is auto-updated by deploy.js on every deployment
-const CACHE_NAME = "tislab-v2.1.20260925_072703";
+// NOTE: CACHE_NAME is auto-updated on deployment
+const CACHE_NAME = "tislab-v2.1.20260925_173000";
+
 
 const ASSETS_TO_CACHE = [
   "./",
@@ -149,8 +150,12 @@ self.addEventListener("fetch", (event) => {
       fetch(request)
         .then((networkResponse) => {
           if (networkResponse && networkResponse.status === 200) {
-            const copy = networkResponse.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
+            const contentType = (networkResponse.headers.get("content-type") || "").toLowerCase();
+            // Never cache HTML responses when expecting JS or CSS
+            if (!contentType.includes("text/html")) {
+              const copy = networkResponse.clone();
+              caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
+            }
           }
           return networkResponse;
         })
