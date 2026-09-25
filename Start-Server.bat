@@ -12,7 +12,7 @@ timeout /t 1 >nul
 start http://localhost:8080/
 where node >nul 2>nul
 if %ERRORLEVEL% equ 0 (
-    node "%~dp0server.js"
+    node "%~dp0local-server.js"
 ) else (
     powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0serve.ps1"
 )
