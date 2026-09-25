@@ -1,0 +1,19 @@
+# Dependencies
+node_modules/
+
+# Backup folders
+_backup_current_before_restore/
+_backup_pre_sync/
+_smart_school_upgrade_backup/
+*.bak
+*.tmp
+
+# Environment and temp
+.firebase/
+.sent_daily_att_*
+*.log
+
+# OS generated files
+.DS_Store
+Thumbs.db
+Desktop.ini

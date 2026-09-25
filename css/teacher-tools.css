@@ -1,0 +1,1403 @@
+/**
+ * ==========================================================================
+ * Styles: Teacher Tools & Automation UI Elements
+ * TIS Lab Computer - Modern Student Management System
+ * ==========================================================================
+ */
+
+/* Pending Online Registration Badge */
+.pending-badge-pulsing {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: #ffffff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 20px;
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.4);
+  animation: pulseAmber 2s infinite;
+  cursor: pointer;
+}
+
+@keyframes pulseAmber {
+  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.6); }
+  70% { transform: scale(1.04); box-shadow: 0 0 0 8px rgba(245, 158, 11, 0); }
+  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
+}
+
+/* Speed Attendance Action Pill */
+.att-quick-actions-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 10px 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  margin-bottom: 16px;
+}
+
+.btn-speed-att {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-speed-att.present-all {
+  background: rgba(16, 185, 129, 0.12);
+  color: #059669;
+  border-color: rgba(16, 185, 129, 0.3);
+}
+
+.btn-speed-att.present-all:hover {
+  background: #10b981;
+  color: #fff;
+}
+
+.btn-speed-att.hardcopy-sheet {
+  background: rgba(99, 102, 241, 0.12);
+  color: #4f46e5;
+  border-color: rgba(99, 102, 241, 0.3);
+}
+
+.btn-speed-att.hardcopy-sheet:hover {
+  background: #4f46e5;
+  color: #fff;
+}
+
+/* Telegram Reminder Button */
+.btn-tg-remind {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  background: rgba(0, 136, 204, 0.1);
+  color: #0088cc;
+  border: 1px solid rgba(0, 136, 204, 0.25);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-tg-remind:hover {
+  background: #0088cc;
+  color: #ffffff;
+}
+
+/* Partial Payment Tag */
+.badge-partial-payment {
+  background: rgba(245, 158, 11, 0.15);
+  color: #d97706;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 12px;
+}
+
+/* Printout Overlays */
+.school-seal-stamp {
+  position: absolute;
+  pointer-events: none;
+  opacity: 0.85;
+  filter: contrast(1.1);
+}
+
+.teacher-signature-stamp {
+  position: absolute;
+  pointer-events: none;
+  filter: contrast(1.2);
+}
+
+/* Paste Excel Modal TextArea */
+.excel-paste-area {
+  width: 100%;
+  height: 160px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  padding: 12px;
+  border: 1.5px dashed var(--border-color);
+  border-radius: 10px;
+  background: var(--bg-main);
+  color: var(--text-main);
+  box-sizing: border-box;
+  resize: vertical;
+}
+
+.excel-paste-area:focus {
+  border-color: #6366f1;
+  outline: none;
+}
+
+/* Keyboard Shortcut Badge */
+.kbd-shortcut-pill {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 4px;
+  padding: 1px 5px;
+  font-size: 0.7rem;
+  font-family: monospace;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+/* Exam Countdown Timer Glowing Display */
+#examTimerDisplayBox {
+  transition: all 0.3s ease;
+}
+
+#examTimerDisplayBox:fullscreen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100vw;
+  height: 100vh;
+  background: #020617;
+  border: none;
+  border-radius: 0;
+}
+
+#examTimerDisplayBox:fullscreen #examTimerDigits {
+  font-size: 14vw;
+}
+
+/* Birthday Icon Animation */
+#btnHeaderBirthday {
+  animation: bounceBirthday 2.5s infinite;
+}
+
+@keyframes bounceBirthday {
+  0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+  40% { transform: translateY(-5px); }
+  60% { transform: translateY(-3px); }
+}
+
+/* 16-PC Lab Interactive Chart & Status */
+.pc-seat-slot {
+  background: var(--bg-card);
+  border: 1.5px solid var(--border-color);
+  border-radius: 10px;
+  padding: 10px 8px;
+  text-align: center;
+  transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+  cursor: pointer;
+}
+
+.pc-seat-slot:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  border-color: #38bdf8;
+}
+
+.pc-seat-slot.occupied {
+  border-left: 4px solid #10b981;
+}
+
+.pc-seat-slot.empty {
+  border-left: 4px solid #94a3b8;
+  opacity: 0.75;
+}
+
+/* Exercise Library Item Hover */
+.exercise-library-item {
+  transition: all 0.2s ease;
+}
+
+.exercise-library-item:hover {
+  transform: translateX(4px);
+  border-color: #6366f1 !important;
+}
+
+/* Custom dropdown items for profile more menu */
+.dropdown-item-custom {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 12px;
+  border: none;
+  background: transparent;
+  color: var(--text-main);
+  font-size: 0.82rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  text-align: left;
+}
+
+.dropdown-item-custom:hover {
+  background: rgba(56, 189, 248, 0.12);
+  color: #38bdf8;
+}
+
+/* -------------------------------------------------------------------------
+ * SMART CLASSROOM HUD ON PROJECTOR STYLES
+ * ------------------------------------------------------------------------- */
+.classroom-hud-card {
+  background: rgba(15, 23, 42, 0.95);
+  border: 1.5px solid rgba(56, 189, 248, 0.35);
+  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.8), 0 0 40px rgba(56, 189, 248, 0.15);
+  backdrop-filter: blur(20px);
+  color: #f8fafc;
+}
+
+.soundboard-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: 12px;
+  font-weight: 800;
+  font-size: 0.9rem;
+  border: 1.5px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.soundboard-btn:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+.soundboard-btn.applause:hover {
+  background: linear-gradient(135deg, #10b981, #059669);
+  border-color: #34d399;
+}
+
+.soundboard-btn.bell:hover {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  border-color: #fbbf24;
+}
+
+.soundboard-btn.buzzer:hover {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  border-color: #f87171;
+}
+
+/* Lucky Wheel Indicator & Animation */
+.lucky-wheel-container {
+  position: relative;
+  width: 240px;
+  height: 240px;
+  margin: 0 auto;
+}
+
+.lucky-wheel-canvas {
+  width: 240px;
+  height: 240px;
+  border-radius: 50%;
+  border: 4px solid #38bdf8;
+  box-shadow: 0 0 25px rgba(56, 189, 248, 0.4);
+  transition: transform 3.5s cubic-bezier(0.15, 0.9, 0.25, 1);
+}
+
+.lucky-wheel-pointer {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 14px solid transparent;
+  border-right: 14px solid transparent;
+  border-top: 22px solid #ef4444;
+  z-index: 10;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+}
+
+/* Dropout Radar Risk Tags */
+.radar-risk-pill {
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-weight: 800;
+  font-size: 0.72rem;
+  letter-spacing: 0.5px;
+}
+
+.radar-risk-pill.critical {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  box-shadow: 0 0 10px rgba(239, 68, 68, 0.2);
+}
+
+.radar-risk-pill.moderate {
+  background: rgba(245, 158, 11, 0.15);
+  color: #f59e0b;
+  border: 1px solid rgba(245, 158, 11, 0.35);
+}
+
+.radar-risk-pill.watch {
+  background: rgba(56, 189, 248, 0.15);
+  color: #38bdf8;
+  border: 1px solid rgba(56, 189, 248, 0.35);
+}
+
+/* =========================================================================
+   KHMER CALENDAR & TELEGRAM HOLIDAY BROADCAST STYLES - FULLSCREEN DASHBOARD
+   ========================================================================= */
+
+/* Modal Card Sizing - Default Spacious Fullscreen View */
+#khmerCalendarModal .modal-card.khmer-calendar-card {
+  width: 98vw !important;
+  max-width: 1720px !important;
+  height: 96vh !important;
+  max-height: 96vh !important;
+  margin: auto !important;
+  display: flex !important;
+  flex-direction: column !important;
+  border-radius: 18px !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.15) !important;
+  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.85), 0 0 50px rgba(56, 189, 248, 0.15) !important;
+  background: #0b1120 !important;
+  overflow: hidden !important;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+/* Fullscreen Immersive Mode (when toggled via Fullscreen button) */
+#khmerCalendarModal.is-fullscreen .modal-card.khmer-calendar-card {
+  width: 100vw !important;
+  max-width: 100vw !important;
+  height: 100vh !important;
+  max-height: 100vh !important;
+  border-radius: 0 !important;
+  border: none !important;
+}
+
+#khmerCalendarModal .modal-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 18px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background: radial-gradient(circle at top right, rgba(30, 41, 59, 0.5), #0b1120 70%);
+}
+
+/* Main 2-Column Responsive Layout */
+.khmer-cal-main-layout {
+  display: grid;
+  grid-template-columns: 1.45fr 1fr;
+  gap: 20px;
+  flex: 1;
+  min-height: 0;
+}
+
+@media (max-width: 1200px) {
+  .khmer-cal-main-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Left Column: Calendar Box */
+.khmer-cal-grid-box {
+  background: rgba(15, 23, 42, 0.65);
+  border: 1.5px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+/* Weekdays Header Row */
+.cal-weekdays-row {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+.cal-weekday {
+  padding: 8px 4px;
+  font-weight: 800;
+  font-size: 0.84rem;
+  color: #cbd5e1;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  letter-spacing: 0.2px;
+}
+
+.cal-weekday.weekend {
+  color: #f87171;
+  background: rgba(239, 68, 68, 0.08);
+  border-color: rgba(239, 68, 68, 0.2);
+}
+
+/* Calendar Days Grid */
+.khmer-calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+  flex: 1;
+}
+
+/* Calendar Day Cell - Spacious & Legible */
+.cal-day-cell {
+  position: relative;
+  min-height: 84px;
+  background: rgba(30, 41, 59, 0.45);
+  border: 1.5px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+  user-select: none;
+}
+
+.cal-day-cell:hover {
+  border-color: #38bdf8;
+  background: rgba(56, 189, 248, 0.1);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4), 0 0 14px rgba(56, 189, 248, 0.25);
+  z-index: 2;
+}
+
+.cal-day-cell.other-month {
+  opacity: 0.22;
+  background: rgba(15, 23, 42, 0.2);
+  pointer-events: none;
+}
+
+.cal-day-cell.today {
+  border: 2px solid #10b981 !important;
+  background: rgba(16, 185, 129, 0.12) !important;
+  box-shadow: 0 0 16px rgba(16, 185, 129, 0.35) !important;
+}
+
+.cal-day-cell.today .day-khmer-num {
+  color: #34d399 !important;
+  font-weight: 900;
+  text-shadow: 0 0 8px rgba(52, 211, 153, 0.5);
+}
+
+.cal-day-cell.holiday {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.22), rgba(185, 28, 28, 0.35)) !important;
+  border: 1.5px solid #ef4444 !important;
+  box-shadow: 0 0 14px rgba(239, 68, 68, 0.25) !important;
+}
+
+.cal-day-cell.holiday:hover {
+  box-shadow: 0 6px 20px rgba(239, 68, 68, 0.45) !important;
+  border-color: #f87171 !important;
+}
+
+.cal-day-cell.holiday .day-khmer-num {
+  color: #fca5a5 !important;
+  font-weight: 900;
+}
+
+.cal-day-cell.custom-holiday {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.22), rgba(79, 70, 229, 0.35)) !important;
+  border: 1.5px solid #818cf8 !important;
+  box-shadow: 0 0 14px rgba(99, 102, 241, 0.25) !important;
+}
+
+.cal-day-cell.custom-holiday .day-khmer-num {
+  color: #c7d2fe !important;
+}
+
+.day-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.day-khmer-num {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #f8fafc;
+  line-height: 1;
+}
+
+.day-latin-num {
+  font-size: 0.8rem;
+  color: #94a3b8;
+  font-weight: 600;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+.day-today-indicator {
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: #10b981;
+  background: rgba(16, 185, 129, 0.2);
+  padding: 1px 6px;
+  border-radius: 4px;
+  border: 1px solid rgba(16, 185, 129, 0.4);
+}
+
+.day-holiday-tag {
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: #fef2f2;
+  background: rgba(220, 38, 38, 0.4);
+  border: 1px solid rgba(248, 113, 113, 0.5);
+  border-radius: 6px;
+  padding: 3px 6px;
+  margin-top: 4px;
+  line-height: 1.25;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.day-holiday-tag.school-tag {
+  background: rgba(79, 70, 229, 0.4);
+  border-color: rgba(129, 140, 248, 0.5);
+  color: #e0e7ff;
+}
+
+/* Right Column: Holidays Side Box */
+.khmer-cal-side-box {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  background: rgba(15, 23, 42, 0.65);
+  border: 1.5px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 16px 18px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.cal-holidays-list-container {
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-right: 6px;
+  max-height: calc(96vh - 280px);
+}
+
+#khmerCalendarModal.is-fullscreen .cal-holidays-list-container {
+  max-height: calc(100vh - 260px);
+}
+
+.upcoming-holiday-card {
+  background: rgba(30, 41, 59, 0.55);
+  border: 1.5px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  padding: 12px 16px;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+}
+
+.upcoming-holiday-card:hover {
+  border-color: #f59e0b;
+  background: rgba(245, 158, 11, 0.08);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), 0 0 16px rgba(245, 158, 11, 0.25);
+}
+
+.upcoming-holiday-card.urgent {
+  background: rgba(239, 68, 68, 0.12);
+  border-color: #ef4444;
+  box-shadow: 0 0 15px rgba(239, 68, 68, 0.2);
+}
+
+.holiday-countdown-pill {
+  font-size: 0.74rem;
+  font-weight: 800;
+  padding: 3px 10px;
+  border-radius: 20px;
+  background: rgba(245, 158, 11, 0.2);
+  color: #fbbf24;
+  border: 1px solid rgba(245, 158, 11, 0.4);
+}
+
+.holiday-countdown-pill.today {
+  background: #ef4444;
+  color: #fff;
+  border-color: #ef4444;
+  animation: pulseAmber 1.5s infinite;
+}
+
+/* ==========================================================================
+ * 4 TEACHER CONVENIENCE FEATURES: STYLES & ANIMATIONS
+ * ========================================================================== */
+
+/* --- 1. CONTACT HUB MODAL & TEMPLATES --- */
+.contact-hub-dialog {
+  max-width: 680px !important;
+  border-radius: 18px !important;
+  overflow: hidden;
+}
+
+.contact-profile-box {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  background: var(--bg-surface-hover, rgba(15, 23, 42, 0.5));
+  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
+  border-radius: 14px;
+}
+
+.contact-profile-avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--primary, #4f46e5);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.contact-direct-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+.contact-btn-direct {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+
+.contact-btn-direct.call {
+  background: rgba(16, 185, 129, 0.12);
+  color: #10b981;
+  border-color: rgba(16, 185, 129, 0.3);
+}
+
+.contact-btn-direct.call:hover {
+  background: #10b981;
+  color: #ffffff;
+}
+
+.contact-btn-direct.telegram {
+  background: rgba(0, 136, 204, 0.12);
+  color: #0088cc;
+  border-color: rgba(0, 136, 204, 0.3);
+}
+
+.contact-btn-direct.telegram:hover {
+  background: #0088cc;
+  color: #ffffff;
+}
+
+.contact-template-nav {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+  margin-top: 14px;
+}
+
+.contact-template-nav::-webkit-scrollbar {
+  height: 4px;
+}
+
+.contact-template-btn {
+  white-space: nowrap;
+  padding: 8px 14px;
+  border-radius: 10px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  background: var(--bg-card, rgba(30, 41, 59, 0.5));
+  color: var(--text-muted, #94a3b8);
+  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.contact-template-btn:hover {
+  background: var(--bg-surface-hover, rgba(51, 65, 85, 0.5));
+  color: var(--text-main, #f8fafc);
+}
+
+.contact-template-btn.active {
+  background: linear-gradient(135deg, #0284c7, #2563eb);
+  color: #ffffff;
+  border-color: #38bdf8;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+
+.contact-msg-editor {
+  width: 100%;
+  border-radius: 12px;
+  padding: 14px;
+  font-size: 0.92rem;
+  line-height: 1.6;
+  font-family: 'Kantumruy Pro', 'Inter', sans-serif;
+  background: var(--bg-surface, #0f172a);
+  color: var(--text-main, #f8fafc);
+  border: 1.5px solid var(--border-color, rgba(255, 255, 255, 0.15));
+  resize: vertical;
+  min-height: 160px;
+  transition: border-color 0.2s;
+}
+
+.contact-msg-editor:focus {
+  outline: none;
+  border-color: #38bdf8;
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
+}
+
+/* --- 2. AT-RISK ATTENDANCE SYSTEM --- */
+.badge-at-risk-pulse {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  border-radius: 20px;
+  padding: 3px 9px;
+  font-size: 0.74rem;
+  font-weight: 800;
+  cursor: pointer;
+  animation: pulseRisk 2s infinite;
+  transition: all 0.2s;
+}
+
+.badge-at-risk-pulse:hover {
+  background: #ef4444;
+  color: #ffffff;
+  transform: scale(1.04);
+}
+
+@keyframes pulseRisk {
+  0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.5); }
+  70% { box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+}
+
+.dashboard-at-risk-banner {
+  margin-bottom: 22px;
+  padding: 16px 20px;
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.12) 0%, rgba(245, 158, 11, 0.08) 100%);
+  border: 1.5px solid rgba(239, 68, 68, 0.35);
+  border-left: 5px solid #ef4444;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  box-shadow: 0 8px 24px rgba(239, 68, 68, 0.1);
+}
+
+.at-risk-student-chips {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.at-risk-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg-card, rgba(15, 23, 42, 0.75));
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.at-risk-chip:hover {
+  border-color: #ef4444;
+  background: rgba(239, 68, 68, 0.2);
+  transform: translateY(-1px);
+}
+
+/* --- 3. QUICK BATCH EXAM GRADING GRID --- */
+.batch-grading-dialog {
+  max-width: 960px !important;
+  width: 95vw !important;
+}
+
+.batch-grid-controls-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 14px 18px;
+  background: var(--bg-surface-hover, rgba(15, 23, 42, 0.5));
+  border-radius: 12px;
+  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
+}
+
+.batch-table-container {
+  max-height: calc(80vh - 280px);
+  overflow-y: auto;
+  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
+  border-radius: 12px;
+}
+
+.batch-score-cell-input {
+  width: 80px;
+  height: 36px;
+  font-size: 1.1rem;
+  font-weight: 800;
+  text-align: center;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  background: var(--bg-surface, #0f172a);
+  color: var(--text-main, #f8fafc);
+  border: 1.5px solid var(--border-color, #475569);
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.batch-score-cell-input:focus {
+  outline: none;
+  border-color: #38bdf8;
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.3);
+  background: rgba(56, 189, 248, 0.08);
+}
+
+.batch-grade-pill {
+  display: inline-block;
+  min-width: 28px;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 800;
+  text-align: center;
+}
+
+.grade-A { background: rgba(16, 185, 129, 0.18); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.4); }
+.grade-B { background: rgba(14, 165, 233, 0.18); color: #0284c7; border: 1px solid rgba(14, 165, 233, 0.4); }
+.grade-C { background: rgba(245, 158, 11, 0.18); color: #d97706; border: 1px solid rgba(245, 158, 11, 0.4); }
+.grade-D { background: rgba(249, 115, 22, 0.18); color: #ea580c; border: 1px solid rgba(249, 115, 22, 0.4); }
+.grade-E { background: rgba(168, 85, 247, 0.18); color: #9333ea; border: 1px solid rgba(168, 85, 247, 0.4); }
+.grade-F { background: rgba(239, 68, 68, 0.18); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.4); }
+
+/* --- 4. DIGITAL RECEIPT GENERATOR & PRINT --- */
+.receipt-modal-dialog {
+  max-width: 780px !important;
+  width: 95vw !important;
+}
+
+.receipt-format-selector {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.receipt-format-btn {
+  flex: 1;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-align: center;
+  background: var(--bg-card, rgba(30, 41, 59, 0.5));
+  border: 1.5px solid var(--border-color, rgba(255, 255, 255, 0.1));
+  color: var(--text-muted, #94a3b8);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.receipt-format-btn.active {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: #ffffff;
+  border-color: #34d399;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
+}
+
+.receipt-preview-outer {
+  background: #cbd5e1;
+  padding: 24px;
+  border-radius: 12px;
+  display: flex;
+  justify-content: center;
+  overflow-x: auto;
+  max-height: calc(85vh - 250px);
+  overflow-y: auto;
+}
+
+/* A5 Paper Standard */
+.receipt-paper-a5 {
+  width: 620px;
+  min-height: 440px;
+  background: #ffffff;
+  color: #0f172a;
+  padding: 24px 28px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  border-radius: 6px;
+  position: relative;
+  font-family: 'Kantumruy Pro', 'Inter', sans-serif;
+  box-sizing: border-box;
+}
+
+/* 80mm POS Thermal Paper */
+.receipt-paper-thermal {
+  width: 320px;
+  background: #ffffff;
+  color: #0f172a;
+  padding: 16px 14px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  font-family: 'Kantumruy Pro', 'Inter', monospace;
+  font-size: 11px;
+  box-sizing: border-box;
+  border-top: 4px dashed #94a3b8;
+  border-bottom: 4px dashed #94a3b8;
+}
+
+.school-red-seal {
+  width: 100px;
+  height: 100px;
+  border: 3px double #dc2626;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #dc2626;
+  text-align: center;
+  font-weight: 900;
+  line-height: 1.1;
+  transform: rotate(-10deg);
+  opacity: 0.88;
+  pointer-events: none;
+  box-shadow: 0 0 0 1px rgba(220, 38, 38, 0.4);
+}
+
+.teacher-sign-box {
+  text-align: center;
+  position: relative;
+}
+
+.teacher-signature-svg {
+  height: 48px;
+  margin-bottom: -10px;
+}
+
+/* ==========================================================================
+   FEATURE: CLASS ATTENDANCE QR SHEET A4 (តារាង Scan វត្តមានលឿនលើក្រដាស A4)
+   ========================================================================== */
+
+.attendance-qr-sheet-dialog {
+  max-width: 1100px;
+  width: 95vw;
+  max-height: 92vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-surface, #1e293b);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
+  overflow: hidden;
+}
+
+.qr-sheet-controls-bar {
+  padding: 12px 18px;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.qr-sheet-controls-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.qr-sheet-controls-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.qr-sheet-preview-viewport {
+  flex: 1;
+  overflow-y: auto;
+  background: #334155;
+  padding: 24px 12px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+/* Pristine A4 Sheet Dimensions */
+.qr-sheet-paper-a4 {
+  width: 210mm;
+  min-height: 297mm;
+  background: #ffffff;
+  color: #0f172a;
+  padding: 8mm 10mm;
+  box-sizing: border-box;
+  font-family: 'Kantumruy Pro', 'Battambang', sans-serif;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.35);
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+/* Header Section */
+.qr-sheet-header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  border-bottom: 2px solid #0f172a;
+  padding-bottom: 8px;
+  margin-bottom: 8px;
+}
+
+.qr-sheet-school-block {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.qr-sheet-school-logo {
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, #1e3a8a, #0284c7);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-size: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.qr-sheet-kingdom-block {
+  text-align: right;
+  line-height: 1.25;
+}
+
+.qr-sheet-kingdom-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1e3a8a;
+}
+
+.qr-sheet-kingdom-motto {
+  font-size: 11px;
+  font-weight: 600;
+  color: #475569;
+}
+
+.qr-sheet-title-banner {
+  text-align: center;
+  margin: 6px 0 10px 0;
+}
+
+.qr-sheet-main-title {
+  font-size: 16px;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0;
+  letter-spacing: 0.5px;
+}
+
+.qr-sheet-sub-title {
+  font-size: 11px;
+  font-weight: 600;
+  color: #64748b;
+  margin-top: 2px;
+}
+
+/* Metadata Bar */
+.qr-sheet-meta-strip {
+  display: flex;
+  justify-content: space-between;
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 12px;
+}
+
+/* Grid Cards Layout (3 columns) */
+.qr-sheet-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  flex: 1;
+}
+
+.qr-card-item {
+  border: 1.5px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 8px;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  page-break-inside: avoid;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.qr-card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.qr-card-avatar {
+  width: 36px;
+  height: 44px;
+  border-radius: 4px;
+  object-fit: cover;
+  border: 1px solid #94a3b8;
+  background: #e2e8f0;
+}
+
+.qr-card-avatar-placeholder {
+  width: 36px;
+  height: 44px;
+  border-radius: 4px;
+  background: #e2e8f0;
+  border: 1px solid #cbd5e1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #64748b;
+  font-size: 18px;
+}
+
+.qr-card-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.qr-card-name-kh {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #0f172a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.2;
+}
+
+.qr-card-name-en {
+  font-size: 10px;
+  font-weight: 600;
+  color: #475569;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.qr-card-id-badge {
+  display: inline-block;
+  background: #e0f2fe;
+  color: #0369a1;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-family: monospace;
+  margin-top: 2px;
+}
+
+.qr-card-middle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 0;
+  background: #f8fafc;
+  border-radius: 6px;
+  border: 1px dashed #cbd5e1;
+  margin-bottom: 6px;
+}
+
+.qr-card-code-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.qr-card-code-container canvas,
+.qr-card-code-container img {
+  width: 76px !important;
+  height: 76px !important;
+  display: block;
+}
+
+/* 5-Day Attendance Checkboxes */
+.qr-card-check-strip {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid #e2e8f0;
+  padding-top: 5px;
+}
+
+.qr-day-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.qr-day-label {
+  font-size: 9px;
+  font-weight: 700;
+  color: #64748b;
+}
+
+.qr-day-circle {
+  width: 17px;
+  height: 17px;
+  border: 1.5px solid #94a3b8;
+  border-radius: 50%;
+  background: #ffffff;
+}
+
+/* Table Scanner List Layout */
+.qr-sheet-table-roster {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 10.5px;
+  margin-top: 4px;
+}
+
+.qr-sheet-table-roster th {
+  background: #1e293b;
+  color: #ffffff;
+  padding: 5px 6px;
+  font-weight: 700;
+  text-align: center;
+  border: 1px solid #0f172a;
+}
+
+.qr-sheet-table-roster td {
+  padding: 4px 6px;
+  border: 1px solid #cbd5e1;
+  vertical-align: middle;
+}
+
+.qr-sheet-table-roster tr:nth-child(even) td {
+  background: #f8fafc;
+}
+
+.qr-table-code-container canvas,
+.qr-table-code-container img {
+  width: 48px !important;
+  height: 48px !important;
+  display: block;
+  margin: 0 auto;
+}
+
+/* Sheet Footer */
+.qr-sheet-footer-block {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  border-top: 1.5px solid #0f172a;
+  padding-top: 10px;
+  margin-top: 14px;
+  page-break-inside: avoid;
+}
+
+.qr-sheet-instructions-box {
+  max-width: 55%;
+  font-size: 10px;
+  color: #475569;
+  line-height: 1.35;
+  background: #f8fafc;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border-left: 3px solid #0284c7;
+}
+
+.qr-sheet-sign-seal-group {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  text-align: center;
+}
+
+/* Print Stylesheet for A4 Sheet */
+@media print {
+  body.printing-attendance-qr-sheet {
+    background: #ffffff !important;
+  }
+
+  body.printing-attendance-qr-sheet * {
+    visibility: hidden !important;
+  }
+
+  body.printing-attendance-qr-sheet #attendanceQrSheetPaper,
+  body.printing-attendance-qr-sheet #attendanceQrSheetPaper * {
+    visibility: visible !important;
+  }
+
+  body.printing-attendance-qr-sheet #attendanceQrSheetPaper {
+    position: fixed !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 210mm !important;
+    min-height: 297mm !important;
+    margin: 0 !important;
+    padding: 8mm 10mm !important;
+    box-shadow: none !important;
+    border: none !important;
+    background: #ffffff !important;
+    color: #0f172a !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    z-index: 999999 !important;
+  }
+
+  @page {
+    size: A4 portrait;
+    margin: 6mm;
+  }
+}
+
+
+

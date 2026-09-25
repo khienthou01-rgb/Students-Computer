@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>TIS Lab Computer - Student Assistant</title>
+  <HTA:APPLICATION 
+    ID="oTISOverlay"
+    APPLICATIONNAME="TIS Lab Student Assistant"
+    BORDER="none"
+    CAPTION="no"
+    SHOWINTASKBAR="yes"
+    SINGLEINSTANCE="yes"
+    SYSMENU="no"
+    WINDOWSTATE="normal"
+    SCROLL="no"
+  />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', 'Kantumruy Pro', 'Khmer OS Siemreap', Tahoma, sans-serif;
+      background: radial-gradient(circle at 50% 10%, #1e1b4b 0%, #0c1222 55%, #020617 100%);
+      color: #f8fafc;
+      overflow: hidden;
+      user-select: none;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Welcome / Sign-in Fullscreen Background */
+    #welcomeScreen {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background: radial-gradient(circle at 50% 20%, rgba(30, 27, 75, 0.8) 0%, rgba(15, 23, 42, 0.95) 75%, #020617 100%);
+      padding: 24px;
+      position: relative;
+    }
+
+    /* Top Aurora Glow Ring */
+    #welcomeScreen::before {
+      content: '';
+      position: absolute;
+      width: 500px;
+      height: 300px;
+      top: 5%;
+      background: radial-gradient(ellipse, rgba(6, 182, 212, 0.18), rgba(139, 92, 246, 0.12), transparent 70%);
+      pointer-events: none;
+      filter: blur(40px);
+    }
+
+    .card-box {
+      background: linear-gradient(145deg, rgba(15, 23, 42, 0.96) 0%, rgba(20, 30, 55, 0.94) 100%);
+      border: 1.5px solid rgba(56, 189, 248, 0.35);
+      border-radius: 24px;
+      padding: 28px 34px;
+      width: 600px;
+      max-width: 95vw;
+      text-align: center;
+      box-shadow: 0 25px 65px rgba(0, 0, 0, 0.85), 0 0 40px rgba(6, 182, 212, 0.22);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Multi-color Neon Top Accent Bar */
+    .card-box::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #06b6d4, #3b82f6, #8b5cf6, #10b981);
+    }
+
+    .school-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .school-tag {
+      background: linear-gradient(135deg, #4f46e5, #06b6d4);
+      color: #fff;
+      font-weight: 800;
+      font-size: 0.84rem;
+      padding: 4px 16px;
+      border-radius: 20px;
+      letter-spacing: 0.6px;
+      box-shadow: 0 4px 14px rgba(79, 70, 229, 0.4);
+    }
+
+    #stationDisplayTag {
+      background: linear-gradient(135deg, rgba(6, 182, 212, 0.18), rgba(14, 165, 233, 0.12));
+      border: 1.5px solid #06b6d4;
+      color: #38bdf8;
+      font-size: 0.82rem;
+      font-weight: 800;
+      padding: 4px 12px;
+      border-radius: 14px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 0 14px rgba(6, 182, 212, 0.35);
+      transition: all 0.2s ease;
+    }
+    #stationDisplayTag:hover {
+      background: rgba(6, 182, 212, 0.3);
+      box-shadow: 0 0 20px rgba(6, 182, 212, 0.6);
+      transform: translateY(-1px);
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #f8fafc;
+      margin-bottom: 4px;
+      letter-spacing: 0.2px;
+    }
+    p.sub {
+      font-size: 0.86rem;
+      color: #94a3b8;
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+
+    /* 3 Shift Selector Tabs */
+    .shift-tabs {
+      display: flex;
+      gap: 8px;
+      background: rgba(10, 15, 29, 0.85);
+      padding: 6px;
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      margin-bottom: 20px;
+      box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.4);
+    }
+    .shift-tab {
+      flex: 1;
+      padding: 10px 8px;
+      border-radius: 12px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: #94a3b8;
+      font-size: 0.88rem;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .shift-tab:hover {
+      background: rgba(255, 255, 255, 0.06);
+      color: #f1f5f9;
+      transform: translateY(-1px);
+    }
+    .shift-tab.active.morning {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      color: #ffffff;
+      box-shadow: 0 4px 18px rgba(245, 158, 11, 0.45);
+      border-color: rgba(253, 230, 138, 0.4);
+    }
+    .shift-tab.active.afternoon {
+      background: linear-gradient(135deg, #0284c7, #2563eb);
+      color: #ffffff;
+      box-shadow: 0 4px 18px rgba(37, 99, 235, 0.45);
+      border-color: rgba(186, 230, 253, 0.4);
+    }
+    .shift-tab.active.evening {
+      background: linear-gradient(135deg, #7c3aed, #4f46e5);
+      color: #ffffff;
+      box-shadow: 0 4px 18px rgba(124, 58, 237, 0.45);
+      border-color: rgba(221, 214, 254, 0.4);
+    }
+
+    /* Student Search & Selection */
+    .selection-panel {
+      text-align: left;
+      margin-bottom: 20px;
+    }
+    .panel-label {
+      font-size: 0.86rem;
+      font-weight: 700;
+      color: #cbd5e1;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .panel-count {
+      font-size: 0.78rem;
+      font-weight: 800;
+      color: #38bdf8;
+      background: rgba(56, 189, 248, 0.14);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 2px 10px;
+      border-radius: 12px;
+    }
+
+    .search-box {
+      position: relative;
+      margin-bottom: 12px;
+    }
+    .search-input {
+      width: 100%;
+      padding: 10px 14px 10px 38px;
+      border-radius: 12px;
+      border: 1.5px solid #334155;
+      background: rgba(15, 23, 42, 0.9);
+      color: #f8fafc;
+      font-family: inherit;
+      font-size: 0.92rem;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+    .search-input:focus {
+      border-color: #38bdf8;
+      box-shadow: 0 0 16px rgba(56, 189, 248, 0.45);
+      background: #0f172a;
+    }
+    .search-icon {
+      position: absolute;
+      left: 12px;
+      top: 10px;
+      color: #64748b;
+      font-size: 0.95rem;
+    }
+
+    /* Student List Grid */
+    .students-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      max-height: 215px;
+      overflow-y: auto;
+      padding-right: 4px;
+      margin-bottom: 14px;
+    }
+    .student-card {
+      background: rgba(15, 23, 42, 0.85);
+      border: 1.5px solid rgba(51, 65, 85, 0.7);
+      border-radius: 12px;
+      padding: 10px 14px;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .student-card:hover {
+      background: rgba(30, 41, 59, 0.95);
+      border-color: #38bdf8;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+    }
+    .student-card.selected {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(5, 150, 105, 0.25));
+      border-color: #10b981;
+      box-shadow: 0 0 18px rgba(16, 185, 129, 0.4);
+    }
+    .student-name {
+      font-size: 0.9rem;
+      font-weight: 800;
+      color: #f1f5f9;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .student-course {
+      font-size: 0.72rem;
+      color: #94a3b8;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      padding: 2px 7px;
+      border-radius: 6px;
+      margin-left: 6px;
+      flex-shrink: 0;
+    }
+    .student-card.selected .student-name {
+      color: #34d399;
+    }
+
+    /* Selected Student Info Banner */
+    .selected-banner {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.12), rgba(6, 182, 212, 0.1));
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      border-radius: 12px;
+      padding: 9px 16px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.9rem;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Submit Button */
+    .btn-start {
+      width: 100%;
+      padding: 14px;
+      font-size: 1.05rem;
+      font-weight: 800;
+      border-radius: 14px;
+      border: none;
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: #fff;
+      font-family: inherit;
+      cursor: pointer;
+      box-shadow: 0 8px 25px rgba(16, 185, 129, 0.45);
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      letter-spacing: 0.3px;
+    }
+    .btn-start:hover {
+      background: linear-gradient(135deg, #059669, #047857);
+      box-shadow: 0 10px 32px rgba(16, 185, 129, 0.65);
+      transform: translateY(-2px);
+    }
+    .btn-start:disabled {
+      background: #334155;
+      cursor: not-allowed;
+      box-shadow: none;
+      opacity: 0.6;
+      transform: none;
+    }
+
+    /* Success Toast Modal inside HTA */
+    #successToast {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(2, 6, 23, 0.96);
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      z-index: 999999;
+      text-align: center;
+      padding: 20px;
+    }
+    .success-card {
+      background: linear-gradient(145deg, #0f172a 0%, #1e293b 100%);
+      border: 2px solid #10b981;
+      border-radius: 24px;
+      padding: 34px;
+      width: 460px;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.85), 0 0 45px rgba(16, 185, 129, 0.45);
+    }
+    .success-icon {
+      font-size: 3.2rem;
+      color: #10b981;
+      margin-bottom: 12px;
+      filter: drop-shadow(0 0 12px rgba(16, 185, 129, 0.6));
+    }
+
+    /* Floating Toolbar Mode (Small Bar at Top Right) */
+    #floatingBar {
+      display: none;
+      position: fixed;
+      top: 8px;
+      right: 12px;
+      background: linear-gradient(135deg, rgba(15, 23, 42, 0.96) 0%, rgba(30, 41, 59, 0.92) 100%);
+      border: 1.5px solid rgba(56, 189, 248, 0.6);
+      border-radius: 30px;
+      padding: 6px 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7), 0 0 20px rgba(6, 182, 212, 0.3);
+      align-items: center;
+      gap: 10px;
+      z-index: 99999;
+    }
+    .btn-tool {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #fff;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+    .btn-tool:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    }
+    .btn-tool.raised {
+      background: linear-gradient(135deg, #ef4444, #dc2626) !important;
+      border-color: #ef4444 !important;
+      box-shadow: 0 0 18px rgba(239, 68, 68, 0.8) !important;
+      animation: pulseHand 1.5s infinite ease-in-out;
+    }
+
+    @keyframes pulseHand {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 12px rgba(239, 68, 68, 0.6); }
+      50% { transform: scale(1.06); box-shadow: 0 0 25px rgba(239, 68, 68, 0.9); }
+    }
+
+    /* Shortcut Keys Modal */
+    #shortcutModal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(2, 6, 23, 0.88);
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 100000;
+    }
+    .shortcut-card {
+      background: linear-gradient(145deg, #0f172a 0%, #1e293b 100%);
+      border: 2px solid #38bdf8;
+      border-radius: 20px;
+      width: 580px;
+      max-height: 85vh;
+      overflow-y: auto;
+      padding: 24px;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.85), 0 0 35px rgba(56, 189, 248, 0.3);
+    }
+    .shortcut-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin: 18px 0;
+    }
+    .shortcut-item {
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 10px;
+      padding: 9px 14px;
+      font-size: 0.84rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .kbd {
+      background: rgba(56, 189, 248, 0.15);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      color: #38bdf8;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-family: monospace;
+      font-weight: 800;
+      font-size: 0.82rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 1. WELCOME & 3-SHIFT SIGN-IN SCREEN -->
+  <div id="welcomeScreen">
+    <div class="card-box">
+      <div class="school-header">
+        <span class="school-tag">🏫 TIS LAB COMPUTER</span>
+        <span style="font-size: 0.8rem; color: #94a3b8;">MasterSchool</span>
+        <span id="stationDisplayTag" onclick="promptChangeStationId()" title="ចុចដើម្បីប្តូរលេខសម្គាល់ម៉ាស៊ីន (Change PC ID)">
+          💻 <span id="lblStationId">PC-01</span> <span style="font-size: 0.72rem; color: #94a3b8; margin-left: 2px;">✏️ ប្តូរ</span>
+        </span>
+      </div>
+      
+      <h1>📋 ស្រង់វត្តមានសិស្សស្វ័យប្រវត្តិ</h1>
+      <p class="sub">វគ្គកុំព្យូទ័ររដ្ឋបាល (Typing • Word • Excel • PowerPoint)<br>សូមជ្រើសរើសវេនសិក្សា និងឈ្មោះរបស់អ្នកដើម្បីចូលរៀន</p>
+      
+      <!-- 3 Shifts Selector Tabs -->
+      <div class="shift-tabs">
+        <button type="button" id="tabShiftMorning" class="shift-tab morning active" onclick="switchShift('ព្រឹក')">
+          🌅 វេនព្រឹក<br><span style="font-size: 0.72rem; opacity: 0.85;">08:00 - 09:00</span>
+        </button>
+        <button type="button" id="tabShiftAfternoon" class="shift-tab afternoon" onclick="switchShift('ថ្ងៃ')">
+          ☀️ វេនថ្ងៃ<br><span style="font-size: 0.72rem; opacity: 0.85;">15:00 - 16:00</span>
+        </button>
+        <button type="button" id="tabShiftEvening" class="shift-tab evening" onclick="switchShift('រសៀល')">
+          🌇 វេនល្ងាច<br><span style="font-size: 0.72rem; opacity: 0.85;">17:00 - 18:00</span>
+        </button>
+      </div>
+
+      <!-- Student Selection Panel -->
+      <div class="selection-panel">
+        <div class="panel-label">
+          <span id="shiftTitleLabel">បញ្ជីឈ្មោះសិស្សវេនព្រឹក៖</span>
+          <span class="panel-count" id="studentCountLabel">០ នាក់</span>
+        </div>
+
+        <!-- Quick Search -->
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="searchInput" class="search-input" placeholder="វាយស្វែងរកឈ្មោះសិស្ស..." onkeyup="filterStudents()" />
+        </div>
+
+        <!-- Interactive Grid of Students in Active Shift -->
+        <div class="students-grid" id="studentsContainer">
+          <!-- Populated dynamically via JS -->
+        </div>
+
+        <!-- Selected Student Banner -->
+        <div class="selected-banner" id="selectedBanner" style="display: none;">
+          <div>
+            <span style="color: #94a3b8; font-size: 0.78rem;">សិស្សជ្រើសរើស៖</span>
+            <strong style="color: #34d399; margin-left: 6px;" id="selectedNameLabel">--</strong>
+          </div>
+          <span id="selectedShiftBadge" style="font-size: 0.78rem; background: #334155; padding: 2px 8px; border-radius: 6px; color: #38bdf8;">--</span>
+        </div>
+
+        <!-- Fallback Manual Name Write-in (if not in list) -->
+        <div style="margin-top: 6px; text-align: right;">
+          <a href="javascript:void(0)" onclick="toggleManualName()" style="color: #38bdf8; font-size: 0.78rem; text-decoration: none;">
+            + មិនឃើញឈ្មោះក្នុងបញ្ជី? ចុចទីនេះដើម្បីវាយឈ្មោះផ្ទាល់
+          </a>
+        </div>
+        <div id="manualNameBox" style="display: none; margin-top: 8px;">
+          <input type="text" id="manualNameInput" class="search-input" placeholder="វាយបញ្ចូលឈ្មោះសិស្សថ្មី/សាកល្បង..." onkeyup="handleManualNameInput()" />
+        </div>
+      </div>
+
+      <!-- Submit Sign-In Button -->
+      <button type="button" id="btnSubmitSignIn" class="btn-start" onclick="handleStudentSignIn()" disabled>
+        🚀 ចូលរៀន & កត់ត្រាវត្តមាន (Sign-In)
+      </button>
+    </div>
+  </div>
+
+  <!-- 2. SUCCESS CONFIRMATION MODAL -->
+  <div id="successToast">
+    <div class="success-card">
+      <div class="success-icon">✅</div>
+      <h2 style="font-size: 1.4rem; color: #f8fafc; margin-bottom: 8px;">កត់ត្រាវត្តមានជោគជ័យ!</h2>
+      <p style="color: #34d399; font-size: 1.1rem; font-weight: 700; margin-bottom: 6px;" id="toastStudentName">ចាន់ សុខា</p>
+      <p style="color: #94a3b8; font-size: 0.88rem; margin-bottom: 18px;" id="toastShiftDetail">វេនព្រឹក (08:00 - 09:00)</p>
+      <div style="background: rgba(16, 185, 129, 0.15); color: #34d399; padding: 8px; border-radius: 8px; font-size: 0.85rem;">
+        ប្រព័ន្ធបានស្រង់វត្តមានចូលប្រព័ន្ធរបស់លោកគ្រូរួចរាល់! ផ្ទាំងនេះនឹងបង្រួមខ្លួនស្វ័យប្រវត្តិ...
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. FLOATING ASSISTANT TOOLBAR (Top Right) -->
+  <div id="floatingBar">
+    <span style="font-size: 0.82rem; font-weight: 700; color: #38bdf8;" id="floatingStudentLabel">សិស្ស: --</span>
+    
+    <button type="button" id="btnRaiseHand" class="btn-tool" onclick="toggleRaiseHand()">
+      🙋‍♂️ លើកដៃសួរគ្រូ
+    </button>
+    
+    <button type="button" class="btn-tool" style="color: #eab308; border-color: #eab308;" onclick="toggleShortcutModal(true)">
+      ⌨️ Shortcut Keys
+    </button>
+  </div>
+
+  <!-- 4. SHORTCUT KEYS REFERENCE MODAL -->
+  <div id="shortcutModal">
+    <div class="shortcut-card">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #334155; padding-bottom: 10px;">
+        <h3 style="color: #38bdf8; font-size: 1.1rem; margin: 0;">⌨️ គ្រាប់ចុចកាត់រដ្ឋបាលសំខាន់ៗ (Quick Shortcuts)</h3>
+        <button type="button" onclick="toggleShortcutModal(false)" style="background: transparent; border: none; color: #fff; font-size: 1.2rem; cursor: pointer;">✖</button>
+      </div>
+
+      <div class="shortcut-grid">
+        <div class="shortcut-item"><span>ប្តូរភាសា ខ្មែរ/EN</span><span class="kbd">Alt + Shift</span></div>
+        <div class="shortcut-item"><span>វាយជើងអក្សរខ្មែរ</span><span class="kbd">J / F + អក្សរ</span></div>
+        <div class="shortcut-item"><span>អក្សរដិត (Bold)</span><span class="kbd">Ctrl + B</span></div>
+        <div class="shortcut-item"><span>អក្សរទ្រេត (Italic)</span><span class="kbd">Ctrl + I</span></div>
+        <div class="shortcut-item"><span>គូសបន្ទាត់ក្រោម</span><span class="kbd">Ctrl + U</span></div>
+        <div class="shortcut-item"><span>តម្រឹមចំកណ្តាល</span><span class="kbd">Ctrl + E</span></div>
+        <div class="shortcut-item"><span>តម្រឹមស្មើសងខាង</span><span class="kbd">Ctrl + J</span></div>
+        <div class="shortcut-item"><span>Save ទុកឯកសារ</span><span class="kbd">Ctrl + S</span></div>
+        <div class="shortcut-item"><span>ចុះទំព័រថ្មី Word</span><span class="kbd">Ctrl + Enter</span></div>
+        <div class="shortcut-item"><span>ជាប់រូបមន្ត Excel ($)</span><span class="kbd">F4</span></div>
+        <div class="shortcut-item"><span>ធ្វើសារដើមវិញ (Undo)</span><span class="kbd">Ctrl + Z</span></div>
+        <div class="shortcut-item"><span>បោះពុម្ព (Print A4)</span><span class="kbd">Ctrl + P</span></div>
+      </div>
+
+      <button type="button" onclick="toggleShortcutModal(false)" style="width: 100%; padding: 8px; border-radius: 8px; background: #334155; color: #fff; border: none; cursor: pointer; font-weight: 700;">
+        បិទផ្ទាំងជំនួយ
+      </button>
+    </div>
+  </div>
+
+  <script>
+    var currentPcId = "PC-01";
+    var activeShift = "ព្រឹក"; // "ព្រឹក" | "ថ្ងៃ" | "រសៀល"
+    var selectedStudentId = "";
+    var selectedStudentName = "";
+    var isHandRaised = false;
+    var firebaseBaseUrl = "https://system-student-c2267-default-rtdb.asia-southeast1.firebasedatabase.app";
+
+    // Standard Fallback Student Roster (Categorized by the 3 Real Shifts)
+    var allStudents = [
+      // 1. វេនព្រឹក (Morning)
+      { id: "TX01", name: "ចាន់ សុខា", course: "Typing", shift: "ព្រឹក" },
+      { id: "TX02", name: "សុខ ដារ៉ា", course: "Microsoft Word", shift: "ព្រឹក" },
+      { id: "TX03", name: "លឹម ស្រីនាង", course: "Microsoft Excel", shift: "ព្រឹក" },
+      { id: "TX04", name: "គង់ វិសាល", course: "PowerPoint", shift: "ព្រឹក" },
+      { id: "TX05", name: "ហេង ពិសិដ្ឋ", course: "Typing", shift: "ព្រឹក" },
+      { id: "TX06", name: "ជា មុនី", course: "Microsoft Word", shift: "ព្រឹក" },
+      { id: "TX07", name: "កែវ ចរិយា", course: "Microsoft Excel", shift: "ព្រឹក" },
+      { id: "TX08", name: "ម៉េង គីមហេង", course: "PowerPoint", shift: "ព្រឹក" },
+      { id: "TX09", name: "អ៊ុំ សុវណ្ណារ៉ា", course: "Typing", shift: "ព្រឹក" },
+      { id: "TX10", name: "ភួង ចិន្តា", course: "Microsoft Word", shift: "ព្រឹក" },
+      { id: "TX11", name: "ថន វ៉ាន់នី", course: "Microsoft Excel", shift: "ព្រឹក" },
+      { id: "TX12", name: "ឌី សុភ័ក្ត្រ", course: "PowerPoint", shift: "ព្រឹក" },
+
+      // 2. វេនថ្ងៃ (Afternoon)
+      { id: "TX15", name: "ឡុង ចាន់រ៉ា", course: "Microsoft Excel", shift: "ថ្ងៃ" },
+      { id: "TX16", name: "ហ៊ីង ពិសី", course: "Microsoft Word", shift: "ថ្ងៃ" },
+      { id: "TX17", name: "ហួរ សុភា", course: "PowerPoint", shift: "ថ្ងៃ" },
+      { id: "TX18", name: "ស៊ុន មុនីរ័ត្ន", course: "Typing", shift: "ថ្ងៃ" },
+      { id: "TX19", name: "ហួត វណ្ណៈ", course: "Microsoft Word", shift: "ថ្ងៃ" },
+      { id: "TX20", name: "ពេជ្រ រចនា", course: "Microsoft Excel", shift: "ថ្ងៃ" },
+      { id: "TX21", name: "កាង សុខលី", course: "PowerPoint", shift: "ថ្ងៃ" },
+      { id: "TX22", name: "នាង ស្រីពៅ", course: "Typing", shift: "ថ្ងៃ" },
+      { id: "TX23", name: "តាំង គីមស្រ៊ុន", course: "Microsoft Word", shift: "ថ្ងៃ" },
+      { id: "TX24", name: "ហេង ធីតា", course: "Microsoft Excel", shift: "ថ្ងៃ" },
+
+      // 3. វេនល្ងាច / រសៀល (Evening)
+      { id: "TX27", name: "យន់ ចំរើន", course: "Microsoft Word", shift: "រសៀល" },
+      { id: "TX28", name: "ឡេង វុទ្ធី", course: "Microsoft Excel", shift: "រសៀល" },
+      { id: "TX29", name: "ឈន ស្រីម៉ៅ", course: "PowerPoint", shift: "រសៀល" },
+      { id: "TX30", name: "អ៊ិន សុភាព", course: "Typing", shift: "រសៀល" },
+      { id: "TX31", name: "ផាន់ រតនា", course: "Microsoft Word", shift: "រសៀល" },
+      { id: "TX32", name: "ភិន កញ្ញា", course: "Microsoft Excel", shift: "រសៀល" },
+      { id: "TX33", name: "ថៃ សុវណ្ណរិទ្ធ", course: "PowerPoint", shift: "រសៀល" },
+      { id: "TX34", name: "ម៉ក់ ចរណៃ", course: "Typing", shift: "រសៀល" },
+      { id: "TX35", name: "ស្រ៊ុន វិទូ", course: "Microsoft Word", shift: "រសៀល" },
+      { id: "TX36", name: "នូ សុខជា", course: "Microsoft Excel", shift: "រសៀល" }
+    ];
+
+    // Read PC ID with bulletproof path, command line, and multi-location lookup
+    try {
+      // 1. Check command line arguments from mshta (e.g. mshta Student-Overlay.hta LAPTOP-01)
+      var htaApp = document.getElementById("oTISOverlay");
+      if (htaApp && htaApp.commandLine) {
+        var parts = htaApp.commandLine.split(/\s+/);
+        for (var pi = 1; pi < parts.length; pi++) {
+          var pClean = parts[pi].replace(/['"]/g, '').replace(/^\s+|\s+$/g, '');
+          if (pClean && pClean.toLowerCase().indexOf(".hta") === -1 && pClean.length >= 3) {
+            currentPcId = pClean.toUpperCase();
+            break;
+          }
+        }
+      }
+
+      // 2. Read from pc_id.txt (sanitizing Windows path by stripping leading slashes)
+      var rawPath = unescape(window.location.pathname).replace(/^[\\\/]+/, '').replace(/\//g, '\\');
+      var fso = new ActiveXObject("Scripting.FileSystemObject");
+      var scriptDir = fso.GetParentFolderName(rawPath);
+      var candidates = [
+        scriptDir + "\\pc_id.txt",
+        "C:\\pc-agent\\pc_id.txt",
+        "C:\\tis-agent\\pc_id.txt"
+      ];
+      for (var ci = 0; ci < candidates.length; ci++) {
+        if (fso.FileExists(candidates[ci])) {
+          var file = fso.OpenTextFile(candidates[ci], 1);
+          var readId = file.ReadLine();
+          file.Close();
+          if (readId && readId.replace(/^\s+|\s+$/g, '').length > 0) {
+            currentPcId = readId.replace(/^\s+|\s+$/g, '').toUpperCase();
+            break;
+          }
+        }
+      }
+    } catch(e) {}
+
+    function updateStationDisplay() {
+      var el = document.getElementById("lblStationId");
+      if (el) el.innerText = currentPcId;
+    }
+
+    function promptChangeStationId() {
+      var entered = prompt("សូមវាយលេខសម្គាល់ម៉ាស៊ីន (ឧ. PC-01 ដល់ PC-16 ឬ LAPTOP-01):", currentPcId);
+      if (entered && entered.replace(/^\s+|\s+$/g, '').length > 0) {
+        currentPcId = entered.replace(/^\s+|\s+$/g, '').toUpperCase();
+        updateStationDisplay();
+        saveStationIdToFile(currentPcId);
+        ensureAgentRunning();
+      }
+    }
+
+    function saveStationIdToFile(newId) {
+      try {
+        var rawPath = unescape(window.location.pathname).replace(/^[\\\/]+/, '').replace(/\//g, '\\');
+        var fso = new ActiveXObject("Scripting.FileSystemObject");
+        var scriptDir = fso.GetParentFolderName(rawPath);
+        var paths = [
+          scriptDir + "\\pc_id.txt",
+          "C:\\pc-agent\\pc_id.txt"
+        ];
+        for (var i = 0; i < paths.length; i++) {
+          try {
+            var f = fso.CreateTextFile(paths[i], true);
+            f.WriteLine(newId);
+            f.Close();
+          } catch(err) {}
+        }
+      } catch(e) {}
+    }
+
+    function ensureAgentRunning() {
+      try {
+        var rawPath = unescape(window.location.pathname).replace(/^[\\\/]+/, '').replace(/\//g, '\\');
+        var fso = new ActiveXObject("Scripting.FileSystemObject");
+        var scriptDir = fso.GetParentFolderName(rawPath);
+        var psScript = scriptDir + "\\tis-lab-agent.ps1";
+        if (fso.FileExists(psScript)) {
+          var wsh = new ActiveXObject("WScript.Shell");
+          var cmd = 'powershell.exe -NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File "' + psScript + '" -PcId "' + currentPcId + '"';
+          wsh.Run(cmd, 0, false);
+        }
+      } catch(e) {}
+    }
+
+    // Window Setup Fullscreen Initial
+    try {
+      window.resizeTo(window.screen.availWidth, window.screen.availHeight);
+      window.moveTo(0, 0);
+    } catch(e) {}
+
+    // Auto-detect shift by local computer clock
+    function autoDetectShift() {
+      var h = new Date().getHours();
+      if (h < 11) {
+        return "ព្រឹក";
+      } else if (h >= 11 && h < 16) {
+        return "ថ្ងៃ";
+      } else {
+        return "រសៀល"; // វេនល្ងាច
+      }
+    }
+
+    // Switch Active Shift Tab
+    function switchShift(shiftKey) {
+      activeShift = shiftKey;
+      selectedStudentId = "";
+      selectedStudentName = "";
+      document.getElementById("btnSubmitSignIn").disabled = true;
+      document.getElementById("selectedBanner").style.display = "none";
+      document.getElementById("searchInput").value = "";
+
+      // Update Tab CSS
+      var tabMorning = document.getElementById("tabShiftMorning");
+      var tabAfternoon = document.getElementById("tabShiftAfternoon");
+      var tabEvening = document.getElementById("tabShiftEvening");
+
+      tabMorning.className = "shift-tab morning" + (shiftKey === "ព្រឹក" ? " active" : "");
+      tabAfternoon.className = "shift-tab afternoon" + (shiftKey === "ថ្ងៃ" ? " active" : "");
+      tabEvening.className = "shift-tab evening" + (shiftKey === "រសៀល" || shiftKey === "ល្ងាច" ? " active" : "");
+
+      var shiftNames = { "ព្រឹក": "វេនព្រឹក (08:00 - 09:00)", "ថ្ងៃ": "វេនថ្ងៃ (15:00 - 16:00)", "រសៀល": "វេនល្ងាច (17:00 - 18:00)" };
+      document.getElementById("shiftTitleLabel").innerText = "បញ្ជីឈ្មោះសិស្ស " + (shiftNames[shiftKey] || shiftKey) + "៖";
+
+      renderStudentList();
+    }
+
+    // Filter and Render Students in Current Shift
+    function renderStudentList(searchQuery) {
+      var container = document.getElementById("studentsContainer");
+      container.innerHTML = "";
+
+      var q = searchQuery ? searchQuery.toLowerCase().replace(/^\s+|\s+$/g, '') : "";
+      var list = [];
+
+      for (var i = 0; i < allStudents.length; i++) {
+        var s = allStudents[i];
+        var sShift = String(s.shift || "");
+        var isMatchShift = false;
+
+        if (activeShift === "ព្រឹក" && sShift.indexOf("ព្រឹក") !== -1) isMatchShift = true;
+        else if (activeShift === "ថ្ងៃ" && sShift.indexOf("ថ្ងៃ") !== -1) isMatchShift = true;
+        else if ((activeShift === "រសៀល" || activeShift === "ល្ងាច") && (sShift.indexOf("រសៀល") !== -1 || sShift.indexOf("ល្ងាច") !== -1)) isMatchShift = true;
+
+        if (!isMatchShift) continue;
+
+        if (q) {
+          var nameLow = (s.name || "").toLowerCase();
+          var idLow = (s.id || "").toLowerCase();
+          if (nameLow.indexOf(q) === -1 && idLow.indexOf(q) === -1) continue;
+        }
+
+        list.push(s);
+      }
+
+      document.getElementById("studentCountLabel").innerText = list.length + " នាក់";
+
+      if (list.length === 0) {
+        container.innerHTML = "<div style='grid-column: 1 / -1; color: #94a3b8; padding: 20px; text-align: center;'>រកមិនឃើញឈ្មោះសិស្សក្នុងវេននេះឡើយ! សូមពិនិត្យមើលការស្វែងរក ឬវាយឈ្មោះផ្ទាល់ខាងក្រោម។</div>";
+        return;
+      }
+
+      for (var j = 0; j < list.length; j++) {
+        var st = list[j];
+        var isSel = (st.id === selectedStudentId);
+
+        var card = document.createElement("div");
+        card.className = "student-card" + (isSel ? " selected" : "");
+        card.setAttribute("data-id", st.id);
+        card.setAttribute("data-name", st.name);
+        card.onclick = (function(studentItem) {
+          return function() {
+            selectStudent(studentItem.id, studentItem.name);
+          };
+        })(st);
+
+        card.innerHTML = "<span class='student-name'>" + (isSel ? "✓ " : "") + st.name + "</span>" +
+                         "<span class='student-course'>" + (st.course || "កុំព្យូទ័រ") + "</span>";
+
+        container.appendChild(card);
+      }
+    }
+
+    function filterStudents() {
+      var val = document.getElementById("searchInput").value;
+      renderStudentList(val);
+    }
+
+    function selectStudent(id, name) {
+      selectedStudentId = id;
+      selectedStudentName = name;
+      document.getElementById("btnSubmitSignIn").disabled = false;
+
+      var banner = document.getElementById("selectedBanner");
+      banner.style.display = "flex";
+      document.getElementById("selectedNameLabel").innerText = name;
+      
+      var shiftLabels = { "ព្រឹក": "🌅 វេនព្រឹក", "ថ្ងៃ": "☀️ វេនថ្ងៃ", "រសៀល": "🌇 វេនល្ងាច" };
+      document.getElementById("selectedShiftBadge").innerText = shiftLabels[activeShift] || activeShift;
+
+      // Re-render highlight
+      renderStudentList(document.getElementById("searchInput").value);
+    }
+
+    function toggleManualName() {
+      var box = document.getElementById("manualNameBox");
+      if (box.style.display === "none") {
+        box.style.display = "block";
+        document.getElementById("manualNameInput").focus();
+      } else {
+        box.style.display = "none";
+      }
+    }
+
+    function handleManualNameInput() {
+      var val = document.getElementById("manualNameInput").value.replace(/^\s+|\s+$/g, '');
+      if (val.length > 0) {
+        selectedStudentId = "CUSTOM_" + new Date().getTime();
+        selectedStudentName = val;
+        document.getElementById("btnSubmitSignIn").disabled = false;
+
+        document.getElementById("selectedBanner").style.display = "flex";
+        document.getElementById("selectedNameLabel").innerText = val + " (សិស្សថ្មី)";
+        var shiftLabels = { "ព្រឹក": "🌅 វេនព្រឹក", "ថ្ងៃ": "☀️ វេនថ្ងៃ", "រសៀល": "🌇 វេនល្ងាច" };
+        document.getElementById("selectedShiftBadge").innerText = shiftLabels[activeShift] || activeShift;
+      }
+    }
+
+    // Connect to Firebase and fetch live students list
+    function loadStudentsFromCloud() {
+      try {
+        var http = new ActiveXObject("MSXML2.ServerXMLHTTP.6.0");
+        http.open("GET", firebaseBaseUrl + "/students.json", true);
+        http.onreadystatechange = function() {
+          if (http.readyState === 4 && http.status === 200) {
+            try {
+              var raw = http.responseText;
+              var data = window.JSON ? JSON.parse(raw) : eval("(" + raw + ")");
+              if (data) {
+                var cloudList = [];
+                for (var k in data) {
+                  if (!data.hasOwnProperty(k)) continue;
+                  var item = data[k];
+                  if (!item) continue;
+                  cloudList.push({
+                    id: item.ID || k,
+                    name: item.NameKh || item.NameEn || item.name || k,
+                    course: item.Course || "កុំព្យូទ័ររដ្ឋបាល",
+                    shift: item.Shift || "ព្រឹក"
+                  });
+                }
+                if (cloudList.length > 0) {
+                  allStudents = cloudList;
+                  renderStudentList();
+                }
+              }
+            } catch(err) {}
+          }
+        };
+        http.send();
+      } catch(e) {}
+    }
+
+    // MAIN SIGN-IN & AUTO-ATTENDANCE LOGIC
+    function handleStudentSignIn() {
+      if (!selectedStudentName) {
+        alert("សូមជ្រើសរើសឈ្មោះរបស់អ្នកជាមុនសិន!");
+        return;
+      }
+
+      var btn = document.getElementById("btnSubmitSignIn");
+      btn.disabled = true;
+      btn.innerText = "⏳ កំពុងកត់ត្រាវត្តមាន...";
+
+      var now = new Date();
+      var y = now.getFullYear();
+      var m = String(now.getMonth() + 1);
+      if (m.length < 2) m = "0" + m;
+      var d = String(now.getDate());
+      if (d.length < 2) d = "0" + d;
+      var todayStr = y + "-" + m + "-" + d;
+
+      // 1. Send Attendance Record directly to Firebase Cloud
+      try {
+        var http = new ActiveXObject("MSXML2.ServerXMLHTTP.6.0");
+        var attUrl = firebaseBaseUrl + "/attendance/" + todayStr + ".json";
+        http.open("PATCH", attUrl, true);
+        http.setRequestHeader("Content-Type", "application/json");
+        var attPayload = '{"' + selectedStudentId + '":"Present"}';
+        http.send(attPayload);
+      } catch(e) {}
+
+      // 2. Update Live PC Status & Claimed Shift
+      try {
+        var http2 = new ActiveXObject("MSXML2.ServerXMLHTTP.6.0");
+        var pcUrl = firebaseBaseUrl + "/lab_monitor/pcs/" + currentPcId + ".json";
+        http2.open("PATCH", pcUrl, true);
+        http2.setRequestHeader("Content-Type", "application/json; charset=utf-8");
+        var pcPayload = '{"claimedStudentId":"' + selectedStudentId + '","claimedStudentName":"' + selectedStudentName + '","claimedShift":"' + activeShift + '","claimedTime":' + now.getTime() + ',"attendanceStatus":"Present","is_online":true,"pc_id":"' + currentPcId + '","pcId":"' + currentPcId + '"}';
+        http2.send(pcPayload);
+      } catch(e) {}
+
+      // 3. Show Success Confirmation Toast
+      var toast = document.getElementById("successToast");
+      document.getElementById("toastStudentName").innerText = selectedStudentName;
+      var shiftLabels = { "ព្រឹក": "🌅 វេនព្រឹក (08:00 - 09:00)", "ថ្ងៃ": "☀️ វេនថ្ងៃ (15:00 - 16:00)", "រសៀល": "🌇 វេនល្ងាច (17:00 - 18:00)" };
+      document.getElementById("toastShiftDetail").innerText = (shiftLabels[activeShift] || activeShift) + " • វត្តមានកត់ត្រាជោគជ័យ";
+      toast.style.display = "flex";
+
+      // 4. Collapse to Floating Assistant Bar after 1.8 seconds
+      setTimeout(function() {
+        toast.style.display = "none";
+        document.getElementById("welcomeScreen").style.display = "none";
+        document.getElementById("floatingBar").style.display = "flex";
+        
+        var shortShift = (activeShift === "ព្រឹក" ? "ព្រឹក" : (activeShift === "ថ្ងៃ" ? "ថ្ងៃ" : "ល្ងាច"));
+        document.getElementById("floatingStudentLabel").innerText = "[" + shortShift + " • " + currentPcId + "] " + selectedStudentName;
+
+        // Resize window to small compact toolbar at top right
+        try {
+          window.resizeTo(360, 60);
+          window.moveTo(window.screen.availWidth - 380, 10);
+        } catch(e) {}
+      }, 1800);
+    }
+
+    // Toggle Student Raise Hand
+    function toggleRaiseHand() {
+      isHandRaised = !isHandRaised;
+      var btn = document.getElementById("btnRaiseHand");
+      if (isHandRaised) {
+        btn.className = "btn-tool raised";
+        btn.innerText = "🤚 កំពុងលើកដៃ...";
+      } else {
+        btn.className = "btn-tool";
+        btn.innerText = "🙋‍♂️ លើកដៃសួរគ្រូ";
+      }
+
+      // Sync to Firebase
+      try {
+        var http = new ActiveXObject("MSXML2.ServerXMLHTTP.6.0");
+        var url = firebaseBaseUrl + "/lab_monitor/pcs/" + currentPcId + ".json";
+        http.open("PATCH", url, true);
+        http.setRequestHeader("Content-Type", "application/json; charset=utf-8");
+        var payload = '{"hand_raised":' + (isHandRaised ? 'true' : 'false') + ',"handRaised":' + (isHandRaised ? 'true' : 'false') + '}';
+        http.send(payload);
+      } catch(e) {}
+    }
+
+    // Shortcut Modal Toggle
+    function toggleShortcutModal(show) {
+      var modal = document.getElementById("shortcutModal");
+      if (show) {
+        try {
+          window.resizeTo(620, 500);
+          window.moveTo((window.screen.availWidth - 620) / 2, (window.screen.availHeight - 500) / 2);
+        } catch(e) {}
+        modal.style.display = "flex";
+      } else {
+        modal.style.display = "none";
+        try {
+          window.resizeTo(360, 60);
+          window.moveTo(window.screen.availWidth - 380, 10);
+        } catch(e) {}
+      }
+    }
+
+    // Initialize on load
+    window.onload = function() {
+      updateStationDisplay();
+      var defShift = autoDetectShift();
+      switchShift(defShift);
+      loadStudentsFromCloud();
+      ensureAgentRunning();
+    };
+  </script>
+</body>
+</html>
