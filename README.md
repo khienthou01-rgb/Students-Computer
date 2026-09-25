@@ -32,16 +32,13 @@
 
 ប្រព័ន្ធត្រូវបានរៀបចំឡើងយ៉ាងល្អឥតខ្ចោះ គាំទ្រការ Hosting ទាំង **Online លើពពក (Cloud)** និង **Local ក្នុងបណ្តាញសាលា (Wi-Fi/LAN)**៖
 
-### ១. Online Cloud Hosting (ដំណើរការលើអ៊ីនធឺណិត ២៤/៧)
-ប្រព័ន្ធត្រូវបានដាក់ឱ្យដំណើរការផ្ទាល់នៅលើ **Firebase Hosting Global CDN** ជាមួយ SSL Certificate សុវត្ថិភាពខ្ពស់ និងល្បឿនលឿនបំផុត៖
-- 🔗 **តំណភ្ជាប់ចម្បង (Primary Live URL):** [https://system-student-c2267.web.app](https://system-student-c2267.web.app)
-- 🔗 **តំណភ្ជាប់បម្រុង (Backup Live URL):** [https://system-student-c2267.firebaseapp.com](https://system-student-c2267.firebaseapp.com)
-- ⚡ **របៀប Deploy កូដថ្មីដោយចុចតែម្តង (1-Click Smart Deploy):**
-  - គ្រាន់តែ **Double-click លើ `Deploy-Online.bat`** (ឬដំណើរការ `node deploy.js`)
-  - ប្រព័ន្ធនឹងស្វ័យប្រវត្តិកំណត់ Version ថ្មី, បំបាត់ Cache ចាស់ (Cache-Busting), និង Upload ឡើងលើ Firebase Hosting ភ្លាមៗក្នុងរយៈពេលត្រឹម ១០ វិនាទី!
-- 🔄 **របៀប Auto-Deploy រាល់ពេល Save កូដ (Live Watcher):**
-  - គ្រាន់តែ **Double-click លើ `Watch-Deploy.bat`**
-  - រាល់ពេលលោកអ្នកកែសម្រួល Save កូដ HTML, CSS ឬ JS វានឹងស្វ័យប្រវត្តិ Deploy ឡើង Live ភ្លាមៗ!
+### ១. Online Cloud Hosting (ដំណើរការលើអ៊ីនធឺណិត ២៤/៧ តាម GitHub Pages)
+ប្រព័ន្ធត្រូវបានដាក់ឱ្យដំណើរការផ្ទាល់នៅលើ **GitHub Pages Global CDN** ជាមួយ SSL Certificate សុវត្ថិភាពខ្ពស់ និងល្បឿនលឿនបំផុត៖
+- 🔗 **តំណភ្ជាប់ផ្លូវការ (Live URL):** [https://khienthou01-rgb.github.io/Students-Computer/](https://khienthou01-rgb.github.io/Students-Computer/)
+- 📦 **GitHub Repository:** [https://github.com/khienthou01-rgb/Students-Computer](https://github.com/khienthou01-rgb/Students-Computer)
+- ⚡ **របៀប Deploy កូដថ្មីដោយចុចតែម្តង (1-Click GitHub Deploy):**
+  - គ្រាន់តែ **Double-click លើ `Deploy-GitHub.bat`**
+  - ប្រព័ន្ធនឹងស្វ័យប្រវត្តិ Commit និង Push ឡើង GitHub Pages ភ្លាមៗក្នុងរយៈពេលត្រឹមតែ ២ វិនាទី!
 - 🌐 **គាំទ្រ Multi-Cloud Hosting (Vercel & Netlify):**
   - មានភ្ជាប់ស្រេចនូវ `vercel.json` និង `_redirects` អាចយកទៅភ្ជាប់ជាមួយ Vercel ឬ Netlify បានដោយចុចតែ ១ Click ប៉ុណ្ណោះ។
 
