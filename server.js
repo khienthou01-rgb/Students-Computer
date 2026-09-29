@@ -126,40 +126,66 @@ const server = http.createServer((req, res) => {
   }
 
   let safePath = path.normalize(decodeURIComponent(req.url.split('?')[0])).replace(/^(\.\.[\/\\])+/, '');
-  if (safePath === '/' || safePath === '\\') {
+  if (safePath === '/' || safePath === '\\' || safePath === '') {
     safePath = 'index.html';
   } else if (safePath.startsWith('/') || safePath.startsWith('\\')) {
     safePath = safePath.slice(1);
   }
 
-  const filePath = path.join(BASE_DIR, safePath);
-
-  fs.stat(filePath, (err, stats) => {
-    if (err || !stats.isFile()) {
-      const ext = path.extname(filePath);
-      if (!ext) {
-        const indexPath = path.join(BASE_DIR, 'index.html');
-        return fs.stat(indexPath, (iErr, iStats) => {
-          if (!iErr && iStats.isFile()) {
-            res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
-            return fs.createReadStream(indexPath).pipe(res);
-          }
-          res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
-          res.end('404 Not Found');
-        });
-      }
-      res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
-      res.end('404 Not Found');
-      return;
+  function resolveStaticFilePath(relPath) {
+    const candidateDirs = [
+      BASE_DIR,
+      process.cwd(),
+      __dirname,
+      path.join(__dirname, '..'),
+      path.join(process.cwd(), '..')
+    ];
+    for (const dir of candidateDirs) {
+      if (!dir) continue;
+      const target = path.join(dir, relPath);
+      try {
+        if (fs.existsSync(target) && fs.statSync(target).isFile()) {
+          return target;
+        }
+      } catch (e) {}
     }
+    return null;
+  }
 
-    const ext = path.extname(filePath).toLowerCase();
-    const contentType = MIME_TYPES[ext] || 'application/octet-stream';
-    res.writeHead(200, { 'Content-Type': contentType });
+  let targetFile = resolveStaticFilePath(safePath);
+  const ext = path.extname(safePath);
 
-    const stream = fs.createReadStream(filePath);
-    stream.pipe(res);
-  });
+  // If no extension or not found and no extension, fallback to index.html (SPA routing)
+  if (!targetFile && !ext) {
+    targetFile = resolveStaticFilePath('index.html');
+  }
+
+  if (!targetFile) {
+    res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
+    res.end('404 Not Found');
+    return;
+  }
+
+  const fileExt = path.extname(targetFile).toLowerCase();
+  const contentType = MIME_TYPES[fileExt] || 'application/octet-stream';
+
+  try {
+    const fileBuffer = fs.readFileSync(targetFile);
+    const headers = {
+      'Content-Type': contentType,
+      'Content-Length': fileBuffer.length
+    };
+    if (safePath === 'sw.js' || safePath === 'manifest.json') {
+      headers['Cache-Control'] = 'no-cache, no-store, must-revalidate';
+    } else {
+      headers['Cache-Control'] = 'public, max-age=86400';
+    }
+    res.writeHead(200, headers);
+    res.end(fileBuffer);
+  } catch (err) {
+    res.writeHead(500, { 'Content-Type': 'text/plain; charset=utf-8' });
+    res.end('500 Internal Server Error: ' + err.message);
+  }
 });
 
 if (!process.env.VERCEL) {
