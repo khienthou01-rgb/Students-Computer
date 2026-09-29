@@ -55,12 +55,12 @@ const SidebarComponent = {
     return `
       <aside id="sidebar" class="sidebar">
         <div class="sidebar-header">
-          <div class="brand-logo" title="TIS Lab Computer">
-            <i class="fa-solid fa-laptop-code"></i>
+          <div class="brand-logo" title="សាលា អន្តរជាតិ ធានស៊ីន (Tian Xin International School)">
+            <img src="assets/images/logo.png" alt="Tian Xin International School" class="brand-logo-img">
           </div>
           <div class="brand-info">
-            <h1>TIS Lab Computer</h1>
-            <p>ប្រព័ន្ធគ្រប់គ្រងសិស្ស & Lab</p>
+            <h1>សាលា ធានស៊ីន</h1>
+            <p>Tian Xin Int. School (TIS)</p>
           </div>
         </div>
 

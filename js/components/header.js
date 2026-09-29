@@ -11,21 +11,24 @@ const HeaderComponent = {
         <div class="header-left">
           ${isStudent ? `
             <div class="student-header-brand" style="display: flex; align-items: center; gap: 12px;">
-              <div class="login-brand-icon" style="width: 42px; height: 42px; font-size: 1.2rem;">
-                <i class="fa-solid fa-laptop-code"></i>
+              <div class="header-brand-logo">
+                <img src="assets/images/logo.png" alt="Tian Xin International School" class="header-logo-img">
               </div>
               <div class="page-title">
-                <h2>TIS Lab Computer - គណនីសិស្សានុសិស្ស</h2>
-                <p>តាមដានការសិក្សា វត្តមាន និងការប្រឡងបញ្ចប់វគ្គ</p>
+                <h2>សាលា អន្តរជាតិ ធានស៊ីន - គណនីសិស្ស</h2>
+                <p>Tian Xin International School (TIS) • តាមដានការសិក្សា</p>
               </div>
             </div>
           ` : `
             <button type="button" id="mobileToggle" class="mobile-toggle" aria-label="បើកម៉ឺនុយ">
               <i class="fa-solid fa-bars"></i>
             </button>
+            <div class="header-brand-logo" style="display: none;" id="mobileHeaderLogo">
+              <img src="assets/images/logo.png" alt="Tian Xin International School" class="header-logo-img">
+            </div>
             <div class="page-title">
-              <h2>TIS Lab Computer</h2>
-              <p>ប្រព័ន្ធគ្រប់គ្រងសិស្ស ស្ថិតិសិក្សា និងបន្ទប់កុំព្យូទ័រ</p>
+              <h2>សាលា អន្តរជាតិ ធានស៊ីន</h2>
+              <p>Tian Xin International School (TIS) • ប្រព័ន្ធគ្រប់គ្រងសិស្ស</p>
             </div>
           `}
         </div>

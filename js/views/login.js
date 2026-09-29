@@ -18,11 +18,12 @@ const LoginView = {
 
             <!-- Brand & Academy Header -->
             <div class="login-brand-header">
-              <div class="login-brand-icon">
-                <i class="fa-solid fa-laptop-code"></i>
+              <div class="login-brand-logo-wrap">
+                <img src="assets/images/logo.png" alt="Tian Xin International School" class="login-brand-logo-img">
               </div>
-              <h1 class="login-brand-title">TIS Lab Computer</h1>
-              <p class="login-brand-subtitle">ប្រព័ន្ធគ្រប់គ្រងសិស្ស & បន្ទប់អនុវត្តកុំព្យូទ័រ (Computer Lab)</p>
+              <h1 class="login-brand-title">សាលា អន្តរជាតិ ធានស៊ីន</h1>
+              <p class="login-brand-en">TIAN XIN INTERNATIONAL SCHOOL (TIS)</p>
+              <p class="login-brand-subtitle">ប្រព័ន្ធគ្រប់គ្រងសិស្ស & បន្ទប់អនុវត្តកុំព្យូទ័រ</p>
             </div>
 
             <!-- Segmented Dual-Role Tab Switcher -->

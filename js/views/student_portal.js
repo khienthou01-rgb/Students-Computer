@@ -95,6 +95,9 @@ const StudentPortalView = {
                 <span class="portal-id-badge"><i class="fa-solid fa-id-card"></i> ${student.ID}</span>
                 <span class="portal-shift-badge"><i class="fa-solid fa-clock"></i> វេន${student.Shift || 'ព្រឹក'}</span>
                 <span class="portal-grade-badge"><i class="fa-solid fa-graduation-cap"></i> ${student.Grade || 'ថ្នាក់កុំព្យូទ័រ'}</span>
+                <span class="portal-school-badge" style="background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.4); padding: 3px 10px; border-radius: 20px; font-weight: 700; font-size: 0.76rem; display: inline-flex; align-items: center; gap: 5px;">
+                  <img src="assets/images/logo.png" alt="TIS Logo" style="width: 15px; height: 15px; border-radius: 50%; background: #fff;"> សាលា អន្តរជាតិ ធានស៊ីន
+                </span>
               </div>
               <h1 class="portal-name-kh">${student.NameKh}</h1>
               <div class="portal-name-en">${student.NameEn || ''}</div>
@@ -274,7 +277,10 @@ const StudentPortalView = {
             <div class="student-id-card-render-wrap">
               <div class="id-card-preview-mini">
                 <div class="id-mini-top">
-                  <div class="id-mini-school">TIS LAB COMPUTER</div>
+                  <div style="display: flex; align-items: center; gap: 6px;">
+                    <img src="assets/images/logo.png" alt="TIS Logo" style="width: 20px; height: 20px; border-radius: 50%; background: #fff; padding: 1px;">
+                    <div class="id-mini-school">សាលា ធានស៊ីន (TIS)</div>
+                  </div>
                   <div class="id-mini-badge">STUDENT CARD</div>
                 </div>
                 <div class="id-mini-body">

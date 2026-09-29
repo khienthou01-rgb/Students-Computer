@@ -513,11 +513,13 @@ const ModalsComponent = {
                   <div class="id-card-preview-wrapper" style="margin: 12px auto;">
                     <div id="printableIdCard" class="id-card-element">
                       <div class="id-card-header">
-                        <div>
-                          <div class="school-name">TIS LAB COMPUTER</div>
-                          <div class="card-tag">STUDENT IDENTITY CARD</div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                          <img src="assets/images/logo.png" alt="Logo" style="width: 28px; height: 28px; border-radius: 50%; background: #fff; padding: 1px; flex-shrink: 0;">
+                          <div>
+                            <div class="school-name">សាលា អន្តរជាតិ ធានស៊ីន</div>
+                            <div class="card-tag">TIAN XIN INTERNATIONAL SCHOOL (TIS)</div>
+                          </div>
                         </div>
-                        <div style="font-size: 20px;">🎓</div>
                       </div>
                       <div class="id-card-body">
                         <img id="cardPreviewAvatar" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%23e2e8f0'/%3E%3Cpath d='M50 48a16 16 0 100-32 16 16 0 000 32zm0 8c-18 0-32 12-32 26v4h64v-4c0-14-14-26-32-26z' fill='%2394a3b8'/%3E%3C/svg%3E" alt="Avatar" class="id-card-avatar">
@@ -8127,11 +8129,11 @@ ${scoresList}
       <div class="qr-sheet-header-top">
         <div class="qr-sheet-school-block">
           <div class="qr-sheet-school-logo">
-            <i class="fa-solid fa-graduation-cap"></i>
+            <img src="assets/images/logo.png" alt="Tian Xin International School Logo">
           </div>
           <div>
-            <div style="font-size: 13.5px; font-weight: 800; color: #1e3a8a; text-transform: uppercase;">សាលាកុំព្យូទ័រ TIS LAB COMPUTER</div>
-            <div style="font-size: 10.5px; font-weight: 600; color: #475569;">MODERN STUDENT MANAGEMENT SYSTEM • SMART ATTENDANCE</div>
+            <div style="font-size: 13.5px; font-weight: 800; color: #be185d; text-transform: uppercase;">សាលា អន្តរជាតិ ធានស៊ីន (TIAN XIN INTERNATIONAL SCHOOL)</div>
+            <div style="font-size: 10px; font-weight: 600; color: #64748b;">MODERN STUDENT MANAGEMENT SYSTEM • SMART ATTENDANCE</div>
           </div>
         </div>
         <div class="qr-sheet-kingdom-block">

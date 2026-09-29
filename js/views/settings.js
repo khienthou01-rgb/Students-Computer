@@ -390,11 +390,11 @@ const SettingsView = {
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-bottom: 20px;">
               <div>
                 <label class="form-label" style="font-weight: 700; font-size: 0.82rem;">ឈ្មោះសាលា (ភាសាខ្មែរ)៖</label>
-                <input type="text" id="brandSchoolNameKh" class="form-control" value="សាលាកុំព្យូទ័រ TIS Lab Computer">
+                <input type="text" id="brandSchoolNameKh" class="form-control" value="សាលា អន្តរជាតិ ធានស៊ីន">
               </div>
               <div>
                 <label class="form-label" style="font-weight: 700; font-size: 0.82rem;">ឈ្មោះសាលា (អង់គ្លេស)៖</label>
-                <input type="text" id="brandSchoolNameEn" class="form-control" value="TIS LAB COMPUTER TRAINING CENTER">
+                <input type="text" id="brandSchoolNameEn" class="form-control" value="TIAN XIN INTERNATIONAL SCHOOL (TIS)">
               </div>
               <div>
                 <label class="form-label" style="font-weight: 700; font-size: 0.82rem;">គោត្តនាម & នាមគ្រូ (Teacher Title)៖</label>

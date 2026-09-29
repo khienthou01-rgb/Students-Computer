@@ -11,11 +11,12 @@
 
 .id-card-element {
   width: 360px;
-  background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+  background: linear-gradient(135deg, #831843 0%, #be185d 50%, #e11d74 100%);
   color: #ffffff;
   border-radius: 16px;
   padding: 18px;
-  box-shadow: 0 12px 28px rgba(37, 99, 235, 0.35);
+  box-shadow: 0 12px 28px rgba(225, 29, 116, 0.35);
+  border: 1px solid rgba(245, 158, 11, 0.35);
   position: relative;
   overflow: hidden;
 }

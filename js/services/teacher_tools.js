@@ -305,23 +305,32 @@ const TeacherToolsService = {
   // 3. SCHOOL BRANDING (DIGITAL SEAL STAMP & TEACHER SIGNATURE)
   // ------------------------------------------------------------------------
   getSchoolBranding() {
-    try {
-      const saved = localStorage.getItem(this.STORAGE_KEY_BRANDING);
-      if (saved) return JSON.parse(saved);
-    } catch (e) {}
-
-    // Default branding
-    return {
-      schoolNameKh: "សាលាកុំព្យូទ័រ TIS Lab Computer",
-      schoolNameEn: "TIS LAB COMPUTER TRAINING CENTER",
+    let branding = {
+      schoolNameKh: "សាលា អន្តរជាតិ ធានស៊ីន",
+      schoolNameEn: "TIAN XIN INTERNATIONAL SCHOOL (TIS)",
       schoolAddress: "ខេត្តកំពត, ព្រះរាជាណាចក្រកម្ពុជា",
       schoolPhone: "071 721 0307",
       schoolEmail: "khienthou01@gmail.com",
       teacherTitle: "លោកគ្រូ ខៀន ធូ",
       teacherPosition: "ប្រធានគ្រប់គ្រង & គ្រូបង្រៀនកុំព្យូទ័រ",
-      stampImageUrl: "", // Custom Seal image
+      stampImageUrl: "assets/images/logo.png", // Official School Logo
       signatureImageUrl: "" // Digital Signature image
     };
+
+    try {
+      const saved = localStorage.getItem(this.STORAGE_KEY_BRANDING);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        branding = { ...branding, ...parsed };
+        if (!branding.stampImageUrl) branding.stampImageUrl = "assets/images/logo.png";
+        if (branding.schoolNameKh === "សាលាកុំព្យូទ័រ TIS Lab Computer") {
+          branding.schoolNameKh = "សាលា អន្តរជាតិ ធានស៊ីន";
+          branding.schoolNameEn = "TIAN XIN INTERNATIONAL SCHOOL (TIS)";
+        }
+      }
+    } catch (e) {}
+
+    return branding;
   },
 
   saveSchoolBranding(brandingData) {

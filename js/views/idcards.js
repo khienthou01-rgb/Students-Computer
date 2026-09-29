@@ -4,19 +4,19 @@
  */
 const IdCardsView = {
   selectedStudent: null,
-  cardTheme: "blue", // "blue", "emerald", "purple", "dark"
+  cardTheme: "rose", // "rose", "blue", "emerald", "dark"
   cardOrientation: "vertical", // "vertical", "horizontal"
 
   render() {
     return `
       <section id="view-idcards" class="page-view">
         <!-- Header Banner -->
-        <div class="card" style="margin-bottom: 20px; padding: 22px 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; border-left: 4px solid #38bdf8;">
+        <div class="card" style="margin-bottom: 20px; padding: 22px 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; border-left: 4px solid #e11d74;">
           <div>
             <h2 style="font-size: 1.35rem; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 10px; margin: 0 0 4px 0;">
-              <i class="fa-solid fa-id-card" style="color: #38bdf8;"></i>
+              <i class="fa-solid fa-id-card" style="color: #e11d74;"></i>
               <span>ស្ទូឌីយោកាតសិស្ស (Student ID Card Studio)</span>
-              <span class="badge" style="background: rgba(56, 189, 248, 0.15); color: #38bdf8; font-size: 0.85rem; padding: 4px 12px; border-radius: 20px; font-weight: 700;">A4 Batch Print Ready</span>
+              <span class="badge" style="background: rgba(225, 29, 116, 0.15); color: #e11d74; font-size: 0.85rem; padding: 4px 12px; border-radius: 20px; font-weight: 700;">A4 Batch Print Ready</span>
             </h2>
             <p style="margin: 0; font-size: 0.88rem; color: var(--text-muted);">
               បង្កើតកាតសិស្សអាជីព ស្កេន QR Code បោះពុម្ពកាតទោល ឬបោះពុម្ពជាសន្លឹក A4 ចំនួន ៨ សន្លឹកក្នុងពេលតែមួយ
@@ -26,7 +26,7 @@ const IdCardsView = {
             <button type="button" id="btnPrintBatchCardsBtn" class="btn-secondary" style="height: 42px; padding: 0 16px; font-size: 0.88rem; font-weight: 600; border-radius: 12px; display: inline-flex; align-items: center; gap: 8px;">
               <i class="fa-solid fa-layer-group"></i> <span>បោះពុម្ព A4 Batch (8 កាត)</span>
             </button>
-            <button type="button" id="btnPrintSingleCardBtn" class="btn-primary" style="height: 42px; padding: 0 18px; font-size: 0.88rem; font-weight: 700; background: linear-gradient(135deg, #0284c7, #38bdf8); border-color: transparent; border-radius: 12px; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 14px rgba(2, 132, 199, 0.35);">
+            <button type="button" id="btnPrintSingleCardBtn" class="btn-primary" style="height: 42px; padding: 0 18px; font-size: 0.88rem; font-weight: 700; background: linear-gradient(135deg, #be185d, #e11d74); border-color: transparent; border-radius: 12px; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 14px rgba(225, 29, 116, 0.35);">
               <i class="fa-solid fa-print"></i> <span>បោះពុម្ពកាតនេះ (Print Card)</span>
             </button>
           </div>
@@ -36,7 +36,7 @@ const IdCardsView = {
           <!-- Left Configuration Panel -->
           <div class="card" style="padding: 22px; border-radius: 20px; border: 1px solid var(--border-color);">
             <h3 style="font-size: 1.05rem; font-weight: 800; color: var(--text-main); margin: 0 0 16px 0; display: flex; align-items: center; gap: 8px;">
-              <i class="fa-solid fa-sliders" style="color: #38bdf8;"></i>
+              <i class="fa-solid fa-sliders" style="color: #e11d74;"></i>
               <span>ការកំណត់ទម្រង់កាត</span>
             </h3>
 
@@ -52,10 +52,10 @@ const IdCardsView = {
             <div style="margin-bottom: 18px;">
               <label class="form-label" style="font-weight: 700; font-size: 0.85rem; margin-bottom: 8px; display: block;">ពណ៌ស្បែកកាត (Theme Color)</label>
               <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;">
-                <button type="button" class="btn-theme-swatch active" data-theme="blue" style="height: 36px; border-radius: 10px; background: linear-gradient(135deg, #0284c7, #38bdf8); border: 2px solid #0284c7; cursor: pointer;"></button>
-                <button type="button" class="btn-theme-swatch" data-theme="emerald" style="height: 36px; border-radius: 10px; background: linear-gradient(135deg, #059669, #34d399); border: 2px solid transparent; cursor: pointer;"></button>
-                <button type="button" class="btn-theme-swatch" data-theme="purple" style="height: 36px; border-radius: 10px; background: linear-gradient(135deg, #7c3aed, #a855f7); border: 2px solid transparent; cursor: pointer;"></button>
-                <button type="button" class="btn-theme-swatch" data-theme="dark" style="height: 36px; border-radius: 10px; background: linear-gradient(135deg, #0f172a, #334155); border: 2px solid transparent; cursor: pointer;"></button>
+                <button type="button" class="btn-theme-swatch active" data-theme="rose" title="Tian Xin Signature (Magenta & Gold)" style="height: 36px; border-radius: 10px; background: linear-gradient(135deg, #be185d, #e11d74, #f59e0b); border: 2px solid #e11d74; cursor: pointer;"></button>
+                <button type="button" class="btn-theme-swatch" data-theme="blue" title="Cyber Blue" style="height: 36px; border-radius: 10px; background: linear-gradient(135deg, #0284c7, #38bdf8); border: 2px solid transparent; cursor: pointer;"></button>
+                <button type="button" class="btn-theme-swatch" data-theme="emerald" title="Emerald Green" style="height: 36px; border-radius: 10px; background: linear-gradient(135deg, #059669, #34d399); border: 2px solid transparent; cursor: pointer;"></button>
+                <button type="button" class="btn-theme-swatch" data-theme="dark" title="Royal Dark" style="height: 36px; border-radius: 10px; background: linear-gradient(135deg, #0f172a, #334155); border: 2px solid transparent; cursor: pointer;"></button>
               </div>
             </div>
 
@@ -168,12 +168,20 @@ const IdCardsView = {
           textHeader: "#ffffff"
         };
       case "blue":
-      default:
         return {
           primary: "#0369a1",
           secondary: "#0284c7",
           gradient: "linear-gradient(135deg, #075985 0%, #0284c7 100%)",
           accent: "#38bdf8",
+          textHeader: "#ffffff"
+        };
+      case "rose":
+      default:
+        return {
+          primary: "#be185d",
+          secondary: "#e11d74",
+          gradient: "linear-gradient(135deg, #831843 0%, #be185d 50%, #e11d74 100%)",
+          accent: "#fbbf24",
           textHeader: "#ffffff"
         };
     }
@@ -208,10 +216,13 @@ const IdCardsView = {
       mount.innerHTML = `
         <div id="printableIdCard" class="id-card-element" style="width: 320px; height: 490px; border-radius: 20px; background: #ffffff; color: #1e293b; box-shadow: 0 16px 36px rgba(0,0,0,0.18); overflow: hidden; display: flex; flex-direction: column; position: relative; border: 1px solid #cbd5e1; font-family: 'Kantumruy Pro', 'Outfit', sans-serif;">
           <!-- Top Header Band -->
-          <div style="background: ${theme.gradient}; padding: 18px 16px 36px; text-align: center; color: #ffffff; position: relative;">
-            <div style="font-size: 0.72rem; letter-spacing: 1px; font-weight: 800; text-transform: uppercase; color: ${theme.accent};">សាលាកុំព្យូទ័ររដ្ឋបាល</div>
-            <div style="font-size: 1.1rem; font-weight: 900; letter-spacing: 0.5px; margin: 2px 0;">TIS LAB COMPUTER</div>
-            <div style="font-size: 0.68rem; opacity: 0.85;">STUDENT IDENTITY CARD</div>
+          <div style="background: ${theme.gradient}; padding: 14px 16px 36px; text-align: center; color: #ffffff; position: relative;">
+            <div style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 2px;">
+              <img src="assets/images/logo.png" alt="TIS Logo" style="width: 28px; height: 28px; border-radius: 50%; background: #fff; padding: 1px; box-shadow: 0 2px 6px rgba(0,0,0,0.2);">
+              <div style="font-size: 0.76rem; letter-spacing: 0.5px; font-weight: 800; color: #fbbf24;">សាលា អន្តរជាតិ ធានស៊ីន</div>
+            </div>
+            <div style="font-size: 0.96rem; font-weight: 900; letter-spacing: 0.5px; margin: 1px 0;">TIAN XIN INTERNATIONAL SCHOOL</div>
+            <div style="font-size: 0.65rem; opacity: 0.9; color: #fdf2f8;">STUDENT IDENTITY CARD (TIS)</div>
           </div>
 
           <!-- Lanyard Punch Hole Marker -->
@@ -272,12 +283,13 @@ const IdCardsView = {
       mount.innerHTML = `
         <div id="printableIdCard" class="id-card-element" style="width: 480px; height: 300px; border-radius: 20px; background: #ffffff; color: #1e293b; box-shadow: 0 16px 36px rgba(0,0,0,0.18); overflow: hidden; display: flex; position: relative; border: 1px solid #cbd5e1; font-family: 'Kantumruy Pro', 'Outfit', sans-serif;">
           <!-- Left Decorative Brand Bar -->
-          <div style="width: 150px; background: ${theme.gradient}; color: #fff; padding: 20px 14px; display: flex; flex-direction: column; justify-content: space-between; text-align: center;">
+          <div style="width: 150px; background: ${theme.gradient}; color: #fff; padding: 14px 10px; display: flex; flex-direction: column; justify-content: space-between; text-align: center;">
             <div>
-              <div style="font-size: 0.65rem; font-weight: 800; color: ${theme.accent}; text-transform: uppercase;">សាលាកុំព្យូទ័រ</div>
-              <div style="font-size: 0.95rem; font-weight: 900; line-height: 1.2;">TIS LAB</div>
+              <img src="assets/images/logo.png" alt="TIS Logo" style="width: 32px; height: 32px; border-radius: 50%; background: #fff; padding: 1px; margin: 0 auto 4px auto; display: block; box-shadow: 0 2px 6px rgba(0,0,0,0.2);">
+              <div style="font-size: 0.68rem; font-weight: 800; color: #fbbf24;">សាលា ធានស៊ីន</div>
+              <div style="font-size: 0.8rem; font-weight: 900; line-height: 1.1;">TIS SCHOOL</div>
             </div>
-            <div style="width: 86px; height: 86px; border-radius: 14px; border: 3px solid #fff; margin: 0 auto; overflow: hidden; background: #f8fafc;">
+            <div style="width: 84px; height: 84px; border-radius: 14px; border: 3px solid #fff; margin: 0 auto; overflow: hidden; background: #f8fafc;">
               <img src="${avatar}" alt="${s.nameKh}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='assets/images/default-male.svg'">
             </div>
             <div style="font-size: 0.72rem; font-weight: 800; background: rgba(0,0,0,0.25); border-radius: 6px; padding: 2px 6px;">
