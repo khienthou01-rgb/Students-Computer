@@ -4,7 +4,7 @@
  */
 
 // NOTE: CACHE_NAME is auto-updated on deployment
-const CACHE_NAME = "tislab-v2.2.20260930_001600";
+const CACHE_NAME = "tislab-v2.3.20260930_010000";
 
 const ASSETS_TO_CACHE = [
   "./",
@@ -14,6 +14,7 @@ const ASSETS_TO_CACHE = [
   "./css/variables.css",
   "./css/layout.css",
   "./css/components.css",
+  "./css/motion.css",
   "./css/idcard.css",
   "./css/student-modal.css",
   "./css/teacher-tools.css",
@@ -23,6 +24,7 @@ const ASSETS_TO_CACHE = [
   "./js/auth.js",
   "./js/api.js",
   "./js/charts.js",
+  "./js/services/motion.js",
   "./js/services/telegram.js",
   "./js/services/teacher_tools.js",
   "./js/services/khmer_calendar.js",

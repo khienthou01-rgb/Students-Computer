@@ -8,44 +8,44 @@ const DashboardView = {
 
     return `
       <section id="view-dashboard" class="page-view active">
-        <!-- 1. 2026 Modern Hero Welcome Section with 3D Tech Visual -->
-        <div class="card" style="margin-bottom: 22px; padding: 24px 30px; background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.9) 60%, rgba(79, 70, 229, 0.25) 100%); border: 1.5px solid rgba(56, 189, 248, 0.25); border-radius: 20px; box-shadow: 0 16px 36px rgba(0, 0, 0, 0.35); position: relative; overflow: hidden; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px;">
+        <!-- 1. 2026 Modern Hero Welcome Section with Ambient Glow Visual -->
+        <div class="card motion-fade-up" style="margin-bottom: 22px; padding: 26px 32px; background: linear-gradient(135deg, rgba(18, 12, 32, 0.95) 0%, rgba(29, 20, 48, 0.9) 55%, rgba(124, 58, 237, 0.22) 100%); border: 1px solid rgba(139, 92, 246, 0.3); border-radius: 22px; box-shadow: 0 20px 48px rgba(0, 0, 0, 0.5), 0 0 30px rgba(124, 58, 237, 0.16); position: relative; overflow: hidden; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px;">
           <!-- Left Content -->
           <div style="flex: 1; min-width: 320px; z-index: 2;">
-            <div style="display: inline-flex; align-items: center; gap: 8px; background: rgba(56, 189, 248, 0.12); border: 1px solid rgba(56, 189, 248, 0.3); padding: 4px 14px; border-radius: 20px; font-size: 0.78rem; color: #38bdf8; font-weight: 700; margin-bottom: 10px;">
-              <span style="width: 7px; height: 7px; border-radius: 50%; background: #10b981; box-shadow: 0 0 8px #10b981;"></span>
+            <div style="display: inline-flex; align-items: center; gap: 8px; background: rgba(124, 58, 237, 0.14); border: 1px solid rgba(139, 92, 246, 0.35); padding: 5px 14px; border-radius: 20px; font-size: 0.78rem; color: #c084fc; font-weight: 700; margin-bottom: 12px;">
+              <span class="hud-pulse-dot"></span>
               <span>Next-Gen Education Platform 2026 • TIS Lab Computer</span>
             </div>
-            <h1 id="dashWelcomeTitle" style="font-size: 1.7rem; font-weight: 900; color: #ffffff; margin: 0 0 6px 0; letter-spacing: 0.3px; line-height: 1.25;">
-              Welcome back, <span id="dashTeacherName" style="color: #38bdf8;">${teacherName}</span> 👋
+            <h1 id="dashWelcomeTitle" style="font-size: 1.75rem; font-weight: 900; color: #ffffff; margin: 0 0 8px 0; letter-spacing: -0.2px; line-height: 1.25;">
+              Welcome back, <span id="dashTeacherName" style="color: #22d3ee; text-shadow: 0 0 20px rgba(6, 182, 212, 0.4);">${teacherName}</span> 👋
             </h1>
-            <p style="margin: 0 0 16px 0; font-size: 0.9rem; color: #cbd5e1; max-width: 620px; line-height: 1.5;">
+            <p style="margin: 0 0 18px 0; font-size: 0.9rem; color: #cbd5e1; max-width: 620px; line-height: 1.6;">
               ថ្ងៃនេះគឺ <strong id="dashLiveDateKh" style="color: #38bdf8;">--</strong> • ប្រព័ន្ធគ្រប់គ្រងសិស្ស ស្ថិតិសិក្សា បន្ទប់ពិសោធន៍កុំព្យូទ័រ និងការប្រឡងបញ្ចប់វគ្គដំណើរការរលូន ១០០%។
             </p>
             <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-              <button type="button" class="btn-primary" onclick="App.openAddStudentModal()" style="height: 40px; padding: 0 18px; font-size: 0.88rem; font-weight: 800; border-radius: 12px; background: linear-gradient(135deg, #4f46e5, #06b6d4); box-shadow: 0 4px 18px rgba(79, 70, 229, 0.45);">
+              <button type="button" class="btn-primary" onclick="App.openAddStudentModal()" style="height: 42px; padding: 0 20px; font-size: 0.88rem; font-weight: 800; border-radius: 12px; background: linear-gradient(135deg, #7c3aed, #06b6d4); box-shadow: 0 4px 20px rgba(124, 58, 237, 0.45); border: none;">
                 <i class="fa-solid fa-user-plus"></i>
                 <span>+ ចុះឈ្មោះសិស្សថ្មី</span>
               </button>
-              <button type="button" class="btn-secondary" onclick="App.switchTab('attendance')" style="height: 40px; padding: 0 16px; font-size: 0.88rem; font-weight: 700; border-radius: 12px;">
+              <button type="button" class="btn-secondary" onclick="App.switchTab('attendance')" style="height: 42px; padding: 0 16px; font-size: 0.88rem; font-weight: 700; border-radius: 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.12);">
                 <i class="fa-solid fa-calendar-check text-emerald-400"></i>
                 <span>កត់ត្រាវត្តមាន</span>
               </button>
-              <button type="button" class="btn-secondary" onclick="App.switchTab('timetable')" style="height: 40px; padding: 0 16px; font-size: 0.88rem; font-weight: 700; border-radius: 12px;">
+              <button type="button" class="btn-secondary" onclick="App.switchTab('timetable')" style="height: 42px; padding: 0 16px; font-size: 0.88rem; font-weight: 700; border-radius: 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.12);">
                 <i class="fa-solid fa-desktop text-cyan-400"></i>
                 <span>Lab Live Cockpit</span>
               </button>
             </div>
           </div>
 
-          <!-- Right 3D Educational Technology Illustration -->
-          <div style="width: 200px; height: 130px; display: flex; align-items: center; justify-content: center; z-index: 2; position: relative;">
-            <svg viewBox="0 0 240 160" width="100%" height="100%" fill="none" xmlns="http://www.w3.org/2000/svg" style="filter: drop-shadow(0 10px 25px rgba(6, 182, 212, 0.3));">
+          <!-- Right 3D Educational Technology Illustration (With Floating Animation) -->
+          <div class="motion-float" style="width: 210px; height: 140px; display: flex; align-items: center; justify-content: center; z-index: 2; position: relative;">
+            <svg viewBox="0 0 240 160" width="100%" height="100%" fill="none" xmlns="http://www.w3.org/2000/svg" style="filter: drop-shadow(0 12px 28px rgba(124, 58, 237, 0.35));">
               <!-- Futuristic 3D Floating Monitor & Graduation Tech Elements -->
               <defs>
                 <linearGradient id="glowGrad" x1="0" y1="0" x2="1" y2="1">
                   <stop offset="0%" stop-color="#06b6d4"/>
-                  <stop offset="50%" stop-color="#4f46e5"/>
+                  <stop offset="50%" stop-color="#7c3aed"/>
                   <stop offset="100%" stop-color="#8b5cf6"/>
                 </linearGradient>
                 <linearGradient id="cubeFace1" x1="0" y1="0" x2="1" y2="1">
@@ -53,8 +53,8 @@ const DashboardView = {
                   <stop offset="100%" stop-color="#0284c7" stop-opacity="0.9"/>
                 </linearGradient>
                 <linearGradient id="cubeFace2" x1="0" y1="0" x2="1" y2="1">
-                  <stop offset="0%" stop-color="#818cf8"/>
-                  <stop offset="100%" stop-color="#4f46e5"/>
+                  <stop offset="0%" stop-color="#8b5cf6"/>
+                  <stop offset="100%" stop-color="#7c3aed"/>
                 </linearGradient>
               </defs>
               <!-- 3D Stand -->
@@ -67,7 +67,7 @@ const DashboardView = {
               <circle cx="82" cy="45" r="4" fill="#f59e0b"/>
               <circle cx="94" cy="45" r="4" fill="#ef4444"/>
               <line x1="70" y1="60" x2="130" y2="60" stroke="#38bdf8" stroke-width="3" stroke-linecap="round"/>
-              <line x1="70" y1="72" x2="110" y2="72" stroke="#818cf8" stroke-width="2.5" stroke-linecap="round"/>
+              <line x1="70" y1="72" x2="110" y2="72" stroke="#8b5cf6" stroke-width="2.5" stroke-linecap="round"/>
               <line x1="70" y1="84" x2="145" y2="84" stroke="#10b981" stroke-width="2.5" stroke-linecap="round"/>
               <!-- Floating 3D Graduation Cap Icon -->
               <g transform="translate(155, 12)">
@@ -89,10 +89,10 @@ const DashboardView = {
         <!-- 2. Statistics Cards (5 Animated Futuristic Cards with Sparklines & % Trends) -->
         <div class="kpi-grid" style="grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 16px; margin-bottom: 22px;">
           <!-- Total Students Card -->
-          <div class="kpi-card" style="--card-accent: #4f46e5; --icon-bg: rgba(79, 70, 229, 0.15); --icon-color: #4f46e5; border-radius: 18px; padding: 20px;">
+          <div class="kpi-card motion-fade-up stagger-1" style="--card-accent: #7c3aed; --icon-bg: rgba(124, 58, 237, 0.16); --icon-color: #8b5cf6; border-radius: 20px; padding: 22px;">
             <div class="kpi-info">
               <span style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">សិស្សសរុប (Total Students)</span>
-              <div id="kpiTotal" class="kpi-number" style="font-size: 2rem; font-weight: 900; margin: 4px 0;">0</div>
+              <div id="kpiTotal" class="kpi-number" style="font-size: 2.1rem; font-weight: 900; margin: 4px 0; color: #ffffff;">0</div>
               <div style="display: flex; align-items: center; gap: 6px; font-size: 0.75rem;">
                 <span class="badge" style="background: rgba(16, 185, 129, 0.15); color: #34d399; font-weight: 800; padding: 2px 7px; border-radius: 6px;">
                   <i class="fa-solid fa-arrow-trend-up"></i> +100%
@@ -106,10 +106,10 @@ const DashboardView = {
           </div>
 
           <!-- Teachers / Instructors Card -->
-          <div class="kpi-card" style="--card-accent: #06b6d4; --icon-bg: rgba(6, 182, 212, 0.15); --icon-color: #06b6d4; border-radius: 18px; padding: 20px;">
+          <div class="kpi-card motion-fade-up stagger-2" style="--card-accent: #06b6d4; --icon-bg: rgba(6, 182, 212, 0.16); --icon-color: #06b6d4; border-radius: 20px; padding: 22px;">
             <div class="kpi-info">
               <span style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">គ្រូបង្រៀន (Teachers)</span>
-              <div id="kpiTeachersCount" class="kpi-number" style="font-size: 2rem; font-weight: 900; margin: 4px 0; color: #38bdf8;">2</div>
+              <div id="kpiTeachersCount" class="kpi-number" style="font-size: 2.1rem; font-weight: 900; margin: 4px 0; color: #38bdf8;">2</div>
               <div style="display: flex; align-items: center; gap: 6px; font-size: 0.75rem;">
                 <span class="badge" style="background: rgba(6, 182, 212, 0.15); color: #38bdf8; font-weight: 800; padding: 2px 7px; border-radius: 6px;">
                   <i class="fa-solid fa-check"></i> ពេញម៉ោង
@@ -123,10 +123,10 @@ const DashboardView = {
           </div>
 
           <!-- Computer Classes Card -->
-          <div class="kpi-card" style="--card-accent: #8b5cf6; --icon-bg: rgba(139, 92, 246, 0.15); --icon-color: #8b5cf6; border-radius: 18px; padding: 20px;">
+          <div class="kpi-card motion-fade-up stagger-3" style="--card-accent: #8b5cf6; --icon-bg: rgba(139, 92, 246, 0.16); --icon-color: #8b5cf6; border-radius: 20px; padding: 22px;">
             <div class="kpi-info">
               <span style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">ថ្នាក់កុំព្យូទ័រ (Classes)</span>
-              <div id="kpiClassesCount" class="kpi-number" style="font-size: 2rem; font-weight: 900; margin: 4px 0; color: #a78bfa;">3</div>
+              <div id="kpiClassesCount" class="kpi-number" style="font-size: 2.1rem; font-weight: 900; margin: 4px 0; color: #c084fc;">3</div>
               <div style="display: flex; align-items: center; gap: 6px; font-size: 0.75rem;">
                 <span class="badge" style="background: rgba(139, 92, 246, 0.15); color: #c084fc; font-weight: 800; padding: 2px 7px; border-radius: 6px;">
                   3 វេនសិក្សា
@@ -140,10 +140,10 @@ const DashboardView = {
           </div>
 
           <!-- Attendance Rate Card -->
-          <div class="kpi-card" style="--card-accent: #10b981; --icon-bg: rgba(16, 185, 129, 0.15); --icon-color: #10b981; border-radius: 18px; padding: 20px;">
+          <div class="kpi-card motion-fade-up stagger-4" style="--card-accent: #10b981; --icon-bg: rgba(16, 185, 129, 0.16); --icon-color: #10b981; border-radius: 20px; padding: 22px;">
             <div class="kpi-info">
               <span style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">វត្តមានសរុប (Attendance)</span>
-              <div id="kpiAttendanceRate" class="kpi-number" style="font-size: 2rem; font-weight: 900; margin: 4px 0; color: #34d399;">89.6%</div>
+              <div id="kpiAttendanceRate" class="kpi-number" style="font-size: 2.1rem; font-weight: 900; margin: 4px 0; color: #34d399;">89.6%</div>
               <div style="display: flex; align-items: center; gap: 6px; font-size: 0.75rem;">
                 <span class="badge" style="background: rgba(16, 185, 129, 0.15); color: #34d399; font-weight: 800; padding: 2px 7px; border-radius: 6px;">
                   <i class="fa-solid fa-circle-check"></i> ល្អប្រសើរ
@@ -157,10 +157,10 @@ const DashboardView = {
           </div>
 
           <!-- Exam Pass Rate Card -->
-          <div class="kpi-card" style="--card-accent: #f59e0b; --icon-bg: rgba(245, 158, 11, 0.15); --icon-color: #f59e0b; border-radius: 18px; padding: 20px;">
+          <div class="kpi-card motion-fade-up stagger-5" style="--card-accent: #f59e0b; --icon-bg: rgba(245, 158, 11, 0.16); --icon-color: #f59e0b; border-radius: 20px; padding: 22px;">
             <div class="kpi-info">
               <span style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">អត្រាប្រឡងជាប់ (Pass Rate)</span>
-              <div id="kpiPassRate" class="kpi-number" style="font-size: 2rem; font-weight: 900; margin: 4px 0; color: #fbbf24;">100%</div>
+              <div id="kpiPassRate" class="kpi-number" style="font-size: 2.1rem; font-weight: 900; margin: 4px 0; color: #fbbf24;">100%</div>
               <div style="display: flex; align-items: center; gap: 6px; font-size: 0.75rem;">
                 <span class="badge" style="background: rgba(245, 158, 11, 0.15); color: #fbbf24; font-weight: 800; padding: 2px 7px; border-radius: 6px;">
                   និទ្ទេស A-C

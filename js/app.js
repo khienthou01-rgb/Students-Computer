@@ -691,18 +691,30 @@ const App = {
       SidebarComponent.expandGroupForTab(tabId);
     }
 
-    // Update active view
+    // Update active view with smooth entrance
     document.querySelectorAll(".page-view").forEach(view => {
-      view.classList.remove("active");
+      view.classList.remove("active", "motion-fade-up");
     });
 
     const targetView = document.getElementById(`view-${tabId}`);
     if (targetView) {
-      targetView.classList.add("active");
+      void targetView.offsetWidth; // Trigger DOM reflow for fresh animation
+      targetView.classList.add("active", "motion-fade-up");
+    }
+
+    // Auto-close mobile drawer if open
+    const sidebar = document.getElementById("sidebar");
+    if (sidebar && sidebar.classList.contains("open")) {
+      sidebar.classList.remove("open");
+      const overlay = document.getElementById("mobileOverlay");
+      if (overlay) overlay.classList.remove("active");
     }
 
     if (tabId === "dashboard") {
       DashboardView.update(this.state.students);
+      if (typeof Motion !== "undefined" && Motion.animateStatsOnView) {
+        Motion.animateStatsOnView();
+      }
     } else if (tabId === "register") {
       this.openAddStudentModal();
     } else if (tabId === "directory") {
@@ -3177,25 +3189,40 @@ const App = {
 
   // Themes & UI Utilities
   initTheme() {
-    const savedTheme = localStorage.getItem(APP_CONFIG.STORAGE_KEY_THEME) || "light";
+    const savedTheme = localStorage.getItem(APP_CONFIG.STORAGE_KEY_THEME) || "dark";
     document.documentElement.setAttribute("data-theme", savedTheme);
+    const icon = document.getElementById("themeIcon");
+    if (icon) {
+      icon.className = savedTheme === "dark" ? "fa-solid fa-sun" : "fa-solid fa-moon";
+    }
   },
 
   toggleTheme() {
-    const current = document.documentElement.getAttribute("data-theme");
+    const current = document.documentElement.getAttribute("data-theme") || "dark";
     const next = current === "dark" ? "light" : "dark";
     document.documentElement.setAttribute("data-theme", next);
     localStorage.setItem(APP_CONFIG.STORAGE_KEY_THEME, next);
 
     const icon = document.getElementById("themeIcon");
     if (icon) {
-      icon.className = next === "dark" ? "fa-solid fa-sun" : "fa-solid fa-moon";
+      icon.style.transition = "transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)";
+      icon.style.transform = "rotate(360deg) scale(1.15)";
+      setTimeout(() => {
+        icon.className = next === "dark" ? "fa-solid fa-sun" : "fa-solid fa-moon";
+        icon.style.transform = "none";
+      }, 200);
     }
 
-    DashboardCharts.updateTheme();
+    if (typeof DashboardCharts !== "undefined" && DashboardCharts.updateTheme) {
+      DashboardCharts.updateTheme();
+    }
   },
 
   animateCounter(elementId, targetValue) {
+    if (typeof Motion !== "undefined" && Motion.countUp) {
+      Motion.countUp(elementId, targetValue, 1200);
+      return;
+    }
     const el = document.getElementById(elementId);
     if (!el) return;
     const start = parseInt(el.textContent, 10) || 0;
@@ -3222,6 +3249,10 @@ const App = {
   },
 
   showToast(message, type = "info") {
+    if (typeof Motion !== "undefined" && Motion.toast) {
+      Motion.toast(message, type);
+      return;
+    }
     const container = document.getElementById("toastContainer");
     if (!container) return;
 
