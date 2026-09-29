@@ -1,16 +1,5 @@
 {
-  "version": 2,
   "cleanUrls": true,
-  "rewrites": [
-    {
-      "source": "/api/(.*)",
-      "destination": "/server.js"
-    },
-    {
-      "source": "/((?!assets/|css/|js/|uploads/|manifest\\.json|sw\\.js|favicon|.*\\..*).*)",
-      "destination": "/index.html"
-    }
-  ],
   "headers": [
     {
       "source": "/sw.js",
@@ -45,3 +34,4 @@
     }
   ]
 }
+
