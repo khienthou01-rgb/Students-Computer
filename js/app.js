@@ -2893,6 +2893,27 @@ const App = {
     const toKhmerNum = (num) => String(num).split("").map(c => khmerDigits[parseInt(c)] || c).join("");
     const dayKh = String(now.getDate()).padStart(2, '0');
 
+    // Retrieve school branding configuration
+    const branding = (typeof TeacherToolsService !== "undefined" && TeacherToolsService.getSchoolBranding)
+      ? TeacherToolsService.getSchoolBranding()
+      : {};
+
+    const customBrandingSaved = localStorage.getItem("tis_school_branding");
+    const schoolTitleKh = (customBrandingSaved && branding.schoolNameKh)
+      ? branding.schoolNameKh
+      : "មជ្ឈមណ្ឌលបណ្តុះបណ្តាលកុំព្យូទ័រ TIS Lab Computer";
+    const schoolTitleEn = branding.schoolNameEn || "TIAN XIN INTERNATIONAL SCHOOL (TIS) • COMPUTER LAB";
+    const schoolAddress = branding.schoolAddress || "ខេត្តកំពត";
+    const schoolPhone = branding.schoolPhone || "071 721 0307";
+    const teacherTitle = branding.teacherTitle || "លោកគ្រូ ខៀន ធូ";
+
+    let logoSrc = (branding && branding.stampImageUrl) ? branding.stampImageUrl : "assets/images/logo.png";
+    try {
+      logoSrc = new URL(logoSrc, window.location.href).href;
+    } catch (e) {
+      logoSrc = "assets/images/logo.png";
+    }
+
     let printWindow = null;
     try {
       printWindow = window.open("", "_blank", "width=1200,height=800");
@@ -2910,22 +2931,23 @@ const App = {
       <html lang="km">
       <head>
         <meta charset="UTF-8">
+        <base href="${window.location.href}">
         <title>របាយការណ៍សិស្ស និងវត្តមានប្រចាំខែ - TIS Lab Computer</title>
-        <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
         <style>
           @page {
             size: A4 landscape;
-            margin: 8mm 10mm;
+            margin: 6mm 8mm;
           }
           * { box-sizing: border-box; }
           body {
             font-family: 'Kantumruy Pro', sans-serif;
-            background: #f8fafc;
+            background: #f1f5f9;
             color: #0f172a;
             margin: 0;
-            padding: 18px 24px;
-            font-size: 12px;
+            padding: 16px 20px;
+            font-size: 11.5px;
             line-height: 1.4;
           }
           @media print {
@@ -2943,80 +2965,266 @@ const App = {
             }
           }
           .no-print-bar {
-            background: #1e293b;
+            background: #0f172a;
             color: #fff;
             padding: 10px 20px;
-            border-radius: 8px;
+            border-radius: 10px;
             margin-bottom: 16px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            box-shadow: 0 4px 16px rgba(15, 23, 42, 0.25);
+            border: 1px solid #1e293b;
+          }
+          .no-print-bar-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+            font-size: 13.5px;
+            letter-spacing: 0.2px;
+          }
+          .no-print-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
           }
           .print-btn {
-            background: #059669;
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
             color: #fff;
             border: none;
             padding: 8px 18px;
-            border-radius: 6px;
+            border-radius: 7px;
             font-family: inherit;
             font-weight: 700;
+            font-size: 12px;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
             gap: 8px;
+            box-shadow: 0 2px 8px rgba(5, 150, 105, 0.35);
+            transition: all 0.2s ease;
+          }
+          .print-btn:hover {
+            background: #047857;
+            transform: translateY(-1px);
           }
           .close-btn {
-            background: #475569;
-            color: #fff;
+            background: #334155;
+            color: #f8fafc;
             border: none;
-            padding: 8px 14px;
-            border-radius: 6px;
+            padding: 8px 16px;
+            border-radius: 7px;
             font-family: inherit;
+            font-weight: 600;
+            font-size: 12px;
             cursor: pointer;
+            transition: all 0.2s ease;
+          }
+          .close-btn:hover {
+            background: #475569;
           }
           .print-page-container {
             background: #fff;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            padding: 24px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            padding: 20px 24px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.06);
           }
           .royal-header {
             display: flex;
             justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 14px;
+            align-items: center;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
           }
-          .school-info { text-align: left; }
-          .kingdom-info { text-align: center; }
+          .school-brand-block {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+          }
+          .school-logo-frame {
+            width: 66px;
+            height: 66px;
+            min-width: 66px;
+            border-radius: 50%;
+            background: #ffffff;
+            border: 2px solid #d97706;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2px;
+            overflow: hidden;
+            box-sizing: border-box;
+          }
+          .school-logo-img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 50%;
+          }
+          .school-info {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+          }
+          .school-name-kh {
+            font-size: 14px;
+            font-weight: 800;
+            color: #0f172a;
+            line-height: 1.3;
+          }
+          .school-dept {
+            font-size: 11px;
+            color: #047857;
+            font-weight: 700;
+            line-height: 1.3;
+            margin-top: 2px;
+          }
+          .school-name-en {
+            font-size: 9.5px;
+            font-weight: 700;
+            color: #2563eb;
+            letter-spacing: 0.5px;
+            line-height: 1.25;
+            margin-top: 1px;
+            text-transform: uppercase;
+          }
+          .school-contact {
+            font-size: 9.5px;
+            color: #64748b;
+            margin-top: 3px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+          }
+          .school-contact .sep {
+            color: #cbd5e1;
+          }
+          .kingdom-info {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-width: 220px;
+          }
+          .kingdom-title {
+            font-size: 14.5px;
+            font-weight: 800;
+            color: #1e3a8a;
+            line-height: 1.25;
+            letter-spacing: 0.5px;
+          }
+          .kingdom-motto {
+            font-size: 12px;
+            font-weight: 700;
+            color: #1e3a8a;
+            letter-spacing: 2px;
+            margin-top: 3px;
+            line-height: 1.25;
+          }
+          .royal-flourish {
+            margin-top: 3px;
+            display: flex;
+            justify-content: center;
+          }
           .report-title-block {
             text-align: center;
-            margin: 14px 0 16px 0;
-            border-top: 1px dashed #cbd5e1;
-            border-bottom: 1px dashed #cbd5e1;
-            padding: 10px 0;
+            margin: 12px 0 14px 0;
+            border-top: 1.5px dashed #cbd5e1;
+            border-bottom: 1.5px dashed #cbd5e1;
+            padding: 10px 0 12px 0;
+          }
+          .report-main-title {
+            font-size: 16.5px;
+            font-weight: 800;
+            color: #064e3b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+          }
+          .report-sub-title {
+            font-size: 10.5px;
+            font-weight: 700;
+            color: #047857;
+            letter-spacing: 0.8px;
+            margin-top: 2px;
+          }
+          .report-meta-pills {
+            display: inline-flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 8px;
+          }
+          .meta-pill {
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            padding: 3px 10px;
+            font-size: 10.5px;
+            color: #334155;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+          }
+          .meta-pill strong {
+            color: #0f172a;
           }
           .stats-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
+            gap: 12px;
             margin-bottom: 14px;
           }
           .stat-box {
-            border: 1px solid #cbd5e1;
-            border-radius: 6px;
-            padding: 6px 10px;
+            border-radius: 8px;
+            padding: 8px 12px;
             text-align: center;
-            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
           }
-          .stat-label { font-size: 10px; color: #64748b; font-weight: 600; }
-          .stat-val { font-size: 14px; font-weight: 800; }
+          .stat-box.box-students {
+            background: #f8fafc;
+            border-color: #cbd5e1;
+            border-top: 3.5px solid #2563eb;
+          }
+          .stat-box.box-present {
+            background: #f0fdf4;
+            border-color: #bbf7d0;
+            border-top: 3.5px solid #16a34a;
+          }
+          .stat-box.box-absent {
+            background: #fef2f2;
+            border-color: #fecaca;
+            border-top: 3.5px solid #dc2626;
+          }
+          .stat-box.box-perm {
+            background: #fffbeb;
+            border-color: #fde68a;
+            border-top: 3.5px solid #d97706;
+          }
+          .stat-label {
+            font-size: 10.5px;
+            color: #64748b;
+            font-weight: 700;
+            margin-bottom: 2px;
+          }
+          .stat-val {
+            font-size: 14.5px;
+            font-weight: 800;
+          }
           table {
             width: 100%;
             border-collapse: collapse;
             font-size: 11px;
-            margin-bottom: 14px;
+            margin-bottom: 16px;
             border: 1px solid #94a3b8;
           }
           th, td {
@@ -3026,10 +3234,9 @@ const App = {
           }
           th {
             background: #f1f5f9;
-            color: #1e293b;
+            color: #0f172a;
             font-weight: 800;
             text-align: center;
-            vertical-align: middle;
             height: 34px;
             white-space: nowrap;
           }
@@ -3038,7 +3245,7 @@ const App = {
           tr:nth-child(even) td[style*="background: #fef2f2"] { background: #fde8e8 !important; }
           tr:nth-child(even) td[style*="background: #fffbeb"] { background: #fef3c7 !important; }
           .signatures-container {
-            margin-top: 24px;
+            margin-top: 22px;
             display: flex;
             justify-content: space-between;
             page-break-inside: avoid;
@@ -3046,15 +3253,32 @@ const App = {
           .sign-col {
             text-align: center;
             width: 38%;
+            position: relative;
+          }
+          .sign-stamp-wrap {
+            height: 65px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+          }
+          .official-seal-watermark {
+            width: 68px;
+            height: 68px;
+            opacity: 0.85;
+            transform: rotate(-6deg);
+            border-radius: 50%;
+            object-fit: contain;
+            pointer-events: none;
           }
         </style>
       </head>
       <body>
         <div class="no-print no-print-bar">
-          <div style="font-weight: 700;">
+          <div class="no-print-bar-title">
             <i class="fa-solid fa-print text-emerald-400"></i> មើលគំរូទម្រង់បោះពុម្ព A4 ផ្លូវការ (Standard Monthly Print Preview)
           </div>
-          <div style="display: flex; gap: 10px;">
+          <div class="no-print-actions">
             <button type="button" class="print-btn" onclick="window.print()">
               <i class="fa-solid fa-print"></i> បោះពុម្ពឯកសារ (Print)
             </button>
@@ -3063,51 +3287,63 @@ const App = {
         </div>
 
         <div class="print-page-container">
-          <!-- Official Cambodian Royal Header -->
+          <!-- Official Cambodian Royal Header with School Logo -->
           <div class="royal-header">
-            <div class="school-info">
-              <div style="font-size: 13px; font-weight: 800; color: #0f172a;">មជ្ឈមណ្ឌលបណ្តុះបណ្តាលកុំព្យូទ័រ TIS Lab Computer</div>
-              <div style="font-size: 11px; color: #475569; font-weight: 600;">ផ្នែក៖ គ្រប់គ្រងសិស្ស និងបច្ចេកវិទ្យាកុំព្យូទ័រ</div>
-              <div style="font-size: 10px; color: #64748b;">អាសយដ្ឋាន៖ ខេត្តកំពត | ទូរស័ព្ទ៖ 071 721 0307</div>
+            <div class="school-brand-block">
+              <div class="school-logo-frame">
+                <img src="${logoSrc}" alt="TIS Logo" class="school-logo-img" onerror="if(this.src!=='assets/images/logo.png'){this.src='assets/images/logo.png';}">
+              </div>
+              <div class="school-info">
+                <div class="school-name-kh">${schoolTitleKh}</div>
+                <div class="school-dept">ផ្នែក៖ គ្រប់គ្រងសិស្ស និងបច្ចេកវិទ្យាកុំព្យូទ័រ</div>
+                <div class="school-name-en">${schoolTitleEn}</div>
+                <div class="school-contact">
+                  <span>📍 ទីតាំង៖ ${schoolAddress}</span>
+                  <span class="sep">•</span>
+                  <span>☎ ទំនាក់ទំនង៖ ${schoolPhone}</span>
+                </div>
+              </div>
             </div>
+
             <div class="kingdom-info">
-              <div style="font-size: 14px; font-weight: 800; color: #1e3a8a;">ព្រះរាជាណាចក្រកម្ពុជា</div>
-              <div style="font-size: 12px; font-weight: 700; color: #1e3a8a; letter-spacing: 1px;">ជាតិ  សាសនា  ព្រះមហាក្សត្រ</div>
-              <div style="font-size: 11px; color: #d97706; margin-top: 2px;">--- 🪷 ---</div>
+              <div class="kingdom-title">ព្រះរាជាណាចក្រកម្ពុជា</div>
+              <div class="kingdom-motto">ជាតិ  សាសនា  ព្រះមហាក្សត្រ</div>
+              <div class="royal-flourish">
+                <svg width="110" height="12" viewBox="0 0 110 12" fill="none">
+                  <path d="M5 6 C 24 12, 34 0, 55 6 C 76 12, 86 0, 105 6" stroke="#d97706" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+                  <circle cx="55" cy="6" r="2.2" fill="#d97706"/>
+                </svg>
+              </div>
             </div>
           </div>
 
-          <!-- Report Title -->
+          <!-- Report Title with Filter Pills -->
           <div class="report-title-block">
-            <div style="font-size: 16px; font-weight: 800; color: #064e3b; text-transform: uppercase;">
-              របាយការណ៍សិស្ស និងវត្តមានប្រចាំខែ
-            </div>
-            <div style="font-size: 10.5px; font-weight: 700; color: #047857; letter-spacing: 0.5px; margin-top: 1px;">
-              MONTHLY STUDENT ATTENDANCE & PERFORMANCE REPORT
-            </div>
-            <div style="font-size: 11px; color: #334155; margin-top: 4px; font-weight: 500;">
-              <span><strong>ប្រចាំខែ៖</strong> ${currentKhmerMonth}</span> &nbsp;|&nbsp;
-              <span><strong>វេនសិក្សា៖</strong> ${shiftText}</span> &nbsp;|&nbsp;
-              <span><strong>ស្ថានភាព៖</strong> ${statusText}</span> &nbsp;|&nbsp;
-              <span><strong>កាលបរិច្ឆេទបញ្ចេញ៖</strong> ${now.toLocaleDateString('km-KH')}</span>
+            <div class="report-main-title">របាយការណ៍សិស្ស និងវត្តមានប្រចាំខែ</div>
+            <div class="report-sub-title">MONTHLY STUDENT ATTENDANCE & PERFORMANCE REPORT</div>
+            <div class="report-meta-pills">
+              <div class="meta-pill"><strong>📅 ប្រចាំខែ៖</strong> ${currentKhmerMonth}</div>
+              <div class="meta-pill"><strong>⏰ វេនសិក្សា៖</strong> ${shiftText}</div>
+              <div class="meta-pill"><strong>🎯 ស្ថានភាព៖</strong> ${statusText}</div>
+              <div class="meta-pill"><strong>🗓️ កាលបរិច្ឆេទបញ្ចេញ៖</strong> ${now.toLocaleDateString('km-KH')}</div>
             </div>
           </div>
 
           <!-- Summary Metric Cards -->
           <div class="stats-grid">
-            <div class="stat-box">
+            <div class="stat-box box-students">
               <div class="stat-label">សិស្សសរុប (នាក់)</div>
               <div class="stat-val" style="color: #1e3a8a;">${students.length} នាក់ (ស្រី ${femaleCount})</div>
             </div>
-            <div class="stat-box">
+            <div class="stat-box box-present">
               <div class="stat-label">វត្តមានសរុប (ថ្ងៃ)</div>
               <div class="stat-val" style="color: #059669;">${sumPresentDays} ថ្ងៃ</div>
             </div>
-            <div class="stat-box">
+            <div class="stat-box box-absent">
               <div class="stat-label">អវត្តមានសរុប (ថ្ងៃ)</div>
               <div class="stat-val" style="color: #dc2626;">${sumAbsentDays} ថ្ងៃ</div>
             </div>
-            <div class="stat-box">
+            <div class="stat-box box-perm">
               <div class="stat-label">សុំច្បាប់សរុប (ថ្ងៃ)</div>
               <div class="stat-val" style="color: #d97706;">${sumPermDays} ថ្ងៃ</div>
             </div>
@@ -3151,15 +3387,19 @@ const App = {
           <!-- Signatures Block -->
           <div class="signatures-container">
             <div class="sign-col">
-              <div style="font-weight: 700; color: #0f172a;">បានឃើញ និងឯកភាព</div>
-              <div style="font-weight: 700; font-size: 12px; margin-top: 2px;">នាយកមជ្ឈមណ្ឌល TIS Lab Computer</div>
-              <div style="height: 60px;"></div>
+              <div style="font-weight: 700; color: #0f172a; font-size: 12px;">បានឃើញ និងឯកភាព</div>
+              <div style="font-weight: 700; font-size: 12px; margin-top: 2px; color: #1e3a8a;">នាយកមជ្ឈមណ្ឌល TIS Lab Computer</div>
+              <div class="sign-stamp-wrap">
+                <img src="${logoSrc}" class="official-seal-watermark" alt="Seal Stamp" onerror="this.style.display='none';">
+              </div>
               <div style="font-style: italic; color: #64748b; font-size: 10px;">(ហត្ថលេខា និងត្រាផ្លូវការ)</div>
             </div>
             <div class="sign-col">
-              <div style="color: #334155; font-size: 11px;">ខេត្តកំពត ថ្ងៃទី${toKhmerNum(dayKh)} ${currentKhmerMonth}</div>
-              <div style="font-weight: 700; font-size: 12px; margin-top: 2px;">គ្រូបន្ទុកថ្នាក់ / អ្នករៀបចំរបាយការណ៍</div>
-              <div style="height: 60px;"></div>
+              <div style="color: #334155; font-size: 11px;">${schoolAddress}, ថ្ងៃទី${toKhmerNum(dayKh)} ${currentKhmerMonth}</div>
+              <div style="font-weight: 700; font-size: 12px; margin-top: 2px; color: #1e3a8a;">គ្រូបន្ទុកថ្នាក់ / អ្នករៀបចំរបាយការណ៍</div>
+              <div style="height: 65px; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 6px;">
+                <div style="font-weight: 700; color: #0f172a; font-size: 12px;">${teacherTitle}</div>
+              </div>
               <div style="font-style: italic; color: #64748b; font-size: 10px;">(ហត្ថលេខា និងឈ្មោះ)</div>
             </div>
           </div>

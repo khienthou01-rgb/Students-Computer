@@ -3043,6 +3043,17 @@ const TimetableLabView = {
     const toKhmerNum = (num) => String(num).split("").map(c => khmerDigits[parseInt(c)] || c).join("");
     const dayKh = String(now.getDate()).padStart(2, '0');
 
+    // Retrieve branding configuration
+    const branding = (typeof TeacherToolsService !== "undefined" && TeacherToolsService.getSchoolBranding)
+      ? TeacherToolsService.getSchoolBranding()
+      : {};
+    let logoSrc = (branding && branding.stampImageUrl) ? branding.stampImageUrl : "assets/images/logo.png";
+    try {
+      logoSrc = new URL(logoSrc, window.location.href).href;
+    } catch (e) {
+      logoSrc = "assets/images/logo.png";
+    }
+
     let printWindow = null;
     try {
       printWindow = window.open("", "_blank", "width=1200,height=800");
@@ -3078,13 +3089,14 @@ const TimetableLabView = {
       <html lang="km">
       <head>
         <meta charset="UTF-8">
+        <base href="${window.location.href}">
         <title>របាយការណ៍សារពើភ័ណ្ឌកម្មវិធី & អាជ្ញាប័ណ្ណ - TIS Lab Computer</title>
         <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
         <style>
           @page { size: A4 landscape; margin: 8mm 10mm; }
           * { box-sizing: border-box; }
           body { font-family: 'Kantumruy Pro', sans-serif; background: #fff; color: #0f172a; margin: 0; padding: 16px; font-size: 11px; }
-          .royal-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+          .royal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
           .report-title-block { text-align: center; margin: 10px 0 14px 0; border-top: 1px dashed #cbd5e1; border-bottom: 1px dashed #cbd5e1; padding: 8px 0; }
           table { width: 100%; border-collapse: collapse; margin-bottom: 14px; font-size: 10.5px; }
           th, td { border: 1px solid #94a3b8; padding: 5px 6px; }
@@ -3104,14 +3116,25 @@ const TimetableLabView = {
         </div>
 
         <div class="royal-header">
-          <div>
-            <div style="font-size: 13px; font-weight: 800; color: #0f172a;">មជ្ឈមណ្ឌលបណ្តុះបណ្តាលកុំព្យូទ័រ TIS Lab Computer</div>
-            <div style="font-size: 11px; color: #475569;">ផ្នែក៖ គ្រប់គ្រងបន្ទប់កុំព្យូទ័រ Lab & បច្ចេកវិទ្យាព័ត៌មានវិទ្យា</div>
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="width: 58px; height: 58px; min-width: 58px; border-radius: 50%; background: #ffffff; border: 2px solid #d97706; box-shadow: 0 2px 6px rgba(0,0,0,0.08); display: flex; align-items: center; justify-content: center; padding: 2px; overflow: hidden; box-sizing: border-box;">
+              <img src="${logoSrc}" alt="TIS Logo" style="width: 100%; height: 100%; object-fit: contain; border-radius: 50%;" onerror="if(this.src!=='assets/images/logo.png'){this.src='assets/images/logo.png';}">
+            </div>
+            <div>
+              <div style="font-size: 13.5px; font-weight: 800; color: #0f172a;">${branding.schoolNameKh || 'មជ្ឈមណ្ឌលបណ្តុះបណ្តាលកុំព្យូទ័រ TIS Lab Computer'}</div>
+              <div style="font-size: 11px; color: #047857; font-weight: 700;">ផ្នែក៖ គ្រប់គ្រងបន្ទប់កុំព្យូទ័រ Lab & បច្ចេកវិទ្យាព័ត៌មានវិទ្យា</div>
+              <div style="font-size: 9.5px; color: #2563eb; font-weight: 700; text-transform: uppercase;">${branding.schoolNameEn || 'TIAN XIN INTERNATIONAL SCHOOL (TIS) • COMPUTER LAB'}</div>
+            </div>
           </div>
-          <div style="text-align: center;">
+          <div style="text-align: center; min-width: 200px;">
             <div style="font-size: 14px; font-weight: 800; color: #1e3a8a;">ព្រះរាជាណាចក្រកម្ពុជា</div>
-            <div style="font-size: 12px; font-weight: 700; color: #1e3a8a; letter-spacing: 1px;">ជាតិ  សាសនា  ព្រះមហាក្សត្រ</div>
-            <div style="font-size: 11px; color: #d97706; margin-top: 2px;">--- 🪷 ---</div>
+            <div style="font-size: 12px; font-weight: 700; color: #1e3a8a; letter-spacing: 1.5px; margin-top: 2px;">ជាតិ  សាសនា  ព្រះមហាក្សត្រ</div>
+            <div style="margin-top: 3px; display: flex; justify-content: center;">
+              <svg width="105" height="12" viewBox="0 0 105 12" fill="none">
+                <path d="M4 6 C 22 12, 33 0, 52.5 6 C 72 12, 83 0, 101 6" stroke="#d97706" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+                <circle cx="52.5" cy="6" r="2.2" fill="#d97706"/>
+              </svg>
+            </div>
           </div>
         </div>
 
