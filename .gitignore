@@ -17,3 +17,6 @@ _smart_school_upgrade_backup/
 .DS_Store
 Thumbs.db
 Desktop.ini
+
+.vercel
+.env*
