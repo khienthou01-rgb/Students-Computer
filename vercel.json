@@ -1,22 +1,10 @@
 {
   "version": 2,
   "cleanUrls": false,
-  "functions": {
-    "server.js": {
-      "includeFiles": "{index.html,manifest.json,sw.js,favicon.ico,css/**,js/**,assets/**,uploads/**}"
-    }
-  },
-  "routes": [
+  "rewrites": [
     {
-      "src": "^/api/(.*)",
-      "dest": "/server.js"
-    },
-    {
-      "handle": "filesystem"
-    },
-    {
-      "src": "^/(.*)",
-      "dest": "/server.js"
+      "source": "/api/:match*",
+      "destination": "/api/index.js"
     }
   ],
   "headers": [
@@ -43,11 +31,28 @@
       ]
     },
     {
+      "source": "/assets/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
       "source": "/(.*)",
       "headers": [
         {
           "key": "Access-Control-Allow-Origin",
           "value": "*"
+        },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET, POST, OPTIONS, PUT, DELETE"
+        },
+        {
+          "key": "Access-Control-Allow-Headers",
+          "value": "Content-Type, Authorization"
         }
       ]
     }
