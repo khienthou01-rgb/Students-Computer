@@ -1967,7 +1967,10 @@ const ModalsComponent = {
                 </p>
               </div>
             </div>
-            <div style="display: flex; align-items: center; gap: 10px;">
+            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+              <button type="button" class="btn-sm" onclick="TimetableLabView.openRemoteFollowIpModal(TimetableLabView.selectedInspectPcId)" style="background: linear-gradient(135deg, rgba(14, 165, 233, 0.25), rgba(99, 102, 241, 0.35)); border: 1.5px solid #0ea5e9; color: #38bdf8; font-weight: 800; padding: 7px 14px; border-radius: 8px; cursor: pointer; transition: all 0.2s ease;">
+                <i class="fa-solid fa-satellite-dish fa-beat"></i> <span>🎯 Follow IP (RDP/VNC)</span>
+              </button>
               <button type="button" class="btn-sm" id="inspectBtnToggleLock" onclick="TimetableLabView.toggleSinglePcLockFromInspect()" style="background: rgba(239, 68, 68, 0.18); border: 1px solid rgba(239, 68, 68, 0.5); color: #fca5a5; font-weight: 700; padding: 7px 14px; border-radius: 8px; cursor: pointer; transition: all 0.2s ease;">
                 <i class="fa-solid fa-lock"></i> <span>ចាក់សោរ PC</span>
               </button>
@@ -2036,6 +2039,341 @@ const ModalsComponent = {
               <span>អាចចុចគ្រាប់ចុច <kbd style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); padding: 1px 6px; border-radius: 4px; font-size: 0.75rem; color: #38bdf8;">Esc</kbd> ដើម្បីបិទផ្ទាំង ឬចុចលើប៊ូតុងខាងស្តាំ។</span>
             </div>
             <button type="button" class="btn-secondary" data-close-modal="pcRemoteInspectModal" style="height: 38px; padding: 0 18px; font-weight: 700; border-radius: 8px;">បិទផ្ទាំង</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 7.5 Modal: Remote Follow User Computer by IP Cockpit -->
+      <div id="pcRemoteFollowIpModal" class="modal-overlay">
+        <div class="modal-card" style="max-width: 1180px; width: 96vw; background: #060b17; border: 1.5px solid rgba(56, 189, 248, 0.35); box-shadow: 0 25px 70px rgba(0,0,0,0.9), 0 0 50px rgba(14, 165, 233, 0.25); border-radius: 20px; overflow: hidden;">
+          <!-- Top Neon Header -->
+          <div class="modal-header" style="background: linear-gradient(135deg, #091228 0%, #15103a 100%); color: #fff; padding: 14px 24px; border-bottom: 2px solid rgba(14, 165, 233, 0.5); position: relative;">
+            <div style="position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, #0ea5e9, #6366f1, #10b981, #f59e0b);"></div>
+            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; width: 100%;">
+              <div style="display: flex; align-items: center; gap: 14px;">
+                <span style="background: rgba(14, 165, 233, 0.15); border: 1.5px solid rgba(56, 189, 248, 0.5); width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #38bdf8; font-size: 1.25rem; box-shadow: 0 0 20px rgba(14, 165, 233, 0.35);">
+                  <i class="fa-solid fa-satellite-dish fa-beat"></i>
+                </span>
+                <div>
+                  <h3 style="margin: 0; font-size: 1.15rem; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 10px; letter-spacing: 0.3px;">
+                    <span>តាមដាន & បញ្ជាពីចម្ងាយតាម IP (Remote Follow User Computer by IP)</span>
+                    <span id="followTargetPcBadge" class="badge font-mono" style="background: linear-gradient(135deg, #0ea5e9, #6366f1); color: #fff; font-size: 0.82rem; padding: 3px 10px; border-radius: 6px;">PC-01</span>
+                  </h3>
+                  <div style="margin-top: 3px; font-size: 0.78rem; color: #94a3b8; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                    <span>IP សកម្ម៖</span>
+                    <code id="followTargetIpText" style="color: #38bdf8; font-weight: 800; background: rgba(14, 165, 233, 0.15); padding: 1px 7px; border-radius: 4px; font-size: 0.8rem; border: 1px solid rgba(56, 189, 248, 0.3); cursor: pointer;" onclick="TimetableLabView.copyFollowedIp()" title="ចុចដើម្បីចម្លង IP">192.168.1.101</code>
+                    <button type="button" onclick="TimetableLabView.copyFollowedIp()" style="background: none; border: none; color: #38bdf8; cursor: pointer; padding: 2px;" title="ចម្លង IP"><i class="fa-regular fa-copy"></i></button>
+                    <span style="color: #475569;">•</span>
+                    <span id="followTargetHostText" style="font-family: var(--font-mono, monospace);">Host: LAB-PC01</span>
+                    <span style="color: #475569;">•</span>
+                    <span id="followTargetPingBadge" class="ping-pill ping-fast"><i class="fa-solid fa-bolt"></i> <span id="followLatencyVal">8ms (Ready)</span></span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Quick Station / IP Switcher -->
+              <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                <div style="display: flex; align-items: center; gap: 6px;">
+                  <span style="font-size: 0.8rem; color: #94a3b8; font-weight: 700;">ប្តូរម៉ាស៊ីន៖</span>
+                  <select id="followStationSelect" class="form-control" onchange="TimetableLabView.onFollowStationChange(this.value)" style="background: rgba(15, 23, 42, 0.95); border: 1.5px solid #0ea5e9; color: #38bdf8; font-weight: 700; height: 36px; padding: 0 10px; border-radius: 8px; font-size: 0.82rem; cursor: pointer;">
+                    <!-- Options populated dynamically -->
+                  </select>
+                </div>
+
+                <div style="display: flex; align-items: center; gap: 4px;">
+                  <input type="text" id="followCustomIpInput" class="form-control" placeholder="វាយ IP (ឧ. 192.168.1.xxx)" style="width: 175px; height: 36px; font-size: 0.8rem; font-family: monospace; background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 0 10px; border-radius: 8px;">
+                  <button type="button" class="btn-primary" onclick="TimetableLabView.followCustomIpFromInput()" style="height: 36px; padding: 0 12px; font-size: 0.8rem; font-weight: 700; border-radius: 8px; background: #0ea5e9; border-color: #0ea5e9;">
+                    <i class="fa-solid fa-crosshairs"></i> Follow
+                  </button>
+                </div>
+
+                <button type="button" class="header-close-btn" data-close-modal="pcRemoteFollowIpModal" style="background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255,255,255,0.15); color: #cbd5e1; width: 34px; height: 34px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; margin-left: 6px; transition: all 0.2s ease;">
+                  <i class="fa-solid fa-xmark"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Cockpit Body -->
+          <div class="modal-body" style="padding: 20px 24px; background: #040813; max-height: calc(90vh - 140px); overflow-y: auto;">
+            <div style="display: grid; grid-template-columns: 1.6fr 1fr; gap: 20px;">
+              <!-- LEFT COLUMN: Live Screen Stream & Watermark Studio -->
+              <div style="display: flex; flex-direction: column; gap: 14px;">
+                <!-- Cinema Screen Box -->
+                <div id="followScreenContainer" style="position: relative; width: 100%; height: 460px; background: #010308; border-radius: 14px; border: 2px solid rgba(14, 165, 233, 0.35); overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 20px 50px rgba(0,0,0,0.85), 0 0 35px rgba(14, 165, 233, 0.15);">
+                  <!-- Screen Image / Simulation Mount -->
+                  <div id="followScreenDisplay" style="flex: 1; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #010206;">
+                    <!-- Screen content populated by JS -->
+                  </div>
+
+                  <!-- Cinema Lower Telemetry Strip -->
+                  <div style="height: 42px; background: linear-gradient(180deg, #0d1527 0%, #060a14 100%); border-top: 1px solid rgba(255, 255, 255, 0.08); padding: 0 16px; display: flex; align-items: center; justify-content: space-between; font-size: 0.78rem; color: #94a3b8;">
+                    <div style="display: flex; align-items: center; gap: 10px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 60%;">
+                      <i class="fa-solid fa-window-maximize text-cyan-400"></i>
+                      <span id="followActiveAppName" style="color: #f1f5f9; font-weight: 700;">Microsoft Word - កិច្ចការ.docx</span>
+                    </div>
+
+                    <div style="display: flex; align-items: center; gap: 10px; font-family: var(--font-mono, monospace);">
+                      <!-- Refresh Interval Selector -->
+                      <div style="display: flex; align-items: center; gap: 4px; background: rgba(255,255,255,0.06); border-radius: 6px; padding: 2px 6px;">
+                        <span style="font-size: 0.7rem; color: #64748b;"><i class="fa-solid fa-arrows-rotate"></i> Auto-Sync:</span>
+                        <button type="button" class="btn-follow-refresh active" data-refresh="1000" onclick="TimetableLabView.setFollowRefreshInterval(1000)" style="background: #0ea5e9; color: #fff; border: none; padding: 2px 6px; font-size: 0.68rem; border-radius: 4px; cursor: pointer;">1s</button>
+                        <button type="button" class="btn-follow-refresh" data-refresh="2000" onclick="TimetableLabView.setFollowRefreshInterval(2000)" style="background: transparent; color: #94a3b8; border: none; padding: 2px 6px; font-size: 0.68rem; border-radius: 4px; cursor: pointer;">2s</button>
+                        <button type="button" class="btn-follow-refresh" data-refresh="5000" onclick="TimetableLabView.setFollowRefreshInterval(5000)" style="background: transparent; color: #94a3b8; border: none; padding: 2px 6px; font-size: 0.68rem; border-radius: 4px; cursor: pointer;">5s</button>
+                      </div>
+
+                      <button type="button" onclick="TimetableLabView.refreshFollowScreenNow()" class="btn-secondary btn-sm" style="height: 26px; padding: 0 8px; font-size: 0.72rem;" title="ទាញយកអេក្រង់ភ្លាមៗ">
+                        <i class="fa-solid fa-rotate"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Hardware & Student Quick Stats Card below Screen -->
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px;">
+                  <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(56, 189, 248, 0.15); border-radius: 10px; padding: 10px 14px;">
+                    <div style="font-size: 0.7rem; color: #94a3b8;">សិស្ស Sign-In</div>
+                    <div id="followStudentNameVal" style="font-size: 0.88rem; font-weight: 800; color: #34d399; margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">សិស្សសកម្ម</div>
+                  </div>
+                  <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(56, 189, 248, 0.15); border-radius: 10px; padding: 10px 14px;">
+                    <div style="font-size: 0.7rem; color: #94a3b8;">CPU Telemetry</div>
+                    <div id="followCpuVal" style="font-size: 0.88rem; font-weight: 800; color: #38bdf8; margin-top: 3px;">12%</div>
+                  </div>
+                  <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(56, 189, 248, 0.15); border-radius: 10px; padding: 10px 14px;">
+                    <div style="font-size: 0.7rem; color: #94a3b8;">RAM Memory</div>
+                    <div id="followRamVal" style="font-size: 0.88rem; font-weight: 800; color: #c084fc; margin-top: 3px;">3.2 / 8.0 GB</div>
+                  </div>
+                  <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(56, 189, 248, 0.15); border-radius: 10px; padding: 10px 14px;">
+                    <div style="font-size: 0.7rem; color: #94a3b8;">ស្ថានភាពអេក្រង់</div>
+                    <div id="followLockStatusVal" style="font-size: 0.88rem; font-weight: 800; color: #34d399; margin-top: 3px;">ធម្មតា (Unlocked)</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- RIGHT COLUMN: Direct Remote Connect & Control Protocols -->
+              <div style="display: flex; flex-direction: column; gap: 14px;">
+                <!-- 1. DIRECT RDP REMOTE DESKTOP (Native Windows) -->
+                <div class="remote-connect-card">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <div style="font-weight: 800; color: #38bdf8; font-size: 0.88rem; display: flex; align-items: center; gap: 8px;">
+                      <i class="fa-brands fa-windows" style="color: #0284c7; font-size: 1.1rem;"></i>
+                      <span>Windows Remote Desktop (RDP)</span>
+                    </div>
+                    <span id="followRdpPortBadge" class="badge" style="background: rgba(16, 185, 129, 0.15); color: #34d399; font-size: 0.7rem; border: 1px solid rgba(16, 185, 129, 0.3);">Port 3389</span>
+                  </div>
+
+                  <p style="font-size: 0.75rem; color: #94a3b8; margin: 0 0 10px 0; line-height: 1.5;">
+                    ចុចទាញយកឯកសារ <code style="color: #38bdf8;">.rdp</code> ដែលបានរៀបចំ IP ស្រាប់ រួច Double Click ដើម្បីបញ្ជាកណ្តុរ & គ្រាប់ចុចផ្ទាល់លើម៉ាស៊ីនសិស្ស។
+                  </p>
+
+                  <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    <button type="button" class="remote-proto-btn remote-proto-rdp" onclick="TimetableLabView.downloadRdpConfigFile()" style="flex: 1;">
+                      <i class="fa-solid fa-download"></i> <span>ទាញយក RDP File (.rdp)</span>
+                    </button>
+                    <button type="button" class="btn-secondary btn-sm" onclick="TimetableLabView.copyRdpCommand()" style="font-size: 0.75rem; padding: 0 10px;" title="ចម្លង Command mstsc /v:IP">
+                      <i class="fa-solid fa-terminal"></i> <span>mstsc</span>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- 2. VNC & ANYDESK PROTOCOLS -->
+                <div class="remote-connect-card">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <div style="font-weight: 800; color: #c084fc; font-size: 0.88rem; display: flex; align-items: center; gap: 8px;">
+                      <i class="fa-solid fa-eye" style="color: #a855f7;"></i>
+                      <span>VNC & AnyDesk Remote Access</span>
+                    </div>
+                    <span id="followVncPortBadge" class="badge" style="background: rgba(139, 92, 246, 0.15); color: #c084fc; font-size: 0.7rem; border: 1px solid rgba(139, 92, 246, 0.3);">Port 5900</span>
+                  </div>
+
+                  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                    <button type="button" class="remote-proto-btn remote-proto-vnc" onclick="TimetableLabView.launchVncProtocol()">
+                      <i class="fa-solid fa-desktop"></i> <span>VNC Viewer</span>
+                    </button>
+                    <button type="button" class="remote-proto-btn" onclick="TimetableLabView.launchAnydeskProtocol()" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: #fff; border-color: #f87171;">
+                      <i class="fa-solid fa-bolt"></i> <span>AnyDesk</span>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- 3. WEB INSPECT PORTS (FOR STUDENT PROJECTS) -->
+                <div class="remote-connect-card">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <div style="font-weight: 800; color: #38bdf8; font-size: 0.84rem; display: flex; align-items: center; gap: 8px;">
+                      <i class="fa-solid fa-globe text-cyan-400"></i>
+                      <span>Web Project Inspection (Port Follow)</span>
+                    </div>
+                  </div>
+                  <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                    <button type="button" class="remote-proto-btn remote-proto-web" onclick="TimetableLabView.openRemoteWebPort(8080)">
+                      <i class="fa-solid fa-arrow-up-right-from-square"></i> :8080
+                    </button>
+                    <button type="button" class="remote-proto-btn remote-proto-web" onclick="TimetableLabView.openRemoteWebPort(3000)">
+                      <i class="fa-solid fa-arrow-up-right-from-square"></i> :3000
+                    </button>
+                    <button type="button" class="remote-proto-btn remote-proto-web" onclick="TimetableLabView.openRemoteWebPort(80)">
+                      <i class="fa-solid fa-arrow-up-right-from-square"></i> :80 (HTTP)
+                    </button>
+                  </div>
+                </div>
+
+                <!-- 4. PING & NETWORK DIAGNOSTICS -->
+                <div class="remote-connect-card">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <div style="font-weight: 800; color: #34d399; font-size: 0.84rem; display: flex; align-items: center; gap: 8px;">
+                      <i class="fa-solid fa-network-wired text-emerald-400"></i>
+                      <span>LAN Ping & Port Check</span>
+                    </div>
+                    <button type="button" class="btn-secondary btn-sm" onclick="TimetableLabView.testIpPing()" style="font-size: 0.72rem; padding: 2px 8px;">
+                      <i class="fa-solid fa-arrows-rotate"></i> Test Ping
+                    </button>
+                  </div>
+                  <div id="followPingDetails" style="font-size: 0.76rem; color: #cbd5e1; background: rgba(0,0,0,0.3); border-radius: 6px; padding: 8px 10px; font-family: var(--font-mono, monospace);">
+                    IP: <span id="pingIpVal" style="color: #38bdf8;">192.168.1.101</span> • Latency: <span id="pingLatencyVal" style="color: #34d399;">8ms</span> • RDP: <span id="pingRdpStatus" style="color: #34d399;">Open</span> • Agent: <span style="color: #34d399;">Active</span>
+                  </div>
+                </div>
+
+                <!-- 5. INSTANT REMOTE COMMANDS -->
+                <div class="remote-connect-card">
+                  <div style="font-weight: 800; color: #fbbf24; font-size: 0.84rem; margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">
+                    <i class="fa-solid fa-terminal text-amber-400"></i>
+                    <span>បញ្ជាបន្ទាន់លើម៉ាស៊ីននេះ (Remote Action)</span>
+                  </div>
+                  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
+                    <button type="button" id="followBtnToggleLock" class="btn-sm" onclick="TimetableLabView.toggleLockFromFollowModal()" style="background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.5); color: #fca5a5; padding: 6px 8px; border-radius: 6px; font-size: 0.76rem; font-weight: 700; cursor: pointer;">
+                      <i class="fa-solid fa-lock"></i> ចាក់សោរ
+                    </button>
+                    <button type="button" class="btn-sm" onclick="TimetableLabView.blankFromFollowModal()" style="background: rgba(245, 158, 11, 0.2); border: 1px solid rgba(245, 158, 11, 0.5); color: #fde68a; padding: 6px 8px; border-radius: 6px; font-size: 0.76rem; font-weight: 700; cursor: pointer;">
+                      <i class="fa-solid fa-eye-slash"></i> Blank Screen
+                    </button>
+                    <button type="button" class="btn-sm" onclick="TimetableLabView.sendMsgFromFollowModal()" style="background: rgba(99, 102, 241, 0.2); border: 1px solid rgba(99, 102, 241, 0.5); color: #c7d2fe; padding: 6px 8px; border-radius: 6px; font-size: 0.76rem; font-weight: 700; cursor: pointer;">
+                      <i class="fa-solid fa-comment-dots"></i> ផ្ញើសារ Pop-up
+                    </button>
+                    <button type="button" class="btn-sm" onclick="TimetableLabView.killAppFromFollowModal()" style="background: rgba(225, 29, 72, 0.2); border: 1px solid rgba(225, 29, 72, 0.5); color: #fda4af; padding: 6px 8px; border-radius: 6px; font-size: 0.76rem; font-weight: 700; cursor: pointer;">
+                      <i class="fa-solid fa-ban"></i> បិទ App នេះ
+                    </button>
+                    <button type="button" class="btn-sm" onclick="TimetableLabView.sendUrlFromFollowModal()" style="background: rgba(14, 165, 233, 0.2); border: 1px solid rgba(14, 165, 233, 0.5); color: #7dd3fc; padding: 6px 8px; border-radius: 6px; font-size: 0.76rem; font-weight: 700; cursor: pointer;">
+                      <i class="fa-solid fa-globe"></i> បញ្ជូន Link
+                    </button>
+                    <button type="button" class="btn-sm" onclick="TimetableLabView.restartFromFollowModal()" style="background: rgba(217, 119, 6, 0.2); border: 1px solid rgba(217, 119, 6, 0.5); color: #fde68a; padding: 6px 8px; border-radius: 6px; font-size: 0.76rem; font-weight: 700; cursor: pointer;">
+                      <i class="fa-solid fa-arrows-rotate"></i> Restart
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Cockpit Footer -->
+          <div class="modal-footer" style="background: #060b17; border-top: 1px solid rgba(255,255,255,0.08); padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+            <div style="font-size: 0.78rem; color: #94a3b8; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+              <span style="display: flex; align-items: center; gap: 6px;">
+                <i class="fa-solid fa-circle-info text-cyan-400"></i>
+                <span>ជំនួយ៖ ប្រសិនបើម៉ាស៊ីនសិស្សមិនទាន់បើក RDP សូមដំណើរការ <code style="color: #34d399; background: rgba(0,0,0,0.4); padding: 1px 6px; border-radius: 4px;">pc-agent/Enable-RemoteDesktop.bat</code> ម្តង។</span>
+              </span>
+            </div>
+
+            <div style="display: flex; gap: 8px;">
+              <button type="button" class="btn-secondary" onclick="TimetableLabView.copyFollowedIp()" style="height: 38px; padding: 0 14px; font-weight: 700; border-radius: 8px;">
+                <i class="fa-solid fa-copy"></i> ចម្លង IP
+              </button>
+              <button type="button" class="btn-secondary" data-close-modal="pcRemoteFollowIpModal" style="height: 38px; padding: 0 18px; font-weight: 700; border-radius: 8px;">បិទផ្ទាំង</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 7.6 Modal: Lab IP Address Manager & Quick Setup -->
+      <div id="labIpManagerModal" class="modal-overlay">
+        <div class="modal-card" style="max-width: 960px; width: 95vw; background: #070d1c; border: 1.5px solid rgba(56, 189, 248, 0.35); box-shadow: 0 25px 70px rgba(0,0,0,0.9), 0 0 45px rgba(6, 182, 212, 0.25); border-radius: 18px; overflow: hidden;">
+          <div class="modal-header" style="background: linear-gradient(135deg, #091530 0%, #17113f 100%); color: #fff; padding: 14px 22px; border-bottom: 2px solid rgba(56, 189, 248, 0.4); position: relative;">
+            <div style="position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, #06b6d4, #3b82f6, #8b5cf6, #10b981);"></div>
+            <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+              <div style="display: flex; align-items: center; gap: 12px;">
+                <span style="background: rgba(6, 182, 212, 0.15); border: 1.5px solid rgba(6, 182, 212, 0.5); width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #38bdf8; font-size: 1.2rem;">
+                  <i class="fa-solid fa-network-wired"></i>
+                </span>
+                <div>
+                  <h3 style="margin: 0; font-size: 1.15rem; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 8px;">
+                    <span>គ្រប់គ្រងបញ្ជី IP ម៉ាស៊ីនសិស្ស (Lab IP Address Manager)</span>
+                    <span class="badge" style="background: #0ea5e9; color: #fff; font-size: 0.72rem;">Control by IP</span>
+                  </h3>
+                  <p style="margin: 3px 0 0 0; font-size: 0.78rem; color: #94a3b8;">
+                    គ្រាន់តែបញ្ចូល ឬបង្កើតជួរ IP របស់កុំព្យូទ័រសិស្ស លោកគ្រូអាចបញ្ជា និងតាមដានបានទាំងអស់ដោយផ្ទាល់!
+                  </p>
+                </div>
+              </div>
+              <button type="button" class="header-close-btn" data-close-modal="labIpManagerModal" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); color: #cbd5e1; width: 34px; height: 34px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.1rem;">
+                <i class="fa-solid fa-xmark"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="modal-body" style="padding: 20px 24px; background: #050a17; max-height: calc(88vh - 130px); overflow-y: auto;">
+            <!-- 1. Quick Auto-Range Generator Box -->
+            <div style="background: linear-gradient(135deg, rgba(14, 165, 233, 0.1) 0%, rgba(99, 102, 241, 0.08) 100%); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 12px; padding: 14px 18px; margin-bottom: 18px;">
+              <div style="font-weight: 800; font-size: 0.86rem; color: #38bdf8; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+                <span style="display: flex; align-items: center; gap: 6px;">
+                  <i class="fa-solid fa-wand-magic-sparkles text-amber-400"></i> បង្កើតជួរ IP ដោយស្វ័យប្រវត្តិ (Quick Auto-Range Setup)
+                </span>
+                <button type="button" class="btn-secondary btn-sm" onclick="TimetableLabView.scanLanSubnet()" style="font-size: 0.75rem; padding: 4px 10px; height: 30px; border-color: #38bdf8; color: #38bdf8;">
+                  <i class="fa-solid fa-satellite-dish"></i> <span>ស្កេនរក IP ក្នុង LAN</span>
+                </button>
+              </div>
+
+              <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+                <div style="display: flex; align-items: center; gap: 6px;">
+                  <span style="font-size: 0.8rem; color: #cbd5e1; font-weight: 700;">Prefix:</span>
+                  <input type="text" id="ipRangePrefix" value="192.168.1." class="form-control" style="width: 130px; height: 34px; font-size: 0.82rem; font-family: monospace; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 0 8px; border-radius: 6px;">
+                </div>
+
+                <div style="display: flex; align-items: center; gap: 6px;">
+                  <span style="font-size: 0.8rem; color: #cbd5e1; font-weight: 700;">ចាប់ផ្តើមពីលេខ:</span>
+                  <input type="number" id="ipRangeStart" value="101" min="1" max="250" class="form-control" style="width: 80px; height: 34px; font-size: 0.82rem; font-family: monospace; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 0 8px; border-radius: 6px;">
+                </div>
+
+                <button type="button" class="btn-primary" onclick="TimetableLabView.applyAutoIpRange()" style="height: 34px; padding: 0 16px; font-size: 0.82rem; font-weight: 800; border-radius: 6px; background: linear-gradient(135deg, #0ea5e9, #0284c7);">
+                  <i class="fa-solid fa-bolt"></i> <span>អនុវត្តជួរ IP ទាំងអស់</span>
+                </button>
+
+                <button type="button" class="btn-secondary" onclick="TimetableLabView.pingAllLabIps()" style="height: 34px; padding: 0 12px; font-size: 0.8rem; font-weight: 700; border-radius: 6px;">
+                  <i class="fa-solid fa-satellite-dish"></i> <span>តេស្ត Ping គ្រប់ម៉ាស៊ីន</span>
+                </button>
+              </div>
+
+              <div id="lanScanStatus" style="display: none; margin-top: 10px; font-size: 0.75rem; color: #38bdf8; background: rgba(0,0,0,0.3); padding: 6px 12px; border-radius: 6px; font-family: monospace;"></div>
+            </div>
+
+            <!-- 2. Interactive IP Table -->
+            <div style="border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; background: rgba(15, 23, 42, 0.6);">
+              <table class="data-table" style="margin: 0; font-size: 0.84rem; width: 100%;">
+                <thead>
+                  <tr style="background: rgba(15, 23, 42, 0.95); border-bottom: 1.5px solid rgba(56, 189, 248, 0.3);">
+                    <th style="width: 80px; text-align: center;">ម៉ាស៊ីន</th>
+                    <th>សិស្សកំពុងរៀន / ឈ្មោះកៅអី</th>
+                    <th style="width: 220px;">IP Address ក្នុងបន្ទប់</th>
+                    <th style="width: 140px; text-align: center;">ស្ថានភាព Ping</th>
+                    <th style="width: 200px; text-align: center;">សកម្មភាពបញ្ជាពីចម្ងាយ</th>
+                  </tr>
+                </thead>
+                <tbody id="labIpTableBody">
+                  <!-- Populated dynamically by JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="modal-footer" style="background: #070d1c; border-top: 1px solid rgba(255,255,255,0.08); padding: 12px 24px; display: flex; justify-content: space-between; align-items: center;">
+            <div style="font-size: 0.8rem; color: #94a3b8;">
+              <i class="fa-solid fa-circle-check text-emerald-400"></i>
+              <span>ទិន្នន័យ IP នឹងត្រូវចងចាំក្នុងប្រព័ន្ធជារៀងរហូត។</span>
+            </div>
+            <div style="display: flex; gap: 8px;">
+              <button type="button" class="btn-primary" onclick="TimetableLabView.saveLabIpMap()" style="height: 38px; padding: 0 20px; font-weight: 800; border-radius: 8px; background: #10b981; border-color: #10b981;">
+                <i class="fa-solid fa-floppy-disk"></i> រក្សាទុក & អនុវត្តភ្លាម
+              </button>
+              <button type="button" class="btn-secondary" data-close-modal="labIpManagerModal" style="height: 38px; padding: 0 16px; font-weight: 700; border-radius: 8px;">បិទ</button>
+            </div>
           </div>
         </div>
       </div>

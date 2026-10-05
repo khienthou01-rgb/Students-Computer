@@ -66,6 +66,159 @@ const server = http.createServer((req, res) => {
     return;
   }
 
+  // API Endpoint: /api/ping-ip for Remote Computer LAN Ping & Port Check (RDP, VNC, Web)
+  if (req.method === 'GET' && (urlPath === '/api/ping-ip' || urlPath.startsWith('/api/ping-ip'))) {
+    const parsedUrl = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
+    const ip = (parsedUrl.searchParams.get('ip') || '').trim();
+    const customPort = parseInt(parsedUrl.searchParams.get('port') || '0', 10);
+
+    if (!ip || !/^(\d{1,3}\.){3}\d{1,3}$/.test(ip)) {
+      res.writeHead(400, { 'Content-Type': 'application/json; charset=utf-8' });
+      res.end(JSON.stringify({ success: false, error: 'Invalid or missing IPv4 address' }));
+      return;
+    }
+
+    const net = require('net');
+    const portsToCheck = customPort ? [customPort] : [3389, 5900, 8080, 80];
+    const results = {};
+    const startTime = Date.now();
+
+    const checkPort = (targetPort) => {
+      return new Promise((resolve) => {
+        const socket = new net.Socket();
+        socket.setTimeout(1200);
+        socket.on('connect', () => {
+          socket.destroy();
+          resolve(true);
+        });
+        socket.on('timeout', () => {
+          socket.destroy();
+          resolve(false);
+        });
+        socket.on('error', () => {
+          socket.destroy();
+          resolve(false);
+        });
+        socket.connect(targetPort, ip);
+      });
+    };
+
+    Promise.all(portsToCheck.map(p => checkPort(p).then(isOpen => { results[p] = isOpen; })))
+      .then(() => {
+        const latencyMs = Math.max(1, Date.now() - startTime);
+        const reachable = Object.values(results).some(Boolean);
+        res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+        res.end(JSON.stringify({
+          success: true,
+          ip,
+          reachable: reachable,
+          latencyMs,
+          ports: {
+            rdp: results[3389] || false,
+            vnc: results[5900] || false,
+            web8080: results[8080] || false,
+            web80: results[80] || false
+          },
+          checkedAt: new Date().toISOString()
+        }));
+      })
+      .catch((err) => {
+        res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+        res.end(JSON.stringify({ success: false, ip, error: err.message, reachable: false }));
+      });
+    return;
+  }
+
+  // API Endpoint: /api/scan-lan for scanning IP range in local subnet
+  if (req.method === 'GET' && (urlPath === '/api/scan-lan' || urlPath.startsWith('/api/scan-lan'))) {
+    const parsedUrl = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
+    let prefix = (parsedUrl.searchParams.get('prefix') || '192.168.1.').trim();
+    if (!prefix.endsWith('.')) prefix += '.';
+    const start = Math.max(1, parseInt(parsedUrl.searchParams.get('start') || '101', 10));
+    const end = Math.min(254, Math.max(start, parseInt(parsedUrl.searchParams.get('end') || '120', 10)));
+
+    const net = require('net');
+    const checkIp = (targetIp) => {
+      return new Promise((resolve) => {
+        const ports = [3389, 5900, 8080, 80, 445];
+        let found = false;
+        let checksDone = 0;
+        ports.forEach(port => {
+          const socket = new net.Socket();
+          socket.setTimeout(400);
+          socket.on('connect', () => {
+            found = true;
+            socket.destroy();
+            resolve({ ip: targetIp, reachable: true, port });
+          });
+          socket.on('timeout', () => { socket.destroy(); done(); });
+          socket.on('error', () => { done(); });
+          const done = () => {
+            checksDone++;
+            if (!found && checksDone === ports.length) {
+              resolve({ ip: targetIp, reachable: false });
+            }
+          };
+          socket.connect(port, targetIp);
+        });
+      });
+    };
+
+    const ipsToCheck = [];
+    for (let i = start; i <= end; i++) {
+      ipsToCheck.push(`${prefix}${i}`);
+    }
+
+    Promise.all(ipsToCheck.map(checkIp)).then(results => {
+      res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+      res.end(JSON.stringify({
+        success: true,
+        scannedCount: results.length,
+        activeHosts: results.filter(r => r.reachable),
+        results
+      }));
+    }).catch(err => {
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ success: false, error: err.message }));
+    });
+    return;
+  }
+
+  // API Endpoint: /api/lan-command for remote shutdown/restart via IP in local network
+  if (req.method === 'POST' && (urlPath === '/api/lan-command' || urlPath.startsWith('/api/lan-command'))) {
+    let body = '';
+    req.on('data', chunk => { body += chunk; });
+    req.on('end', () => {
+      try {
+        const payload = JSON.parse(body || '{}');
+        const ip = (payload.ip || '').trim();
+        const action = payload.action || 'restart';
+        if (!ip || !/^(\d{1,3}\.){3}\d{1,3}$/.test(ip)) {
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ success: false, error: 'Invalid IP address' }));
+          return;
+        }
+        const { exec } = require('child_process');
+        const flag = action === 'shutdown' ? '/s' : '/r';
+        const cmd = `shutdown.exe /m \\\\${ip} ${flag} /t 5 /c "Teacher Remote ${action}"`;
+        exec(cmd, (err, stdout, stderr) => {
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({
+            success: !err,
+            ip,
+            action,
+            message: err ? stderr || err.message : `Command sent to ${ip}`,
+            command: cmd
+          }));
+        });
+      } catch (err) {
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ success: false, error: err.message }));
+      }
+    });
+    return;
+  }
+
   // API Endpoint: /api/upload for Local Image Hosting (HostImg)
   if (req.method === 'POST' && (urlPath === '/api/upload' || urlPath.startsWith('/api/upload'))) {
     let body = '';

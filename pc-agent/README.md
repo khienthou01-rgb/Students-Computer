@@ -117,15 +117,37 @@
 ```text
 C:\pc-agent\
 ├── Student-Overlay.hta    <-- ផ្ទាំងស្វាគមន៍ Sign-In, ប៊ូតុងលើកដៃ 🙋‍♂️, និង Shortcut Keys ⌨️
-├── Student-Sign-In.bat    <-- ផ្លូវកាត់សម្រាប់បើក Student Overlay ដោយដៃ
-├── Install-AutoStart.bat  <-- ឯកសារ Batch ដំឡើង Auto-Start ចូល Windows Startup
-├── Start-Agent.bat        <-- ឯកសារ Batch បើកដំណើរការតេស្ត និងកំណត់ PC-ID
-├── Silent-Start.vbs       <-- Script បើកដំណើរការ Agent ស្ងាត់ៗក្នុង Background (គ្មានផ្ទាំង CMD)
-├── Stop-Agent.bat         <-- ឯកសារ Batch បិទដំណើរការ Agent ពេលត្រូវការផ្អាក
-├── tis-lab-agent.ps1      <-- កូដស្នូល PowerShell (ចាប់អេក្រង់, ឆែក App, Auto-Save, Attention Lock)
-├── pc_id.txt              <-- ឯកសារផ្ទុកលេខសម្គាល់ម៉ាស៊ីន (ឧ. PC-01)
-└── README.md              <-- សៀវភៅណែនាំបច្ចេកទេសនេះ
+├── Student-Sign-In.bat        <-- ផ្លូវកាត់សម្រាប់បើក Student Overlay ដោយដៃ
+├── Install-AutoStart.bat      <-- ឯកសារ Batch ដំឡើង Auto-Start ចូល Windows Startup
+├── Enable-RemoteDesktop.bat   <-- ឯកសារ Batch បើកដំណើរការ Windows RDP (Port 3389) សម្រាប់បញ្ជាពីចម្ងាយ
+├── Start-Agent.bat            <-- ឯកសារ Batch បើកដំណើរការតេស្ត និងកំណត់ PC-ID
+├── Silent-Start.vbs           <-- Script បើកដំណើរការ Agent ស្ងាត់ៗក្នុង Background (គ្មានផ្ទាំង CMD)
+├── Stop-Agent.bat             <-- ឯកសារ Batch បិទដំណើរការ Agent ពេលត្រូវការផ្អាក
+├── tis-lab-agent.ps1          <-- កូដស្នូល PowerShell (ចាប់អេក្រង់, ឆែក App, Auto-Save, Attention Lock)
+├── pc_id.txt                  <-- ឯកសារផ្ទុកលេខសម្គាល់ម៉ាស៊ីន (ឧ. PC-01)
+└── README.md                  <-- សៀវភៅណែនាំបច្ចេកទេសនេះ
 ```
+
+---
+
+## 🎯 មុខងារតាមដាន & បញ្ជាពីចម្ងាយតាម IP (Remote Follow User Computer by IP)
+
+នៅលើផ្ទាំង Dashboard **«តាមដានផ្ទាល់ (Live Monitor)»** លោកគ្រូអាចតាមដាន និងបញ្ជាកុំព្យូទ័រសិស្សតាមរយៈ Real IP Address ផ្ទាល់៖
+
+1. **ទាញយក RDP (.rdp) ភ្ជាប់ផ្ទាល់៖**
+   - ចុចលើប៊ូតុង **«🎯 តាមដានតាម IP»** ឬចុចលើកាតម៉ាស៊ីនណាមួយ
+   - ចុច **«ទាញយក RDP File (.rdp)»** ដើម្បីបើក Windows Remote Desktop ទៅកាន់ម៉ាស៊ីននោះភ្លាម
+   - ឬប្រើប្រាស់ Command: `mstsc /v:<IP-សិស្ស>` (ឧ. `mstsc /v:192.168.1.105`)
+
+2. **តភ្ជាប់តាម VNC ឬ AnyDesk៖**
+   - គាំទ្រការបើក `vnc://<IP>:5900` និង `anydesk://<IP>`
+
+3. **តេស្តល្បឿនបណ្តាញ LAN (Ping & Port Check)៖**
+   - ពិនិត្យ Latency (ms) ថាតើបណ្តាញកុំព្យូទ័រដើរលឿន ឬយឺត
+   - ឆែក Port 3389 (RDP) និង Port 5900 (VNC) ដោយស្វ័យប្រវត្តិ
+
+4. **បើកដំណើរការ Remote Desktop លើ PC សិស្ស៖**
+   - ប្រសិនបើម៉ាស៊ីនសិស្សមិនទាន់បានបើក Remote Desktop សូម Right Click លើ **`Enable-RemoteDesktop.bat`** ហើយរើស **Run as administrator** ម្តងជាការស្រេច!
 
 ---
 

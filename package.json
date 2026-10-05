@@ -5,8 +5,7 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "node server.js",
-    "build": "echo Project ready for Vercel deployment"
+    "dev": "node server.js"
   },
   "keywords": [
     "student-management",

@@ -1,11 +1,14 @@
 {
   "version": 2,
-  "outputDirectory": ".",
   "cleanUrls": false,
   "rewrites": [
     {
       "source": "/api/:match*",
       "destination": "/api/index.js"
+    },
+    {
+      "source": "/((?!api/|uploads/|assets/|css/|js/|pc-agent/|favicon\\.ico|manifest\\.json|sw\\.js|404\\.html).*|.*\\.[a-zA-Z0-9]+$)",
+      "destination": "/index.html"
     }
   ],
   "headers": [
@@ -41,6 +44,24 @@
       ]
     },
     {
+      "source": "/css/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=86400, stale-while-revalidate=604800"
+        }
+      ]
+    },
+    {
+      "source": "/js/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=86400, stale-while-revalidate=604800"
+        }
+      ]
+    },
+    {
       "source": "/(.*)",
       "headers": [
         {
@@ -53,7 +74,7 @@
         },
         {
           "key": "Access-Control-Allow-Headers",
-          "value": "Content-Type, Authorization"
+          "value": "Content-Type, Authorization, X-Requested-With"
         }
       ]
     }

@@ -1,0 +1,31 @@
+# Vercel Deployment Ignore Rules
+# Dependencies
+node_modules/
+
+# Backup directories
+_backup_current_before_restore/
+_backup_pre_sync/
+_smart_school_upgrade_backup/
+*.bak
+*.tmp
+
+# Version control
+.git/
+.github/
+
+# Local server helper scripts
+Start-Server.bat
+Stop-Server.bat
+Start-Background.vbs
+Deploy-GitHub.bat
+Deploy-Vercel.bat
+serve.ps1
+
+# Ephemeral state & logs
+.sent_daily_att_*
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+Desktop.ini
