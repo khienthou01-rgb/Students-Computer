@@ -35,8 +35,10 @@ const server = http.createServer((req, res) => {
     return;
   }
 
+  const urlPath = (req.url || '').split('?')[0];
+
   // API Endpoint: /api/info for Server & LAN network telemetry
-  if (req.method === 'GET' && req.url === '/api/info') {
+  if (req.method === 'GET' && (urlPath === '/api/info' || urlPath.startsWith('/api/info'))) {
     const ifaces = os.networkInterfaces();
     const lanIps = [];
     for (const name in ifaces) {
@@ -57,8 +59,15 @@ const server = http.createServer((req, res) => {
     return;
   }
 
+  // API Endpoint: /api/health
+  if (req.method === 'GET' && (urlPath === '/api/health' || urlPath.startsWith('/api/health'))) {
+    res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+    res.end(JSON.stringify({ status: 'ok', service: 'TIS Lab Computer Server', time: new Date().toISOString() }));
+    return;
+  }
+
   // API Endpoint: /api/upload for Local Image Hosting (HostImg)
-  if (req.method === 'POST' && (req.url === '/api/upload' || req.url.startsWith('/api/upload'))) {
+  if (req.method === 'POST' && (urlPath === '/api/upload' || urlPath.startsWith('/api/upload'))) {
     let body = '';
     req.on('data', chunk => {
       body += chunk;
@@ -96,10 +105,14 @@ const server = http.createServer((req, res) => {
           buffer = Buffer.from(base64Data, 'base64');
         }
 
-        const uploadsDir = path.join(BASE_DIR, 'uploads', 'images');
-        if (!fs.existsSync(uploadsDir)) {
-          fs.mkdirSync(uploadsDir, { recursive: true });
-        }
+        const uploadsDir = process.env.VERCEL
+          ? path.join(os.tmpdir(), 'uploads', 'images')
+          : path.join(BASE_DIR, 'uploads', 'images');
+        try {
+          if (!fs.existsSync(uploadsDir)) {
+            fs.mkdirSync(uploadsDir, { recursive: true });
+          }
+        } catch (e) {}
 
         const safeName = (fileName ? path.basename(fileName, path.extname(fileName)) : 'img')
           .replace(/[^a-zA-Z0-9_-]/g, '_')
@@ -107,13 +120,21 @@ const server = http.createServer((req, res) => {
         const uniqueName = `${safeName}_${Date.now()}_${Math.random().toString(36).slice(2, 7)}.${ext}`;
         const targetFile = path.join(uploadsDir, uniqueName);
 
-        fs.writeFileSync(targetFile, buffer);
+        try {
+          fs.writeFileSync(targetFile, buffer);
+        } catch (writeErr) {
+          console.warn('File write notice (serverless storage fallback):', writeErr.message);
+        }
+
+        const hostedUrl = process.env.VERCEL
+          ? `data:image/${ext};base64,${buffer.toString('base64')}`
+          : `/uploads/images/${uniqueName}`;
 
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({
           success: true,
-          url: `/uploads/images/${uniqueName}`,
-          fullUrl: `http://localhost:${PORT}/uploads/images/${uniqueName}`,
+          url: hostedUrl,
+          fullUrl: hostedUrl.startsWith('data:') ? hostedUrl : `http://localhost:${PORT}${hostedUrl}`,
           filename: uniqueName,
           size: buffer.length
         }));

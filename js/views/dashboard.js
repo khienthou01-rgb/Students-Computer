@@ -143,7 +143,7 @@ const DashboardView = {
           <div class="kpi-card motion-fade-up stagger-4" style="--card-accent: #10b981; --icon-bg: rgba(16, 185, 129, 0.16); --icon-color: #10b981; border-radius: 20px; padding: 22px;">
             <div class="kpi-info">
               <span style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">វត្តមានសរុប (Attendance)</span>
-              <div id="kpiAttendanceRate" class="kpi-number" style="font-size: 2.1rem; font-weight: 900; margin: 4px 0; color: #34d399;">89.6%</div>
+              <div id="kpiAttendanceRate" class="kpi-number" style="font-size: 2.1rem; font-weight: 900; margin: 4px 0; color: #34d399;">--</div>
               <div style="display: flex; align-items: center; gap: 6px; font-size: 0.75rem;">
                 <span class="badge" style="background: rgba(16, 185, 129, 0.15); color: #34d399; font-weight: 800; padding: 2px 7px; border-radius: 6px;">
                   <i class="fa-solid fa-circle-check"></i> ល្អប្រសើរ
@@ -160,7 +160,7 @@ const DashboardView = {
           <div class="kpi-card motion-fade-up stagger-5" style="--card-accent: #f59e0b; --icon-bg: rgba(245, 158, 11, 0.16); --icon-color: #f59e0b; border-radius: 20px; padding: 22px;">
             <div class="kpi-info">
               <span style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">អត្រាប្រឡងជាប់ (Pass Rate)</span>
-              <div id="kpiPassRate" class="kpi-number" style="font-size: 2.1rem; font-weight: 900; margin: 4px 0; color: #fbbf24;">100%</div>
+              <div id="kpiPassRate" class="kpi-number" style="font-size: 2.1rem; font-weight: 900; margin: 4px 0; color: #fbbf24;">--</div>
               <div style="display: flex; align-items: center; gap: 6px; font-size: 0.75rem;">
                 <span class="badge" style="background: rgba(245, 158, 11, 0.15); color: #fbbf24; font-weight: 800; padding: 2px 7px; border-radius: 6px;">
                   និទ្ទេស A-C
@@ -484,7 +484,7 @@ const DashboardView = {
         const rate = (Math.round((presentAtt / totalAtt) * 1000) / 10).toFixed(1);
         attEl.textContent = `${rate}%`;
       } else {
-        attEl.textContent = "100%";
+        attEl.textContent = "—";
       }
     }
 
@@ -494,11 +494,17 @@ const DashboardView = {
       if (typeof StudentAPI !== "undefined" && StudentAPI.getAllExams) {
         const allExams = StudentAPI.getAllExams();
         if (allExams && typeof allExams === "object") {
-          Object.values(allExams).forEach(ex => {
-            if (ex && typeof ex === "object") {
-              totalExams++;
-              const sc = parseFloat(ex.score || ex.Score || 0);
-              if (sc >= 50) passedExams++;
+          Object.values(allExams).forEach(studentExams => {
+            if (studentExams && typeof studentExams === "object") {
+              Object.values(studentExams).forEach(ex => {
+                if (ex && typeof ex === "object") {
+                  const sc = parseFloat(ex.score ?? ex.Score);
+                  if (!isNaN(sc) && sc >= 0) {
+                    totalExams++;
+                    if (sc >= 50 || ex.status === "Pass" || ex.Status === "Pass") passedExams++;
+                  }
+                }
+              });
             }
           });
         }
@@ -507,7 +513,7 @@ const DashboardView = {
         const passRate = (Math.round((passedExams / totalExams) * 1000) / 10).toFixed(1);
         passEl.textContent = `${passRate}%`;
       } else {
-        passEl.textContent = "100%";
+        passEl.textContent = "—";
       }
     }
 

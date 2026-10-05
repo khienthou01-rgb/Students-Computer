@@ -167,10 +167,11 @@ const DocumentsView = {
                 <label class="form-label" style="font-weight: 600; font-size: 0.85rem; margin-bottom: 6px; display: block;">ការពិពណ៌នាសង្ខេប</label>
                 <textarea id="docInputDesc" class="form-control" rows="3" placeholder="ពិពណ៌នាអំពីខ្លឹមសារនៃឯកសារនេះ..."></textarea>
               </div>
-              <div style="border: 2px dashed var(--border-color); border-radius: 14px; padding: 24px; text-align: center; margin-bottom: 20px; background: var(--bg-main);">
-                <i class="fa-solid fa-file-arrow-up" style="font-size: 2rem; color: var(--text-muted); margin-bottom: 8px;"></i>
-                <div style="font-size: 0.85rem; color: var(--text-main); font-weight: 600;">ជ្រើសរើសឯកសារ ឬអូសទម្លាក់ទីនេះ</div>
-                <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">គាំទ្រ PDF, Word, Excel, PowerPoint រហូតដល់ 25MB</div>
+              <div style="border: 2px dashed var(--border-color); border-radius: 14px; padding: 24px; text-align: center; margin-bottom: 20px; background: var(--bg-main); cursor: pointer;" onclick="document.getElementById('docRealFileInput').click()">
+                <input type="file" id="docRealFileInput" style="display: none;" onchange="DocumentsView.handleFileSelect(event)">
+                <i class="fa-solid fa-file-arrow-up" style="font-size: 2rem; color: #db2777; margin-bottom: 8px;"></i>
+                <div id="docFileLabel" style="font-size: 0.85rem; color: var(--text-main); font-weight: 600;">ជ្រើសរើសឯកសារ ឬអូសទម្លាក់ទីនេះ</div>
+                <div id="docFileSizeLabel" style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">គាំទ្រ PDF, Word, Excel, PowerPoint រហូតដល់ 25MB</div>
               </div>
               <div style="display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid var(--border-color); padding-top: 18px;">
                 <button type="button" class="btn-secondary" onclick="DocumentsView.closeModal()">បោះបង់</button>
@@ -304,6 +305,34 @@ const DocumentsView = {
     if (modal) modal.style.display = "none";
   },
 
+  selectedFile: null,
+
+  handleFileSelect(e) {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    this.selectedFile = file;
+
+    const label = document.getElementById("docFileLabel");
+    const sizeLabel = document.getElementById("docFileSizeLabel");
+    const titleInput = document.getElementById("docInputTitle");
+    const typeSelect = document.getElementById("docInputType");
+
+    if (label) label.textContent = `📄 ${file.name}`;
+    const sizeStr = file.size >= 1024 * 1024 ? `${(file.size / (1024 * 1024)).toFixed(1)} MB` : `${Math.max(1, Math.round(file.size / 1024))} KB`;
+    if (sizeLabel) sizeLabel.textContent = `ទំហំឯកសារ៖ ${sizeStr}`;
+
+    if (titleInput && !titleInput.value.trim()) {
+      titleInput.value = file.name.replace(/\.[^/.]+$/, "");
+    }
+
+    if (typeSelect) {
+      const ext = file.name.split('.').pop().toLowerCase();
+      if (['pdf', 'xlsx', 'docx', 'pptx'].includes(ext)) {
+        typeSelect.value = ext;
+      }
+    }
+  },
+
   handleUpload(e) {
     e.preventDefault();
     const title = document.getElementById("docInputTitle").value.trim();
@@ -313,6 +342,12 @@ const DocumentsView = {
 
     if (!title) return;
 
+    let realSize = "1.5 MB";
+    if (this.selectedFile) {
+      const sz = this.selectedFile.size;
+      realSize = sz >= 1024 * 1024 ? `${(sz / (1024 * 1024)).toFixed(1)} MB` : `${Math.max(1, Math.round(sz / 1024))} KB`;
+    }
+
     const docs = this.getDocs();
     const newId = "DOC-" + String(docs.length + 1).padStart(3, "0");
 
@@ -321,13 +356,14 @@ const DocumentsView = {
       title,
       category,
       type,
-      size: (Math.random() * 4 + 1).toFixed(1) + " MB",
+      size: realSize,
       date: new Date().toISOString().split("T")[0],
-      downloads: 1,
+      downloads: 0,
       desc: desc || "ឯកសារបង្រៀនថ្មីទើបបង្ហោះចូលប្រព័ន្ធ។"
     });
 
     this.saveDocs(docs);
+    this.selectedFile = null;
     this.closeModal();
     this.renderGrid();
 

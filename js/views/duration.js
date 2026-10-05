@@ -93,7 +93,11 @@ const DurationView = {
     const select = document.getElementById("durationFilterCourse");
     if (!select) return;
     const students = App.state.students || [];
-    const courses = [...new Set(students.map(s => s.Course).filter(Boolean))].sort();
+    const courseSet = new Set(students.map(s => s.Course).filter(Boolean));
+    if (typeof APP_CONFIG !== "undefined" && APP_CONFIG.computerCourses) {
+      APP_CONFIG.computerCourses.forEach(c => courseSet.add(c.name));
+    }
+    const courses = [...courseSet].sort();
     const currentVal = select.value;
     select.innerHTML = `<option value="">វគ្គទាំងអស់</option>` + courses.map(c => `<option value="${c}">${c}</option>`).join("");
     select.value = currentVal;
@@ -101,7 +105,10 @@ const DurationView = {
 
   // Get filtered students
   getFilteredStudents() {
-    const students = (App.state.students || []).filter(s => s.Status === "Active" || s.Status === "active");
+    const students = (App.state.students || []).filter(s => {
+      const st = String(s.Status || s.status || "Active").toLowerCase();
+      return st !== "dropped" && st !== "graduated" && st !== "drop" && st !== "ផ្អាក";
+    });
     return students.filter(s => {
       // Search filter
       if (this.filters.search) {
@@ -112,7 +119,11 @@ const DurationView = {
         if (!match) return false;
       }
       // Course filter
-      if (this.filters.course && s.Course !== this.filters.course) return false;
+      if (this.filters.course) {
+        const sc = (s.Course || "").toLowerCase();
+        const fc = this.filters.course.toLowerCase();
+        if (sc !== fc && !sc.includes(fc) && !fc.includes(sc)) return false;
+      }
       // Shift filter
       if (this.filters.shift && (!s.Shift || !s.Shift.includes(this.filters.shift))) return false;
       // Status filter (duration-based)

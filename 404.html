@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+  <meta charset="utf-8">
+  <title>សាលា អន្តរជាតិ ធានស៊ីន - Tian Xin International School (TIS)</title>
+  <script>
+    // GitHub Pages SPA single page redirect
+    var path = window.location.pathname;
+    var repoPrefix = "/Students-Computer";
+    var cleanPath = path;
+    if (cleanPath.startsWith(repoPrefix)) {
+      cleanPath = cleanPath.slice(repoPrefix.length);
+    }
+    if (cleanPath && cleanPath !== "/" && cleanPath !== "/index.html") {
+      sessionStorage.setItem("gh_spa_redirect", cleanPath + window.location.search + window.location.hash);
+    }
+    window.location.replace((path.startsWith(repoPrefix) ? repoPrefix : "") + "/");
+  </script>
+</head>
+<body style="font-family: sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; background: #070510; color: #fff;">
+  <p>កំពុងដំណើរការទៅកាន់ប្រព័ន្ធ... (Redirecting to TIS Lab Computer...)</p>
+</body>
+</html>

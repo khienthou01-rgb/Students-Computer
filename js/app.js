@@ -33,6 +33,24 @@ const App = {
   async init() {
     this.initTheme();
 
+    // Check if coming from a GitHub Pages SPA redirect
+    let ghRedirectTab = null;
+    try {
+      const ghRedirect = sessionStorage.getItem("gh_spa_redirect");
+      if (ghRedirect) {
+        sessionStorage.removeItem("gh_spa_redirect");
+        const hashIdx = ghRedirect.indexOf("#");
+        if (hashIdx !== -1) {
+          window.location.hash = ghRedirect.slice(hashIdx);
+        }
+        const pathPart = hashIdx !== -1 ? ghRedirect.slice(0, hashIdx) : ghRedirect;
+        const tabMatch = pathPart.replace(/^\/+/, "").split(/[/?#]/)[0];
+        if (tabMatch && tabMatch !== "index" && tabMatch !== "index.html") {
+          ghRedirectTab = tabMatch;
+        }
+      }
+    } catch (e) {}
+
     // Support #verify-cert, #self-register, #logout, and #student-login hash
     if (window.location.hash.startsWith("#verify-cert")) {
       this.mountVerifyCertScreen();
@@ -116,6 +134,13 @@ const App = {
     // Check for advance Khmer Calendar national holidays & prompt teacher
     if (typeof KhmerCalendarService !== "undefined" && KhmerCalendarService.checkAndPromptAdvanceHolidays) {
       KhmerCalendarService.checkAndPromptAdvanceHolidays();
+    }
+
+    // If redirected from GitHub Pages SPA or direct path, switch to that tab
+    if (ghRedirectTab) {
+      setTimeout(() => {
+        this.switchTab(ghRedirectTab);
+      }, 120);
     }
   },
 

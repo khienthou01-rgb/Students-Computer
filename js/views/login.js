@@ -7,12 +7,12 @@ const LoginView = {
   render() {
     return `
       <div class="login-page-wrapper">
-        <!-- Ambient Glowing Lights -->
+        <!-- Dynamic Ambient Floating Luminous Orbs -->
         <div class="login-ambient-orb orb-1"></div>
         <div class="login-ambient-orb orb-2"></div>
         <div class="login-ambient-orb orb-3"></div>
 
-        <!-- Master Professional Centered Authentication Card -->
+        <!-- Master Professional Centered Authentication Cockpit -->
         <div class="login-master-container">
           <div class="login-card-inner">
 
@@ -26,22 +26,32 @@ const LoginView = {
               <p class="login-brand-subtitle">ប្រព័ន្ធគ្រប់គ្រងសិស្ស & បន្ទប់អនុវត្តកុំព្យូទ័រ</p>
             </div>
 
-            <!-- Segmented Dual-Role Tab Switcher -->
-            <div class="login-segmented-control">
+            <!-- Dynamic Segmented Dual-Role Tab Switcher with Sliding Glider -->
+            <div class="login-segmented-control" data-role="${this.currentRole}">
+              <div class="segmented-pill-glider"></div>
               <button type="button" class="btn-segmented ${this.currentRole === 'teacher' ? 'active' : ''}" data-role="teacher">
                 <i class="fa-solid fa-chalkboard-user"></i>
-                <span>👨‍🏫 គ្រូបង្រៀន</span>
+                <span>👨‍🏫 គ្រូបង្រៀន (Teacher)</span>
               </button>
               <button type="button" class="btn-segmented ${this.currentRole === 'student' ? 'active' : ''}" data-role="student">
                 <i class="fa-solid fa-user-graduate"></i>
-                <span>🎓 សិស្សានុសិស្ស</span>
+                <span>🎓 សិស្សានុសិស្ស (Student)</span>
               </button>
             </div>
 
             <!-- ======================================== -->
             <!-- 1. TEACHER AUTHENTICATION FORM           -->
             <!-- ======================================== -->
-            <div id="teacherLoginSection" style="display: ${this.currentRole === 'teacher' ? 'block' : 'none'};">
+            <div id="teacherLoginSection" style="display: ${this.currentRole === 'teacher' ? 'block' : 'none'};" class="motion-fade-up">
+
+              <!-- Quick One-Click Demo Login Banner -->
+              <div class="login-quick-demo-banner" onclick="LoginView.quickFill('teacher')" title="ចុចត្រង់នេះដើម្បីបំពេញគណនីគ្រូសាកល្បងដោយស្វ័យប្រវត្តិ">
+                <div class="quick-demo-left">
+                  <span class="quick-demo-badge"><i class="fa-solid fa-bolt"></i> Demo Login</span>
+                  <span class="quick-demo-creds">Username: <strong>khienthou</strong> • Pass: <strong>••••••••</strong></span>
+                </div>
+                <span class="quick-demo-action"><i class="fa-solid fa-wand-magic-sparkles"></i> បំពេញភ្លាម</span>
+              </div>
 
               <!-- Teacher Error Alert Banner -->
               <div id="loginErrorAlert" class="login-error-alert" style="display: none;">
@@ -87,7 +97,16 @@ const LoginView = {
             <!-- ======================================== -->
             <!-- 2. STUDENT AUTHENTICATION FORM           -->
             <!-- ======================================== -->
-            <div id="studentLoginSection" style="display: ${this.currentRole === 'student' ? 'block' : 'none'};">
+            <div id="studentLoginSection" style="display: ${this.currentRole === 'student' ? 'block' : 'none'};" class="motion-fade-up">
+
+              <!-- Quick One-Click Demo Student Login Banner -->
+              <div class="login-quick-demo-banner student-demo" onclick="LoginView.quickFill('student')" title="ចុចត្រង់នេះដើម្បីបំពេញអត្តលេខសិស្សសាកល្បងដោយស្វ័យប្រវត្តិ">
+                <div class="quick-demo-left">
+                  <span class="quick-demo-badge student"><i class="fa-solid fa-graduation-cap"></i> Student Demo</span>
+                  <span class="quick-demo-creds">ID: <strong>TX-01</strong> • PIN: <strong>123</strong></span>
+                </div>
+                <span class="quick-demo-action"><i class="fa-solid fa-wand-magic-sparkles"></i> បំពេញភ្លាម</span>
+              </div>
 
               <!-- Student Error Alert Banner -->
               <div id="studentLoginErrorAlert" class="login-error-alert" style="display: none;">
@@ -100,7 +119,7 @@ const LoginView = {
                 <div class="form-field-group">
                   <label for="studentLoginId">អត្តលេខសិស្ស (Student ID) ឬលេខទូរស័ព្ទ</label>
                   <div class="input-container-pro">
-                    <i class="fa-solid fa-id-card field-icon text-purple-500"></i>
+                    <i class="fa-solid fa-id-card field-icon text-cyan-400"></i>
                     <input type="text" id="studentLoginId" class="input-pro" placeholder="បញ្ចូលអត្តលេខសិស្ស ឬលេខទូរស័ព្ទ..." required>
                   </div>
                 </div>
@@ -108,7 +127,7 @@ const LoginView = {
                 <div class="form-field-group">
                   <label for="studentLoginPin">លេខកូដសម្ងាត់ (PIN / Password)</label>
                   <div class="input-container-pro">
-                    <i class="fa-solid fa-key field-icon text-purple-500"></i>
+                    <i class="fa-solid fa-key field-icon text-cyan-400"></i>
                     <input type="password" id="studentLoginPin" class="input-pro" placeholder="បញ្ចូលលេខកូដសម្ងាត់..." required>
                     <button type="button" id="toggleStudentPinVisibility" class="btn-eye-pro" aria-label="បង្ហាញលេខសម្ងាត់">
                       <i class="fa-regular fa-eye"></i>
@@ -133,10 +152,10 @@ const LoginView = {
             <!-- Card Bottom Security Guarantee Footer -->
             <div class="login-form-footer">
               <div class="footer-security-tag">
-                <i class="fa-solid fa-shield-halved text-emerald-500"></i>
+                <i class="fa-solid fa-shield-halved text-emerald-400"></i>
                 <span>256-Bit SSL Encrypted & Secured</span>
               </div>
-              <div class="footer-version">TIS Lab Computer v2.5</div>
+              <div class="footer-version">TIS Lab Computer v2.6 Pro</div>
             </div>
 
           </div>
@@ -156,16 +175,29 @@ const LoginView = {
         const role = btn.getAttribute("data-role");
         this.currentRole = role;
 
+        const control = document.querySelector(".login-segmented-control");
+        if (control) control.setAttribute("data-role", role);
+
         roleBtns.forEach(b => b.classList.remove("active"));
         btn.classList.add("active");
 
         if (role === "student") {
           if (teacherSec) teacherSec.style.display = "none";
-          if (studentSec) studentSec.style.display = "block";
+          if (studentSec) {
+            studentSec.style.display = "block";
+            studentSec.classList.remove("motion-fade-up");
+            void studentSec.offsetWidth;
+            studentSec.classList.add("motion-fade-up");
+          }
           const sInput = document.getElementById("studentLoginId");
           if (sInput) sInput.focus();
         } else {
-          if (teacherSec) teacherSec.style.display = "block";
+          if (teacherSec) {
+            teacherSec.style.display = "block";
+            teacherSec.classList.remove("motion-fade-up");
+            void teacherSec.offsetWidth;
+            teacherSec.classList.add("motion-fade-up");
+          }
           if (studentSec) studentSec.style.display = "none";
           const tInput = document.getElementById("loginUsername");
           if (tInput) tInput.focus();
@@ -277,7 +309,53 @@ const LoginView = {
       });
     }
 
+  },
+
+  quickFill(role) {
+    if (role === 'teacher') {
+      const u = document.getElementById("loginUsername");
+      const p = document.getElementById("loginPassword");
+      if (u && p) {
+        u.value = "khienthou";
+        p.value = "11112222";
+        u.classList.add("input-pulse-glow");
+        p.classList.add("input-pulse-glow");
+        setTimeout(() => {
+          u.classList.remove("input-pulse-glow");
+          p.classList.remove("input-pulse-glow");
+        }, 800);
+        const submit = document.getElementById("loginSubmitBtn");
+        if (submit) submit.focus();
+        if (typeof Motion !== "undefined" && Motion.toast) {
+          Motion.toast("⚡ បានបំពេញគណនីលោកគ្រូ Khien Thou រួចរាល់! ចុច Sign In ដើម្បីចូល។", "info", 2500);
+        }
+      }
+    } else {
+      const sId = document.getElementById("studentLoginId");
+      const sPin = document.getElementById("studentLoginPin");
+      if (sId && sPin) {
+        let demoId = "TX-01";
+        if (typeof StudentAPI !== "undefined") {
+          const list = StudentAPI.getLocalStudents();
+          if (list && list.length > 0) demoId = list[0].ID || list[0].id || "TX-01";
+        }
+        sId.value = demoId;
+        sPin.value = "123";
+        sId.classList.add("input-pulse-glow");
+        sPin.classList.add("input-pulse-glow");
+        setTimeout(() => {
+          sId.classList.remove("input-pulse-glow");
+          sPin.classList.remove("input-pulse-glow");
+        }, 800);
+        const submit = document.getElementById("studentLoginSubmitBtn");
+        if (submit) submit.focus();
+        if (typeof Motion !== "undefined" && Motion.toast) {
+          Motion.toast(`⚡ បានបំពេញអត្តលេខសិស្ស ${demoId} រួចរាល់! ចុច Sign In ដើម្បីចូល។`, "info", 2500);
+        }
+      }
+    }
   }
 };
+
 
 

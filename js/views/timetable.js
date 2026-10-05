@@ -3944,8 +3944,8 @@ const TimetableLabView = {
       const studentId = currentShiftSeats[pcId];
       const student = students.find(s => s.ID === studentId);
       const studentName = student ? student.NameKh : "កៅអីទំនេរ";
-      const wpm = this.raceSpeeds[pcId] || Math.floor(Math.random() * 25) + 15;
-      const progress = Math.min(92, Math.max(5, Math.round((wpm / 60) * 88)));
+      const wpm = student ? (this.raceSpeeds[pcId] || 0) : 0;
+      const progress = wpm > 0 ? Math.min(92, Math.max(5, Math.round((wpm / 60) * 88))) : 0;
       const color = carColors[(i - 1) % carColors.length];
 
       html += `
@@ -4008,10 +4008,17 @@ const TimetableLabView = {
       const timerDisplay = document.getElementById("raceTimerDisplay");
       if (timerDisplay) timerDisplay.textContent = `${min}:${sec}`;
 
-      // Dynamically wiggle and boost speeds
+      // Dynamically wiggle and boost speeds for seated students
       const totalPcs = this.getTotalPcs();
+      const allSeats = this.getLabSeats();
+      const currentShiftSeats = allSeats[this.activeShift] || {};
       for (let i = 1; i <= totalPcs; i++) {
         const pcId = `PC-${String(i).padStart(2, '0')}`;
+        const studentId = currentShiftSeats[pcId];
+        if (!studentId) {
+          this.raceSpeeds[pcId] = 0;
+          continue;
+        }
         const current = this.raceSpeeds[pcId] || 25;
         const change = Math.floor(Math.random() * 5) - 2;
         this.raceSpeeds[pcId] = Math.max(10, Math.min(65, current + change));

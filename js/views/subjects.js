@@ -200,7 +200,31 @@ const SubjectsView = {
       return;
     }
 
+    const allStudents = (typeof App !== "undefined" && App.state && App.state.students) || [];
+    const activeStudents = allStudents.filter(s => {
+      const st = String(s.Status || s.status || "").toLowerCase();
+      return st !== "dropped" && st !== "graduated" && st !== "drop";
+    });
+
+    const getModuleStudentCount = (code) => {
+      if (code === "TYPING") {
+        return activeStudents.filter(s => (s.Course || "").toLowerCase().includes("typing") || (s.Course || "").toLowerCase().includes("វាយ")).length;
+      } else if (code === "MS-WORD") {
+        return activeStudents.filter(s => (s.Course || "").toLowerCase().includes("word")).length;
+      } else if (code === "MS-EXCEL") {
+        return activeStudents.filter(s => (s.Course || "").toLowerCase().includes("excel")).length;
+      } else if (code === "MS-POWERPOINT") {
+        return activeStudents.filter(s => (s.Course || "").toLowerCase().includes("powerpoint") || (s.Course || "").toLowerCase().includes("ppt")).length;
+      } else if (code === "OFFICE-ADMIN") {
+        return activeStudents.length;
+      }
+      return 0;
+    };
+
     container.innerHTML = filtered.map(m => {
+      const studentCount = getModuleStudentCount(m.code);
+      const classCourseFilter = m.code === "MS-WORD" ? "Word" : (m.code === "MS-EXCEL" ? "Excel" : (m.code === "MS-POWERPOINT" ? "PowerPoint" : (m.code === "TYPING" ? "Typing" : "")));
+
       return `
         <div class="card module-card" style="padding: 24px; border-radius: 20px; border: 1px solid var(--border-color); display: flex; flex-direction: column; justify-content: space-between; transition: all 0.25s ease; position: relative; overflow: hidden;">
           <div style="position: absolute; top: 0; left: 0; right: 0; height: 4px; background: ${m.color};"></div>
@@ -231,16 +255,16 @@ const SubjectsView = {
                 <span style="color: var(--text-muted);">${m.duration}</span>
               </div>
               <div style="display: flex; align-items: center; gap: 8px;">
+                <i class="fa-solid fa-users" style="color: ${m.color};"></i>
+                <span style="font-weight: 700; color: var(--text-main);">${studentCount} សិស្សកំពុងរៀន</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 8px;">
                 <i class="fa-solid fa-list-check" style="color: #10b981;"></i>
                 <span style="font-weight: 700; color: var(--text-main);">${m.lessonsCount} មេរៀន</span>
               </div>
               <div style="display: flex; align-items: center; gap: 8px;">
                 <i class="fa-solid fa-laptop-code" style="color: #06b6d4;"></i>
                 <span style="font-weight: 700; color: var(--text-main);">${m.exercisesCount} លំហាត់</span>
-              </div>
-              <div style="display: flex; align-items: center; gap: 8px;">
-                <i class="fa-solid fa-award" style="color: #f59e0b;"></i>
-                <span style="font-weight: 700; color: var(--text-main);">ប្រឡងបញ្ចប់</span>
               </div>
             </div>
           </div>
@@ -249,7 +273,7 @@ const SubjectsView = {
             <button type="button" class="btn-secondary" onclick="SubjectsView.openSyllabus('${m.id}')" style="flex: 1; height: 38px; font-size: 0.82rem; font-weight: 700; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; gap: 6px;">
               <i class="fa-solid fa-book-open"></i> មាតិកាមេរៀន (Syllabus)
             </button>
-            <button type="button" class="btn-primary" onclick="App.switchTab('classes')" style="height: 38px; padding: 0 14px; font-size: 0.82rem; font-weight: 700; border-radius: 10px; background: ${m.color}; border-color: ${m.color};" title="មើលថ្នាក់រៀន">
+            <button type="button" class="btn-primary" onclick="if (typeof ClassesView !== 'undefined') { ClassesView.filterCourse = '${classCourseFilter}'; } App.switchTab('classes');" style="height: 38px; padding: 0 14px; font-size: 0.82rem; font-weight: 700; border-radius: 10px; background: ${m.color}; border-color: ${m.color};" title="មើលថ្នាក់រៀនសម្រាប់ ${m.title}">
               <i class="fa-solid fa-arrow-right"></i>
             </button>
           </div>

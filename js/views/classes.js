@@ -18,7 +18,7 @@ const ClassesView = {
       room: "បន្ទប់ Computer Lab (16 ម៉ាស៊ីន)",
       teacher: "លោកគ្រូ ខៀន ធូ",
       maxSeats: 16,
-      occupiedSeats: 16,
+      occupiedSeats: 0,
       status: "សកម្ម",
       color: "#8b5cf6"
     },
@@ -31,7 +31,7 @@ const ClassesView = {
       room: "បន្ទប់ Computer Lab (16 ម៉ាស៊ីន)",
       teacher: "មាស​​ មករា",
       maxSeats: 16,
-      occupiedSeats: 9,
+      occupiedSeats: 0,
       status: "សកម្ម",
       color: "#06b6d4"
     },
@@ -44,7 +44,7 @@ const ClassesView = {
       room: "បន្ទប់ Computer Lab (16 ម៉ាស៊ីន)",
       teacher: "លោកគ្រូ ខៀន ធូ",
       maxSeats: 16,
-      occupiedSeats: 2,
+      occupiedSeats: 0,
       status: "សកម្ម",
       color: "#f59e0b"
     }
@@ -239,14 +239,18 @@ const ClassesView = {
     }
 
     container.innerHTML = filtered.map(c => {
-      // Calculate active student count for this course & shift
+      // Calculate real active student count for this course & shift
       const actualCount = allStudents.filter(s => {
-        const cMatch = (s.Course || s.course) === c.course;
-        const sMatch = (s.Shift || s.shift) === c.shift;
+        const sCourse = (s.Course || s.course || "").toLowerCase();
+        const cCourse = (c.course || "").toLowerCase();
+        const cMatch = sCourse === cCourse || sCourse.includes(cCourse) || (cCourse === "word" && sCourse.includes("word")) || (cCourse === "excel" && sCourse.includes("excel")) || (cCourse === "powerpoint" && (sCourse.includes("powerpoint") || sCourse.includes("ppt")));
+        const sShift = s.Shift || s.shift || "";
+        const sMatch = sShift === c.shift || sShift.includes(c.shift);
         const st = String(s.Status || s.status || "").toLowerCase();
-        return cMatch && sMatch && st !== "dropped" && st !== "graduated";
+        return cMatch && sMatch && st !== "dropped" && st !== "graduated" && st !== "drop";
       }).length;
-      const displayCount = actualCount > 0 ? actualCount : (c.occupiedSeats || 0);
+
+      const displayCount = actualCount;
       const percent = Math.min(100, Math.round((displayCount / (c.maxSeats || 20)) * 100));
       const isAlmostFull = percent >= 90;
 

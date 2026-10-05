@@ -1,4 +1,4 @@
-# ==============================================================================
+﻿# ==============================================================================
 # TIS Lab Computer - Student PC Background Agent (PowerShell)
 # Synchronized with MasterSchool Firebase Realtime Database
 # Monitors active foreground window, enforces teacher app policies, and reports status
@@ -52,7 +52,7 @@ if ([string]::IsNullOrWhiteSpace($PcId)) {
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
 
-Add-Type @"
+$win32Source = @"
 using System;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -73,7 +73,8 @@ public class Win32 {
     [DllImport("user32.dll")]
     public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
 }
-"@ -ReferencedAssemblies System.Drawing, System.Windows.Forms
+"@
+Add-Type -TypeDefinition $win32Source -ReferencedAssemblies System.Drawing, System.Windows.Forms
 
 Write-Host "==========================================================" -ForegroundColor Cyan
 Write-Host "  TIS Lab Computer - Student PC Agent [$PcId]" -ForegroundColor Green

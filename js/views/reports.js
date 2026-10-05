@@ -205,19 +205,42 @@ const ReportsView = {
     } else if (type === "attendance") {
       if (titleHeader) titleHeader.textContent = "របាយការណ៍សង្ខេបវត្តមានសិស្ស (Attendance Summary)";
 
+      // Calculate real attendance statistics across current filtered students
+      let totalAllDays = 0, totalPresentDays = 0, totalPermDays = 0, totalAbsentDays = 0;
+      const studentAttMap = {};
+
+      students.forEach(s => {
+        const att = (typeof StudentAPI !== "undefined" && StudentAPI.getStudentAttendanceSummary) ? StudentAPI.getStudentAttendanceSummary(s.id) : null;
+        const pDays = att ? att.present : 0;
+        const lDays = att ? att.permission : 0;
+        const aDays = att ? att.absent : 0;
+        const totalDays = pDays + lDays + aDays;
+        const pct = totalDays > 0 ? (Math.round((pDays / totalDays) * 1000) / 10).toFixed(1) : (students.length > 0 ? "100.0" : "0.0");
+        studentAttMap[s.id] = { pDays, lDays, aDays, totalDays, pct: pct + "%" };
+
+        totalAllDays += totalDays;
+        totalPresentDays += pDays;
+        totalPermDays += lDays;
+        totalAbsentDays += aDays;
+      });
+
+      const avgAttRate = totalAllDays > 0 ? (Math.round((totalPresentDays / totalAllDays) * 1000) / 10).toFixed(1) + "%" : (students.length > 0 ? "100%" : "0%");
+      const permRate = totalAllDays > 0 ? (Math.round((totalPermDays / totalAllDays) * 1000) / 10).toFixed(1) + "%" : "0%";
+      const absentRate = totalAllDays > 0 ? (Math.round((totalAbsentDays / totalAllDays) * 1000) / 10).toFixed(1) + "%" : "0%";
+
       if (kpiMount) {
         kpiMount.innerHTML = `
           <div class="kpi-card" style="border-top: 3px solid #10b981; background: var(--bg-card); padding: 16px; border-radius: 14px;">
             <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">អត្រាវត្តមានមធ្យម</div>
-            <div style="font-size: 1.6rem; font-weight: 800; color: #10b981; margin-top: 4px;">96.4%</div>
-          </div>
-          <div class="kpi-card" style="border-top: 3px solid #3b82f6; background: var(--bg-card); padding: 16px; border-radius: 14px;">
-            <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">មកទាន់ពេល</div>
-            <div style="font-size: 1.6rem; font-weight: 800; color: #3b82f6; margin-top: 4px;">92.1%</div>
+            <div style="font-size: 1.6rem; font-weight: 800; color: #10b981; margin-top: 4px;">${avgAttRate}</div>
           </div>
           <div class="kpi-card" style="border-top: 3px solid #f59e0b; background: var(--bg-card); padding: 16px; border-radius: 14px;">
-            <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">មានច្បាប់</div>
-            <div style="font-size: 1.6rem; font-weight: 800; color: #f59e0b; margin-top: 4px;">3.6%</div>
+            <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">ច្បាប់អនុញ្ញាត</div>
+            <div style="font-size: 1.6rem; font-weight: 800; color: #f59e0b; margin-top: 4px;">${totalPermDays} ថ្ងៃ (${permRate})</div>
+          </div>
+          <div class="kpi-card" style="border-top: 3px solid #ef4444; background: var(--bg-card); padding: 16px; border-radius: 14px;">
+            <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">អវត្តមានឥតច្បាប់</div>
+            <div style="font-size: 1.6rem; font-weight: 800; color: #ef4444; margin-top: 4px;">${totalAbsentDays} ថ្ងៃ (${absentRate})</div>
           </div>
         `;
       }
@@ -240,23 +263,17 @@ const ReportsView = {
             <tbody>
               ${students.length === 0 ? '<tr><td colspan="8" style="text-align:center; padding: 24px; color: var(--text-muted);">មិនមានទិន្នន័យ</td></tr>' :
                 students.map((s, idx) => {
-                  const att = (typeof StudentAPI !== "undefined" && StudentAPI.getStudentAttendanceSummary) ? StudentAPI.getStudentAttendanceSummary(s.id) : null;
-                  const pDays = att ? att.present : 0;
-                  const lDays = att ? att.permission : 0;
-                  const aDays = att ? att.absent : 0;
-                  const totalDays = pDays + lDays + aDays;
-                  const pct = totalDays > 0 ? `${(Math.round((pDays / totalDays) * 1000) / 10).toFixed(1)}%` : "100%";
-
+                  const data = studentAttMap[s.id] || { pDays: 0, lDays: 0, aDays: 0, pct: "100%" };
                   return `
                     <tr style="vertical-align: middle;">
                       <td style="text-align: center; font-weight: 700;">${idx + 1}</td>
                       <td style="font-weight: 700; color: #2563eb; text-align: center; font-family: monospace;">${s.id}</td>
                       <td style="font-weight: 700; text-align: left; padding-left: 10px;">${s.nameKh}</td>
                       <td style="text-align: center;">${s.course} (វេន${s.shift})</td>
-                      <td style="text-align: center; color: #10b981; font-weight: 800;">${pDays} ថ្ងៃ</td>
-                      <td style="text-align: center; color: #f59e0b; font-weight: 700;">${lDays} ថ្ងៃ</td>
-                      <td style="text-align: center; color: #ef4444; font-weight: 700;">${aDays} ថ្ងៃ</td>
-                      <td style="text-align: center;"><span class="badge" style="background: rgba(16, 185, 129, 0.15); color: #10b981; font-weight: 800;">${pct}</span></td>
+                      <td style="text-align: center; color: #10b981; font-weight: 800;">${data.pDays} ថ្ងៃ</td>
+                      <td style="text-align: center; color: #f59e0b; font-weight: 700;">${data.lDays} ថ្ងៃ</td>
+                      <td style="text-align: center; color: #ef4444; font-weight: 700;">${data.aDays} ថ្ងៃ</td>
+                      <td style="text-align: center;"><span class="badge" style="background: rgba(16, 185, 129, 0.15); color: #10b981; font-weight: 800;">${data.pct}</span></td>
                     </tr>
                   `;
                 }).join("")
@@ -268,19 +285,73 @@ const ReportsView = {
     } else if (type === "exams" || type === "rankings") {
       if (titleHeader) titleHeader.textContent = type === "exams" ? "របាយការណ៍លទ្ធផលប្រឡង & និទ្ទេស (Exam Scores)" : "របាយការណ៍ចំណាត់ថ្នាក់ & សិស្សឆ្នើម (Top Rankings)";
 
+      const allExams = (typeof StudentAPI !== "undefined" && StudentAPI.getAllExams) ? StudentAPI.getAllExams() : {};
+      let totalExamined = 0;
+      let totalPassed = 0;
+      let totalGradeA = 0;
+      let sumScores = 0;
+
+      const studentExamRows = students.map((s, idx) => {
+        const studentExams = allExams[s.id] || (s.exams && typeof s.exams === "object" ? s.exams : {});
+        const courseKeys = ["Typing", "Word", "Excel", "PowerPoint"];
+        let validScores = [];
+
+        courseKeys.forEach(k => {
+          const ex = studentExams[k];
+          if (ex && typeof ex === "object") {
+            const sc = parseFloat(ex.score ?? ex.Score);
+            if (!isNaN(sc) && sc >= 0) validScores.push(sc);
+          } else if (typeof ex === "number" && !isNaN(ex)) {
+            validScores.push(ex);
+          }
+        });
+
+        const hasScore = validScores.length > 0;
+        const score = hasScore ? Math.round(validScores.reduce((a, b) => a + b, 0) / validScores.length) : 0;
+
+        if (hasScore) {
+          totalExamined++;
+          sumScores += score;
+          if (score >= 50) totalPassed++;
+          if (score >= 85) totalGradeA++;
+        }
+
+        let grade = "—";
+        let gradeColor = "#94a3b8";
+        let resultText = `<span class="badge" style="background: rgba(100, 116, 139, 0.12); color: #64748b;">រង់ចាំប្រឡង</span>`;
+
+        if (hasScore) {
+          if (score >= 90) { grade = "A (ល្អប្រសើរ)"; gradeColor = "#10b981"; }
+          else if (score >= 80) { grade = "B (ល្អណាស់)"; gradeColor = "#3b82f6"; }
+          else if (score >= 70) { grade = "C (ល្អ)"; gradeColor = "#f59e0b"; }
+          else if (score >= 60) { grade = "D (មធ្យម)"; gradeColor = "#8b5cf6"; }
+          else { grade = "E (ខ្សោយ)"; gradeColor = "#ef4444"; }
+
+          resultText = score >= 50 
+            ? `<span class="badge" style="background: rgba(16, 185, 129, 0.15); color: #10b981; font-weight: 700;">ជាប់ (Pass)</span>`
+            : `<span class="badge" style="background: rgba(239, 68, 68, 0.15); color: #ef4444; font-weight: 700;">ធ្លាក់ (Fail)</span>`;
+        }
+
+        return { s, idx, score, hasScore, scoreDisplay: hasScore ? `${score}` : "—", grade, gradeColor, resultText };
+      });
+
+      const passRate = totalExamined > 0 ? (Math.round((totalPassed / totalExamined) * 1000) / 10).toFixed(1) + "%" : "—";
+      const avgScore = totalExamined > 0 ? (Math.round((sumScores / totalExamined) * 10) / 10).toFixed(1) + " / 100" : "—";
+      const gradeAPct = totalExamined > 0 ? Math.round((totalGradeA / totalExamined) * 100) + "%" : "0%";
+
       if (kpiMount) {
         kpiMount.innerHTML = `
           <div class="kpi-card" style="border-top: 3px solid #10b981; background: var(--bg-card); padding: 16px; border-radius: 14px;">
-            <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">អត្រាជាប់មធ្យម</div>
-            <div style="font-size: 1.6rem; font-weight: 800; color: #10b981; margin-top: 4px;">94.2%</div>
+            <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">អត្រាជាប់ជាក់ស្តែង</div>
+            <div style="font-size: 1.6rem; font-weight: 800; color: #10b981; margin-top: 4px;">${passRate}</div>
           </div>
           <div class="kpi-card" style="border-top: 3px solid #f59e0b; background: var(--bg-card); padding: 16px; border-radius: 14px;">
             <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">និទ្ទេស A (ឆ្នើម)</div>
-            <div style="font-size: 1.6rem; font-weight: 800; color: #f59e0b; margin-top: 4px;">28%</div>
+            <div style="font-size: 1.6rem; font-weight: 800; color: #f59e0b; margin-top: 4px;">${totalGradeA} នាក់ (${gradeAPct})</div>
           </div>
           <div class="kpi-card" style="border-top: 3px solid #6366f1; background: var(--bg-card); padding: 16px; border-radius: 14px;">
             <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">ពិន្ទុមធ្យមសរុប</div>
-            <div style="font-size: 1.6rem; font-weight: 800; color: #6366f1; margin-top: 4px;">82.5 / 100</div>
+            <div style="font-size: 1.6rem; font-weight: 800; color: #6366f1; margin-top: 4px;">${avgScore}</div>
           </div>
         `;
       }
@@ -301,23 +372,23 @@ const ReportsView = {
               </tr>
             </thead>
             <tbody>
-              ${students.length === 0 ? '<tr><td colspan="8" style="text-align:center; padding: 24px; color: var(--text-muted);">មិនមានទិន្នន័យ</td></tr>' :
-                students.map((s, idx) => {
-                  const hash = (s.nameKh || "0").split("").reduce((a, c) => a + c.charCodeAt(0), 0);
-                  const score = 70 + (hash % 29);
-                  return `
-                    <tr>
-                      <td>${idx + 1}</td>
-                      <td style="font-weight: 700; color: #2563eb;">${s.id}</td>
-                      <td style="font-weight: 700;">${s.nameKh}</td>
-                      <td>${s.course}</td>
-                      <td>វេន${s.shift}</td>
-                      <td style="text-align: center; font-weight: 800; color: #0284c7;">${score}</td>
-                      <td style="text-align: center;"><span class="badge" style="background: rgba(16, 185, 129, 0.15); color: #10b981; font-weight: 700;">${score >= 90 ? 'A' : (score >= 80 ? 'B' : 'C')}</span></td>
-                      <td style="text-align: center;"><span class="badge" style="background: rgba(16, 185, 129, 0.15); color: #10b981; font-weight: 700;">ជាប់ (Pass)</span></td>
-                    </tr>
-                  `;
-                }).join("")
+              ${studentExamRows.length === 0 ? '<tr><td colspan="8" style="text-align:center; padding: 24px; color: var(--text-muted);">មិនមានទិន្នន័យ</td></tr>' :
+                studentExamRows.map(row => `
+                  <tr>
+                    <td>${row.idx + 1}</td>
+                    <td style="font-weight: 700; color: #2563eb; font-family: monospace;">${row.s.id}</td>
+                    <td style="font-weight: 700;">${row.s.nameKh}</td>
+                    <td>${row.s.course}</td>
+                    <td>វេន${row.s.shift}</td>
+                    <td style="text-align: center; font-weight: 800; color: ${row.hasScore ? '#0284c7' : 'var(--text-muted)'};">${row.scoreDisplay}</td>
+                    <td style="text-align: center;">
+                      <span class="badge" style="background: ${row.gradeColor}18; color: ${row.gradeColor}; font-weight: 700; padding: 4px 10px; border-radius: 8px;">
+                        ${row.grade}
+                      </span>
+                    </td>
+                    <td style="text-align: center;">${row.resultText}</td>
+                  </tr>
+                `).join("")
               }
             </tbody>
           </table>
@@ -326,21 +397,39 @@ const ReportsView = {
     } else if (type === "fees") {
       if (titleHeader) titleHeader.textContent = "របាយការណ៍ចំណូលថ្លៃសិក្សា & បង់ប្រាក់ (Tuition Revenue)";
 
-      const totalRevenue = students.length * 50;
+      let totalCollected = 0;
+      let totalDue = 0;
+      let totalPaidCount = 0;
+
+      const studentFeeRows = students.map((s, idx) => {
+        const fee = (typeof StudentAPI !== "undefined" && StudentAPI.getStudentFee) ? StudentAPI.getStudentFee(s.id) : null;
+        const total = fee ? parseFloat(fee.totalAmount || 50) : 50;
+        const paid = fee ? parseFloat(fee.paidAmount || 0) : 0;
+        const balance = fee ? parseFloat(fee.balance || 0) : Math.max(0, total - paid);
+        const status = fee ? fee.status : (paid >= total ? "Paid" : (paid > 0 ? "Partial" : "Unpaid"));
+        const date = fee?.date || s.startDate || "2026-09-01";
+        const method = fee?.paymentMethod || "ABA KHQR";
+
+        totalCollected += paid;
+        totalDue += balance;
+        if (status === "Paid" || balance <= 0) totalPaidCount++;
+
+        return { s, idx, total, paid, balance, status, date, method };
+      });
 
       if (kpiMount) {
         kpiMount.innerHTML = `
           <div class="kpi-card" style="border-top: 3px solid #10b981; background: var(--bg-card); padding: 16px; border-radius: 14px;">
-            <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">ចំណូលសរុបប៉ាន់ស្មាន</div>
-            <div style="font-size: 1.6rem; font-weight: 800; color: #10b981; margin-top: 4px;">$${totalRevenue}</div>
+            <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">ចំណូលប្រមូលបានជាក់ស្តែង</div>
+            <div style="font-size: 1.6rem; font-weight: 800; color: #10b981; margin-top: 4px;">$${totalCollected.toLocaleString()}</div>
           </div>
-          <div class="kpi-card" style="border-top: 3px solid #3b82f6; background: var(--bg-card); padding: 16px; border-radius: 14px;">
-            <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">តម្លៃវគ្គសិក្សាមូលដ្ឋាន</div>
-            <div style="font-size: 1.6rem; font-weight: 800; color: #3b82f6; margin-top: 4px;">$50 / វគ្គ</div>
+          <div class="kpi-card" style="border-top: 3px solid #ef4444; background: var(--bg-card); padding: 16px; border-radius: 14px;">
+            <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">ប្រាក់ជំពាក់នៅសល់</div>
+            <div style="font-size: 1.6rem; font-weight: 800; color: #ef4444; margin-top: 4px;">$${totalDue.toLocaleString()}</div>
           </div>
           <div class="kpi-card" style="border-top: 3px solid #8b5cf6; background: var(--bg-card); padding: 16px; border-radius: 14px;">
-            <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">ទូទាត់តាម ABA KHQR</div>
-            <div style="font-size: 1.6rem; font-weight: 800; color: #8b5cf6; margin-top: 4px;">100% Digital</div>
+            <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">សិស្សបង់រួចរាល់</div>
+            <div style="font-size: 1.6rem; font-weight: 800; color: #8b5cf6; margin-top: 4px;">${totalPaidCount} / ${students.length} នាក់</div>
           </div>
         `;
       }
@@ -355,25 +444,38 @@ const ReportsView = {
                 <th>ឈ្មោះសិស្ស</th>
                 <th>វគ្គសិក្សា</th>
                 <th>ថ្លៃសិក្សា</th>
-                <th>វិធីសាស្ត្រទូទាត់</th>
+                <th>បានបង់</th>
+                <th>នៅខ្វះ</th>
+                <th>វិធីសាស្ត្រ</th>
                 <th>កាលបរិច្ឆេទ</th>
                 <th>ស្ថានភាព</th>
               </tr>
             </thead>
             <tbody>
-              ${students.length === 0 ? '<tr><td colspan="8" style="text-align:center; padding: 24px; color: var(--text-muted);">មិនមានទិន្នន័យ</td></tr>' :
-                students.map((s, idx) => `
-                  <tr>
-                    <td>${idx + 1}</td>
-                    <td style="font-weight: 700; color: #2563eb;">${s.id}</td>
-                    <td style="font-weight: 700;">${s.nameKh}</td>
-                    <td>${s.course}</td>
-                    <td style="font-weight: 800; color: #10b981;">$50.00</td>
-                    <td>ABA KHQR / Bank Transfer</td>
-                    <td>2026-09-01</td>
-                    <td><span class="badge" style="background: rgba(16, 185, 129, 0.15); color: #10b981; font-weight: 700;">● បានទូទាត់</span></td>
-                  </tr>
-                `).join("")
+              ${studentFeeRows.length === 0 ? '<tr><td colspan="10" style="text-align:center; padding: 24px; color: var(--text-muted);">មិនមានទិន្នន័យ</td></tr>' :
+                studentFeeRows.map(row => {
+                  let badge = `<span class="badge" style="background: rgba(16, 185, 129, 0.15); color: #10b981; font-weight: 700;">● បានបង់ពេញ</span>`;
+                  if (row.status === "Partial" || (row.balance > 0 && row.paid > 0)) {
+                    badge = `<span class="badge" style="background: rgba(245, 158, 11, 0.15); color: #d97706; font-weight: 700;">● បង់ខ្លះ</span>`;
+                  } else if (row.status === "Unpaid" || (row.balance > 0 && row.paid === 0)) {
+                    badge = `<span class="badge" style="background: rgba(239, 68, 68, 0.15); color: #ef4444; font-weight: 700;">● ជំពាក់</span>`;
+                  }
+
+                  return `
+                    <tr>
+                      <td>${row.idx + 1}</td>
+                      <td style="font-weight: 700; color: #2563eb; font-family: monospace;">${row.s.id}</td>
+                      <td style="font-weight: 700;">${row.s.nameKh}</td>
+                      <td>${row.s.course}</td>
+                      <td style="font-weight: 700;">$${row.total}</td>
+                      <td style="font-weight: 800; color: #10b981;">$${row.paid}</td>
+                      <td style="font-weight: 700; color: ${row.balance > 0 ? '#ef4444' : 'var(--text-muted)'};">$${row.balance}</td>
+                      <td>${row.method}</td>
+                      <td>${row.date}</td>
+                      <td>${badge}</td>
+                    </tr>
+                  `;
+                }).join("")
               }
             </tbody>
           </table>
@@ -405,45 +507,91 @@ const ReportsView = {
       ]);
     } else if (type === "attendance") {
       headers = ["No", "Student ID", "Name Khmer", "Course", "Shift", "Attended Days", "Permission Days", "Absent Days", "Attendance Rate"];
-      rows = students.map((s, i) => [
-        i + 1,
-        s.id,
-        s.nameKh,
-        s.course,
-        s.shift,
-        28,
-        1,
-        0,
-        "96.6%"
-      ]);
-    } else if (type === "exams" || type === "rankings") {
-      headers = ["No", "Student ID", "Name Khmer", "Course", "Shift", "Score", "Grade", "Result"];
       rows = students.map((s, i) => {
-        const hash = (s.nameKh || "0").split("").reduce((a, c) => a + c.charCodeAt(0), 0);
-        const score = 70 + (hash % 29);
+        const att = (typeof StudentAPI !== "undefined" && StudentAPI.getStudentAttendanceSummary) ? StudentAPI.getStudentAttendanceSummary(s.id) : null;
+        const pDays = att ? att.present : 0;
+        const lDays = att ? att.permission : 0;
+        const aDays = att ? att.absent : 0;
+        const total = pDays + lDays + aDays;
+        const pct = total > 0 ? (Math.round((pDays / total) * 1000) / 10).toFixed(1) + "%" : (students.length > 0 ? "100.0%" : "0.0%");
         return [
           i + 1,
           s.id,
           s.nameKh,
           s.course,
           s.shift,
-          score,
-          score >= 90 ? 'A' : (score >= 80 ? 'B' : 'C'),
-          "Passed"
+          pDays,
+          lDays,
+          aDays,
+          pct
+        ];
+      });
+    } else if (type === "exams" || type === "rankings") {
+      headers = ["No", "Student ID", "Name Khmer", "Course", "Shift", "Score", "Grade", "Result"];
+      const allExams = (typeof StudentAPI !== "undefined" && StudentAPI.getAllExams) ? StudentAPI.getAllExams() : {};
+
+      rows = students.map((s, i) => {
+        const studentExams = allExams[s.id] || (s.exams && typeof s.exams === "object" ? s.exams : {});
+        const courseKeys = ["Typing", "Word", "Excel", "PowerPoint"];
+        let validScores = [];
+
+        courseKeys.forEach(k => {
+          const ex = studentExams[k];
+          if (ex && typeof ex === "object") {
+            const sc = parseFloat(ex.score ?? ex.Score);
+            if (!isNaN(sc) && sc >= 0) validScores.push(sc);
+          } else if (typeof ex === "number" && !isNaN(ex)) {
+            validScores.push(ex);
+          }
+        });
+
+        const hasScore = validScores.length > 0;
+        const score = hasScore ? Math.round(validScores.reduce((a, b) => a + b, 0) / validScores.length) : 0;
+
+        let grade = "—";
+        let result = "Pending";
+        if (hasScore) {
+          if (score >= 90) grade = "A";
+          else if (score >= 80) grade = "B";
+          else if (score >= 70) grade = "C";
+          else if (score >= 60) grade = "D";
+          else grade = "E";
+          result = score >= 50 ? "Pass" : "Fail";
+        }
+
+        return [
+          i + 1,
+          s.id,
+          s.nameKh,
+          s.course,
+          s.shift,
+          hasScore ? score : "—",
+          grade,
+          result
         ];
       });
     } else {
-      headers = ["No", "Student ID", "Name Khmer", "Course", "Amount", "Method", "Date", "Status"];
-      rows = students.map((s, i) => [
-        i + 1,
-        s.id,
-        s.nameKh,
-        s.course,
-        "$50.00",
-        "ABA KHQR",
-        "2026-09-01",
-        "Paid"
-      ]);
+      headers = ["No", "Student ID", "Name Khmer", "Course", "Total Amount", "Paid Amount", "Balance", "Method", "Date", "Status"];
+      rows = students.map((s, i) => {
+        const fee = (typeof StudentAPI !== "undefined" && StudentAPI.getStudentFee) ? StudentAPI.getStudentFee(s.id) : null;
+        const total = fee ? parseFloat(fee.totalAmount || 50) : 50;
+        const paid = fee ? parseFloat(fee.paidAmount || 0) : 0;
+        const balance = fee ? parseFloat(fee.balance || 0) : Math.max(0, total - paid);
+        const status = fee ? fee.status : (paid >= total ? "Paid" : (paid > 0 ? "Partial" : "Unpaid"));
+
+        return [
+          i + 1,
+          s.id,
+          s.nameKh,
+          s.course,
+          `$${total}`,
+          `$${paid}`,
+          `$${balance}`,
+          fee?.paymentMethod || "ABA KHQR",
+          fee?.date || s.startDate || "2026-09-01",
+          status
+        ];
+      });
     }
 
     // Generate CSV with UTF-8 BOM so Excel opens Khmer text properly

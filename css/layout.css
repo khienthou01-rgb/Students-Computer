@@ -48,7 +48,7 @@
   left: 20px;
   right: 20px;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(225, 29, 116, 0.7), rgba(245, 158, 11, 0.7), transparent);
+  background: linear-gradient(90deg, transparent, rgba(124, 58, 237, 0.7), rgba(6, 182, 212, 0.7), transparent);
 }
 
 .brand-logo {
@@ -62,7 +62,7 @@
   position: relative;
   flex-shrink: 0;
   padding: 2px;
-  box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.5), 0 0 20px rgba(225, 29, 116, 0.45);
+  box-shadow: 0 0 0 2px rgba(6, 182, 212, 0.5), 0 0 20px rgba(124, 58, 237, 0.45);
   animation: logoPulse 4s ease-in-out infinite;
   cursor: pointer;
 }
@@ -81,10 +81,10 @@
 
 @keyframes logoPulse {
   0%, 100% {
-    box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.5), 0 0 16px rgba(225, 29, 116, 0.4);
+    box-shadow: 0 0 0 2px rgba(6, 182, 212, 0.5), 0 0 16px rgba(124, 58, 237, 0.4);
   }
   50% {
-    box-shadow: 0 0 0 3px rgba(225, 29, 116, 0.8), 0 0 26px rgba(245, 158, 11, 0.65);
+    box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.8), 0 0 26px rgba(6, 182, 212, 0.65);
   }
 }
 
@@ -299,18 +299,18 @@
   gap: 3px;
   padding-left: 10px;
   margin: 4px 0 6px 14px;
-  border-left: 1.5px solid rgba(255, 255, 255, 0.1);
+  border-left: 1.5px solid rgba(139, 92, 246, 0.25);
 }
 
 .sidebar-group.open .sidebar-sub-menu {
   display: flex;
-  animation: sidebarSlideDown 0.22s ease-out;
+  animation: sidebarSlideDown 0.28s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @keyframes sidebarSlideDown {
   from {
     opacity: 0;
-    transform: translateY(-6px);
+    transform: translateY(-8px);
   }
   to {
     opacity: 1;
@@ -420,6 +420,18 @@
   will-change: transform;
   gap: 16px;
   min-width: 0;
+  position: relative;
+}
+
+.top-header::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(124, 58, 237, 0.4), rgba(6, 182, 212, 0.4), transparent);
+  pointer-events: none;
 }
 
 .header-left {

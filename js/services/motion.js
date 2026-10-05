@@ -12,6 +12,8 @@ const Motion = {
   init() {
     this.bindKeyboardShortcuts();
     this.initDynamicBackdrop();
+    this.bindButtonRipples();
+    this.bindCardSpotlight();
     console.log("✨ TIS High-End Motion Engine Initialized");
   },
 
@@ -340,23 +342,25 @@ const Motion = {
   },
 
   /**
-   * 6. Dynamic Ambient Light Canvas Effect (High-Performance GPU Particle Glow)
+   * 6. Dynamic Ambient Light Canvas Effect (High-Performance GPU Particle & Constellation Glow)
    */
   initDynamicBackdrop() {
-    // Adds a subtle ambient glowing particle layer to the welcome hero section
-    const canvas = document.createElement("canvas");
-    canvas.id = "msAmbientCanvas";
-    canvas.style.cssText = `
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      pointer-events: none;
-      z-index: -2;
-      opacity: 0.35;
-    `;
-    document.body.prepend(canvas);
+    let canvas = document.getElementById("msAmbientCanvas");
+    if (!canvas) {
+      canvas = document.createElement("canvas");
+      canvas.id = "msAmbientCanvas";
+      canvas.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        pointer-events: none;
+        z-index: 0;
+        opacity: 0.55;
+      `;
+      document.body.prepend(canvas);
+    }
 
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
@@ -369,26 +373,68 @@ const Motion = {
       height = canvas.height = window.innerHeight;
     });
 
+    const mouse = { x: -1000, y: -1000, radius: 140 };
+    window.addEventListener("mousemove", (e) => {
+      mouse.x = e.clientX;
+      mouse.y = e.clientY;
+    });
+    window.addEventListener("mouseleave", () => {
+      mouse.x = -1000;
+      mouse.y = -1000;
+    });
+
     const particles = [];
-    const particleCount = 22; // Very lightweight, zero GPU lag
+    const particleCount = 28; // High performance, 60+ FPS guarantee
 
     for (let i = 0; i < particleCount; i++) {
       particles.push({
         x: Math.random() * width,
         y: Math.random() * height,
-        radius: Math.random() * 2 + 1,
-        color: i % 2 === 0 ? "rgba(124, 58, 237, 0.4)" : "rgba(6, 182, 212, 0.35)",
-        vx: (Math.random() - 0.5) * 0.4,
-        vy: (Math.random() - 0.5) * 0.4
+        baseX: Math.random() * width,
+        baseY: Math.random() * height,
+        radius: Math.random() * 2.2 + 1.2,
+        color: i % 3 === 0 ? "rgba(124, 58, 237, 0.65)" : (i % 3 === 1 ? "rgba(6, 182, 212, 0.6)" : "rgba(245, 158, 11, 0.45)"),
+        vx: (Math.random() - 0.5) * 0.45,
+        vy: (Math.random() - 0.5) * 0.45
       });
     }
 
     function renderParticles() {
       ctx.clearRect(0, 0, width, height);
 
+      // Draw subtle connecting constellation lines
+      for (let i = 0; i < particles.length; i++) {
+        for (let j = i + 1; j < particles.length; j++) {
+          const dx = particles[i].x - particles[j].x;
+          const dy = particles[i].y - particles[j].y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 115) {
+            const alpha = (1 - dist / 115) * 0.18;
+            ctx.beginPath();
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.strokeStyle = `rgba(124, 58, 237, ${alpha})`;
+            ctx.lineWidth = 0.8;
+            ctx.stroke();
+          }
+        }
+      }
+
+      // Draw and update particles
       particles.forEach((p) => {
+        // Natural drift
         p.x += p.vx;
         p.y += p.vy;
+
+        // Interactive mouse repulsion
+        const dx = mouse.x - p.x;
+        const dy = mouse.y - p.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < mouse.radius && dist > 0) {
+          const force = (mouse.radius - dist) / mouse.radius;
+          p.x -= (dx / dist) * force * 3;
+          p.y -= (dy / dist) * force * 3;
+        }
 
         if (p.x < 0) p.x = width;
         if (p.x > width) p.x = 0;
@@ -399,7 +445,7 @@ const Motion = {
         ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
         ctx.fillStyle = p.color;
         ctx.shadowColor = p.color;
-        ctx.shadowBlur = 8;
+        ctx.shadowBlur = 10;
         ctx.fill();
       });
 
@@ -409,6 +455,51 @@ const Motion = {
     if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       requestAnimationFrame(renderParticles);
     }
+  },
+
+  /**
+   * 7. Interactive Button Click Ripple System
+   */
+  bindButtonRipples() {
+    document.addEventListener("click", (e) => {
+      const btn = e.target.closest(".btn-primary, .btn-secondary, .btn-segmented, .btn-submit-pro, .ms-update-btn, .theme-btn");
+      if (!btn) return;
+      const rect = btn.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const ripple = document.createElement("span");
+      ripple.className = "ms-ripple-effect";
+      ripple.style.left = `${x}px`;
+      ripple.style.top = `${y}px`;
+      btn.appendChild(ripple);
+      setTimeout(() => ripple.remove(), 600);
+    });
+  },
+
+  /**
+   * 8. Dynamic Card Cursor Spotlight Reflection
+   */
+  bindCardSpotlight() {
+    let ticking = false;
+    document.addEventListener("mousemove", (e) => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          document.documentElement.style.setProperty("--cursor-x", `${e.clientX}px`);
+          document.documentElement.style.setProperty("--cursor-y", `${e.clientY}px`);
+
+          const card = e.target.closest(".card, .kpi-card, .login-master-container, .student-card");
+          if (card) {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            card.style.setProperty("--mouse-x", `${x}px`);
+            card.style.setProperty("--mouse-y", `${y}px`);
+          }
+          ticking = false;
+        });
+        ticking = true;
+      }
+    });
   }
 };
 

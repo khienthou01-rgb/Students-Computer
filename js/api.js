@@ -822,39 +822,13 @@ const StudentAPI = {
   },
 
   _generateDemoAttendance() {
-    const result = {};
-    const students = this.getLocalStudents();
-    const studentIds = (students && students.length > 0) ? students.map(s => s.ID) : DEFAULT_STUDENTS.map(s => s.ID);
-    
-    // Generate recent 30 days of demo attendance for weekdays (Mon-Fri)
-    const today = new Date();
-    for (let i = 35; i >= 0; i--) {
-      const d = new Date();
-      d.setDate(today.getDate() - i);
-      const dayOfWeek = d.getDay();
-      // Skip weekends: Sunday (0) and Saturday (6)
-      if (dayOfWeek === 0 || dayOfWeek === 6) continue;
-
-      const dateKey = d.toISOString().split("T")[0];
-      const dayRecords = {};
-
-      studentIds.forEach((id, idx) => {
-        // High attendance rate: ~85-90% present, ~7% permission, ~3% absent
-        const seed = (idx * 3 + i * 7) % 20;
-        if (seed === 17) dayRecords[id] = "Permission";
-        else if (seed === 19) dayRecords[id] = "Absent";
-        else dayRecords[id] = "Present";
-      });
-
-      result[dateKey] = dayRecords;
-    }
-    return result;
+    return {};
   },
 
   async resetDemoData() {
     const demoData = [...DEFAULT_STUDENTS];
     this.saveLocalStudents(demoData);
-    this.saveAllAttendance(this._generateDemoAttendance());
+    this.saveAllAttendance({});
     this.saveAllExams({});
 
     if (this.isCloudConnected()) {
@@ -1052,25 +1026,35 @@ const StudentAPI = {
     if (Array.isArray(students) && students.length > 0) {
       students.forEach(s => {
         const existing = fees[s.ID];
-        // Ensure every student has $50 total, $50 paid, $0 balance, status "Paid"
-        if (!existing || existing.status !== "Paid" || existing.balance > 0 || existing.totalAmount !== defaultPrice || existing.paidAmount !== defaultPrice) {
+        if (!existing) {
+          // Initialize fee record for student without one
           fees[s.ID] = {
             studentId: s.ID,
             studentNameKh: s.NameKh || "",
             studentNameEn: s.NameEn || "",
             course: s.Course || "Typing",
             totalAmount: defaultPrice,
-            paidAmount: defaultPrice,
+            paidAmount: 0,
             discount: 0,
-            balance: 0,
-            status: "Paid",
-            receiptNo: existing?.receiptNo || ("INV-2026-" + String(s.ID).replace(/\D/g, "").padStart(4, "0")),
-            date: existing?.date || s.StartDate || "2026-08-10",
-            paymentMethod: (existing?.paymentMethod && existing?.paymentMethod !== "—") ? existing.paymentMethod : "ABA KHQR",
-            note: "បង់ថ្លៃសិក្សាពេញ $50 រួចរាល់",
+            balance: defaultPrice,
+            status: "Unpaid",
+            receiptNo: "INV-" + new Date().getFullYear() + "-" + String(s.ID).replace(/\D/g, "").padStart(4, "0"),
+            date: s.StartDate || new Date().toISOString().split("T")[0],
+            paymentMethod: "—",
+            note: "រង់ចាំការបង់ប្រាក់",
             updatedAt: new Date().toISOString()
           };
           hasChanges = true;
+        } else {
+          // Keep existing fee data intact; only backfill missing metadata
+          let updated = false;
+          if (!existing.studentNameKh && s.NameKh) { existing.studentNameKh = s.NameKh; updated = true; }
+          if (!existing.studentNameEn && s.NameEn) { existing.studentNameEn = s.NameEn; updated = true; }
+          if (!existing.course && s.Course) { existing.course = s.Course; updated = true; }
+          if (updated) {
+            fees[s.ID] = existing;
+            hasChanges = true;
+          }
         }
       });
     }
@@ -1091,29 +1075,47 @@ const StudentAPI = {
         const snapshot = await firebase.database().ref("fees").once("value");
         const val = snapshot.val();
         const local = this.getAllFees();
-        const defaultPrice = APP_CONFIG.feeConfig?.defaultCoursePrice || 50;
 
         let merged = { ...local };
         if (val && typeof val === "object") {
           Object.keys(val).forEach(sid => {
             const remote = val[sid];
-            // Normalize any remote fee that had debt or old price
-            merged[sid] = {
-              ...(local[sid] || {}),
-              ...remote,
-              totalAmount: defaultPrice,
-              paidAmount: defaultPrice,
-              discount: 0,
-              balance: 0,
-              status: "Paid",
-              paymentMethod: (remote.paymentMethod && remote.paymentMethod !== "—") ? remote.paymentMethod : "ABA KHQR"
-            };
+            if (remote && typeof remote === "object") {
+              const total = (remote.totalAmount !== undefined && !isNaN(parseFloat(remote.totalAmount)))
+                ? parseFloat(remote.totalAmount)
+                : (parseFloat(local[sid]?.totalAmount) || (APP_CONFIG.feeConfig?.defaultCoursePrice || 50));
+              const paid = (remote.paidAmount !== undefined && !isNaN(parseFloat(remote.paidAmount)))
+                ? parseFloat(remote.paidAmount)
+                : (parseFloat(local[sid]?.paidAmount) || 0);
+              const discount = (remote.discount !== undefined && !isNaN(parseFloat(remote.discount)))
+                ? parseFloat(remote.discount)
+                : (parseFloat(local[sid]?.discount) || 0);
+              const balance = (remote.balance !== undefined && !isNaN(parseFloat(remote.balance)))
+                ? parseFloat(remote.balance)
+                : Math.max(0, total - discount - paid);
+              let status = remote.status || local[sid]?.status;
+              if (!status) {
+                if (balance <= 0 && paid > 0) status = "Paid";
+                else if (paid > 0 && balance > 0) status = "Partial";
+                else status = "Unpaid";
+              }
+              merged[sid] = {
+                ...(local[sid] || {}),
+                ...remote,
+                totalAmount: total,
+                paidAmount: paid,
+                discount: discount,
+                balance: balance,
+                status: status,
+                paymentMethod: (remote.paymentMethod && remote.paymentMethod !== "—")
+                  ? remote.paymentMethod
+                  : (local[sid]?.paymentMethod || "—")
+              };
+            }
           });
         }
 
         this.saveAllFees(merged);
-        // Sync the clean $50 fully paid records back to cloud
-        await firebase.database().ref("fees").set(merged);
         return merged;
       } catch (e) {
         console.warn("Fetch fees from Firebase notice:", e);
@@ -1135,14 +1137,14 @@ const StudentAPI = {
       studentNameEn: student ? student.NameEn : "",
       course: student ? (student.Course || "Typing") : "Typing",
       totalAmount: defaultPrice,
-      paidAmount: defaultPrice,
+      paidAmount: 0,
       discount: 0,
-      balance: 0,
-      status: "Paid",
-      receiptNo: "INV-2026-" + String(studentId).replace(/\D/g, "").padStart(4, "0"),
-      date: student?.StartDate || "2026-08-10",
-      paymentMethod: "ABA KHQR",
-      note: "បង់ថ្លៃសិក្សាពេញ $50 រួចរាល់",
+      balance: defaultPrice,
+      status: "Unpaid",
+      receiptNo: "INV-" + new Date().getFullYear() + "-" + String(studentId).replace(/\D/g, "").padStart(4, "0"),
+      date: student?.StartDate || new Date().toISOString().split("T")[0],
+      paymentMethod: "—",
+      note: "មិនទាន់បង់ប្រាក់",
       updatedAt: new Date().toISOString()
     };
   },
@@ -1179,7 +1181,7 @@ const StudentAPI = {
       receiptNo: receiptNo,
       date: paymentData.date || new Date().toISOString().split("T")[0],
       paymentMethod: paymentData.paymentMethod || "ABA KHQR",
-      note: paymentData.note || "បង់ថ្លៃសិក្សាគ្រប់ចំនួន ($50)",
+      note: paymentData.note || (status === "Paid" ? "បង់ថ្លៃសិក្សាគ្រប់ចំនួន" : (status === "Partial" ? "បង់បានមួយចំនួន" : "មិនទាន់បង់ប្រាក់")),
       updatedAt: new Date().toISOString()
     };
 

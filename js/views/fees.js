@@ -313,14 +313,20 @@ const FeesView = {
     // Compute overall statistics across all students
     students.forEach(s => {
       const fee = allFees[s.ID];
-      const total = (fee && fee.totalAmount !== undefined) ? (parseFloat(fee.totalAmount) || defaultPrice) : defaultPrice;
-      const paid = (fee && fee.paidAmount !== undefined) ? (parseFloat(fee.paidAmount) || 0) : defaultPrice;
-      const balance = (fee && fee.balance !== undefined) ? (parseFloat(fee.balance) || 0) : Math.max(0, total - paid);
+      const total = (fee && fee.totalAmount !== undefined && !isNaN(parseFloat(fee.totalAmount)))
+        ? parseFloat(fee.totalAmount)
+        : defaultPrice;
+      const paid = (fee && fee.paidAmount !== undefined && !isNaN(parseFloat(fee.paidAmount)))
+        ? parseFloat(fee.paidAmount)
+        : 0;
+      const balance = (fee && fee.balance !== undefined && !isNaN(parseFloat(fee.balance)))
+        ? parseFloat(fee.balance)
+        : Math.max(0, total - paid);
 
       totalRevenue += paid;
       pendingDue += balance;
 
-      if (balance === 0 || fee?.status === "Paid") {
+      if (balance === 0 && paid > 0) {
         paidCount++;
       } else {
         unpaidCount++;
@@ -358,19 +364,19 @@ const FeesView = {
     tbody.innerHTML = filtered.map((s, idx) => {
       const fee = allFees[s.ID] || {
         totalAmount: defaultPrice,
-        paidAmount: defaultPrice,
+        paidAmount: 0,
         discount: 0,
-        balance: 0,
-        status: "Paid",
-        date: s.StartDate || s.CreatedAt || "2026-08-10",
-        paymentMethod: "ABA KHQR",
-        receiptNo: "INV-2026-" + String(s.ID).replace(/\D/g, "").padStart(4, "0")
+        balance: defaultPrice,
+        status: "Unpaid",
+        date: s.StartDate || s.CreatedAt || "—",
+        paymentMethod: "—",
+        receiptNo: "INV-" + new Date().getFullYear() + "-" + String(s.ID).replace(/\D/g, "").padStart(4, "0")
       };
 
-      const total = parseFloat(fee.totalAmount) || defaultPrice;
-      const paid = parseFloat(fee.paidAmount) || defaultPrice;
-      const balance = parseFloat(fee.balance) || 0;
-      const isPaid = fee.status === "Paid" || balance === 0;
+      const total = (fee.totalAmount !== undefined && !isNaN(parseFloat(fee.totalAmount))) ? parseFloat(fee.totalAmount) : defaultPrice;
+      const paid = (fee.paidAmount !== undefined && !isNaN(parseFloat(fee.paidAmount))) ? parseFloat(fee.paidAmount) : 0;
+      const balance = (fee.balance !== undefined && !isNaN(parseFloat(fee.balance))) ? parseFloat(fee.balance) : Math.max(0, total - paid);
+      const isPaid = fee.status === "Paid" || (balance === 0 && paid > 0);
       const isPartial = fee.status === "Partial" || (paid > 0 && balance > 0);
 
       return `
@@ -563,13 +569,13 @@ const FeesView = {
     const defaultPrice = APP_CONFIG.feeConfig?.defaultCoursePrice || 50;
     const fee = StudentAPI.getStudentFee(studentId) || {
       totalAmount: defaultPrice,
-      paidAmount: defaultPrice,
+      paidAmount: 0,
       discount: 0,
-      balance: 0,
-      status: "Paid",
-      receiptNo: "INV-2026-" + String(studentId).replace(/\D/g, "").padStart(4, "0"),
+      balance: defaultPrice,
+      status: "Unpaid",
+      receiptNo: "INV-" + new Date().getFullYear() + "-" + String(studentId).replace(/\D/g, "").padStart(4, "0"),
       date: new Date().toISOString().split("T")[0],
-      paymentMethod: "ABA KHQR",
+      paymentMethod: "—",
       note: "ថ្លៃសិក្សាកុំព្យូទ័ររដ្ឋបាល"
     };
 

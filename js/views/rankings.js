@@ -122,47 +122,104 @@ const RankingsView = {
   getRankedData() {
     const rawStudents = (typeof App !== "undefined" && App.state && App.state.students) ? [...App.state.students] : [];
     const students = rawStudents.map(s => this.normalizeStudent(s));
-    const course = this.filterCourse;
-    const shift = this.filterShift;
+    const course = (this.filterCourse || "").trim().toLowerCase();
+    const shift = (this.filterShift || "").trim();
+    const allExams = (typeof StudentAPI !== "undefined" && StudentAPI.getAllExams) ? StudentAPI.getAllExams() : {};
 
-    // Filter active students
-    let list = students.filter(s => String(s.status).toLowerCase() !== "dropped");
-    if (course) list = list.filter(s => s.course === course);
-    if (shift) list = list.filter(s => s.shift === shift);
+    // Filter active students (exclude dropped)
+    let list = students.filter(s => {
+      const st = String(s.status || "").toLowerCase();
+      return st !== "dropped" && st !== "drop";
+    });
 
-    // Calculate rank scores (from actual exam scores or calculate composite score)
+    if (course) {
+      list = list.filter(s => {
+        const sc = (s.course || "").toLowerCase();
+        if (course === "word") return sc.includes("word");
+        if (course === "excel") return sc.includes("excel");
+        if (course === "powerpoint") return sc.includes("powerpoint") || sc.includes("ppt");
+        if (course === "typing") return sc.includes("typing") || sc.includes("វាយ");
+        return sc === course || sc.includes(course);
+      });
+    }
+
+    if (shift) {
+      list = list.filter(s => (s.shift || "").includes(shift));
+    }
+
+    // Calculate real rank scores from actual exam records in StudentAPI
     const ranked = list.map(s => {
-      let score = 0;
-      if (s.exams && typeof s.exams === "object") {
-        const vals = Object.values(s.exams).map(Number).filter(v => !isNaN(v) && v > 0);
-        if (vals.length > 0) {
-          score = Math.round(vals.reduce((a, b) => a + b, 0) / vals.length);
+      const studentExams = allExams[s.id] || (s.exams && typeof s.exams === "object" ? s.exams : {});
+      let validScores = [];
+
+      if (course) {
+        // Find exam for this specific course
+        const targetKeys = course === "word" ? ["Word", "Microsoft Word"] :
+                           (course === "excel" ? ["Excel", "Microsoft Excel"] :
+                           (course === "powerpoint" ? ["PowerPoint", "Microsoft PowerPoint"] : ["Typing"]));
+        for (const k of targetKeys) {
+          const ex = studentExams[k];
+          if (ex && typeof ex === "object") {
+            const sc = parseFloat(ex.score ?? ex.Score);
+            if (!isNaN(sc) && sc >= 0) { validScores.push(sc); break; }
+          } else if (typeof ex === "number" && !isNaN(ex)) {
+            validScores.push(ex);
+            break;
+          }
         }
-      }
-      // If no score yet, assign a default baseline based on student ID hash for realistic preview
-      if (score === 0) {
-        const hash = (s.nameKh || s.id || "0").split("").reduce((acc, c) => acc + c.charCodeAt(0), 0);
-        score = 65 + (hash % 34); // between 65 and 98
+      } else {
+        // Overall: average of all taken computer courses
+        const checkKeys = [
+          ["Typing"],
+          ["Word", "Microsoft Word"],
+          ["Excel", "Microsoft Excel"],
+          ["PowerPoint", "Microsoft PowerPoint"]
+        ];
+
+        checkKeys.forEach(variants => {
+          for (const k of variants) {
+            const ex = studentExams[k];
+            if (ex && typeof ex === "object") {
+              const sc = parseFloat(ex.score ?? ex.Score);
+              if (!isNaN(sc) && sc >= 0) { validScores.push(sc); break; }
+            } else if (typeof ex === "number" && !isNaN(ex)) {
+              validScores.push(ex);
+              break;
+            }
+          }
+        });
       }
 
-      let grade = "C";
+      const hasExamData = validScores.length > 0;
+      const score = hasExamData ? Math.round(validScores.reduce((a, b) => a + b, 0) / validScores.length) : 0;
+
+      let grade = "— (មិនទាន់ប្រឡង)";
       let badgeColor = "#64748b";
-      if (score >= 90) { grade = "A (ល្អប្រសើរ)"; badgeColor = "#10b981"; }
-      else if (score >= 80) { grade = "B (ល្អណាស់)"; badgeColor = "#3b82f6"; }
-      else if (score >= 70) { grade = "C (ល្អ)"; badgeColor = "#f59e0b"; }
-      else if (score >= 60) { grade = "D (មធ្យម)"; badgeColor = "#8b5cf6"; }
-      else { grade = "E (ខ្សោយ)"; badgeColor = "#ef4444"; }
+      if (hasExamData) {
+        if (score >= 90) { grade = "A (ល្អប្រសើរ)"; badgeColor = "#10b981"; }
+        else if (score >= 80) { grade = "B (ល្អណាស់)"; badgeColor = "#3b82f6"; }
+        else if (score >= 70) { grade = "C (ល្អ)"; badgeColor = "#f59e0b"; }
+        else if (score >= 60) { grade = "D (មធ្យម)"; badgeColor = "#8b5cf6"; }
+        else { grade = "E (ខ្សោយ)"; badgeColor = "#ef4444"; }
+      }
 
       return {
         ...s,
+        hasExamData,
         finalScore: score,
+        scoreDisplay: hasExamData ? `${score}` : "—",
         gradeText: grade,
         gradeColor: badgeColor
       };
     });
 
-    // Sort descending by score
-    ranked.sort((a, b) => b.finalScore - a.finalScore);
+    // Sort: Students with real exam scores first (descending by score), then unexamined students
+    ranked.sort((a, b) => {
+      if (a.hasExamData && !b.hasExamData) return -1;
+      if (!a.hasExamData && b.hasExamData) return 1;
+      return b.finalScore - a.finalScore;
+    });
+
     return ranked;
   },
 
@@ -189,9 +246,11 @@ const RankingsView = {
       return;
     }
 
-    const first = ranked[0];
-    const second = ranked[1];
-    const third = ranked[2];
+    // Only students with actual completed exams go on the Champions Podium
+    const examinedStudents = ranked.filter(s => s.hasExamData && s.finalScore > 0);
+    const first = examinedStudents[0] || null;
+    const second = examinedStudents[1] || null;
+    const third = examinedStudents[2] || null;
 
     const getAvatar = (s) => {
       if (!s) return "assets/images/default-male.svg";
@@ -201,58 +260,75 @@ const RankingsView = {
 
     // Render 3D Podium
     if (podiumMount) {
-      podiumMount.innerHTML = `
-        <div class="podium-wrapper">
-          <!-- Rank 2: Silver (Left) -->
-          ${second ? `
-            <div class="podium-column podium-rank-2">
-              <div class="podium-avatar-wrap">
-                <span class="podium-badge-medal" style="background: #94a3b8; color: #fff;">🥈 #2</span>
-                <img src="${getAvatar(second)}" alt="${second.nameKh}" class="podium-avatar" onerror="this.src='assets/images/default-male.svg'">
-              </div>
-              <div class="podium-student-name">${second.nameKh}</div>
-              <div class="podium-student-score">${second.finalScore} ពិន្ទុ</div>
-              <div class="podium-student-course">${second.course} • វេន${second.shift}</div>
-              <div class="podium-pedestal pedestal-2">
-                <span class="pedestal-number">2</span>
-              </div>
+      if (examinedStudents.length === 0) {
+        podiumMount.innerHTML = `
+          <div style="padding: 36px 20px; text-align: center; color: var(--text-muted);">
+            <div style="width: 64px; height: 64px; border-radius: 50%; background: rgba(251, 191, 36, 0.12); color: #f59e0b; display: inline-flex; align-items: center; justify-content: center; font-size: 1.8rem; margin-bottom: 14px;">
+              <i class="fa-solid fa-trophy"></i>
             </div>
-          ` : '<div style="flex: 1;"></div>'}
+            <h4 style="margin: 0 0 8px; font-size: 1.05rem; font-weight: 700; color: var(--text-main);">មិនទាន់មានលទ្ធផលប្រឡងបញ្ចប់វគ្គនៅឡើយទេ</h4>
+            <p style="margin: 0 0 18px; font-size: 0.85rem; max-width: 480px; margin-inline: auto; color: var(--text-muted);">
+              សូមកត់ត្រាពិន្ទុជាក់ស្តែងរបស់សិស្សក្នុងទំព័រ «ប្រឡងបញ្ចប់វគ្គ» ដើម្បីឱ្យប្រព័ន្ធគណនាចំណាត់ថ្នាក់ឆ្នើមនៅលើ Podium ដោយស្វ័យប្រវត្តិ។
+            </p>
+            <button type="button" class="btn-primary" onclick="App.switchTab('exams')" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 18px; font-size: 0.86rem; border-radius: 10px;">
+              <i class="fa-solid fa-award"></i> <span>ទៅកាន់ទំព័រប្រឡង (Exams Portal)</span>
+            </button>
+          </div>
+        `;
+      } else {
+        podiumMount.innerHTML = `
+          <div class="podium-wrapper">
+            <!-- Rank 2: Silver (Left) -->
+            ${second ? `
+              <div class="podium-column podium-rank-2">
+                <div class="podium-avatar-wrap">
+                  <span class="podium-badge-medal" style="background: #94a3b8; color: #fff;">🥈 #2</span>
+                  <img src="${getAvatar(second)}" alt="${second.nameKh}" class="podium-avatar" onerror="this.src='assets/images/default-male.svg'">
+                </div>
+                <div class="podium-student-name">${second.nameKh}</div>
+                <div class="podium-student-score">${second.finalScore} ពិន្ទុ</div>
+                <div class="podium-student-course">${second.course} • វេន${second.shift}</div>
+                <div class="podium-pedestal pedestal-2">
+                  <span class="pedestal-number">2</span>
+                </div>
+              </div>
+            ` : '<div style="flex: 1;"></div>'}
 
-          <!-- Rank 1: Gold (Center) -->
-          ${first ? `
-            <div class="podium-column podium-rank-1">
-              <div class="podium-crown"><i class="fa-solid fa-crown"></i></div>
-              <div class="podium-avatar-wrap">
-                <span class="podium-badge-medal" style="background: #f59e0b; color: #fff;">🥇 #1</span>
-                <img src="${getAvatar(first)}" alt="${first.nameKh}" class="podium-avatar rank-1-avatar" onerror="this.src='assets/images/default-male.svg'">
+            <!-- Rank 1: Gold (Center) -->
+            ${first ? `
+              <div class="podium-column podium-rank-1">
+                <div class="podium-crown"><i class="fa-solid fa-crown"></i></div>
+                <div class="podium-avatar-wrap">
+                  <span class="podium-badge-medal" style="background: #f59e0b; color: #fff;">🥇 #1</span>
+                  <img src="${getAvatar(first)}" alt="${first.nameKh}" class="podium-avatar rank-1-avatar" onerror="this.src='assets/images/default-male.svg'">
+                </div>
+                <div class="podium-student-name" style="font-size: 1.15rem; font-weight: 900; color: #d97706;">${first.nameKh}</div>
+                <div class="podium-student-score" style="font-size: 1.25rem; font-weight: 900; color: #f59e0b;">${first.finalScore} ពិន្ទុ</div>
+                <div class="podium-student-course">${first.course} • វេន${first.shift}</div>
+                <div class="podium-pedestal pedestal-1">
+                  <span class="pedestal-number">1</span>
+                </div>
               </div>
-              <div class="podium-student-name" style="font-size: 1.15rem; font-weight: 900; color: #d97706;">${first.nameKh}</div>
-              <div class="podium-student-score" style="font-size: 1.25rem; font-weight: 900; color: #f59e0b;">${first.finalScore} ពិន្ទុ</div>
-              <div class="podium-student-course">${first.course} • វេន${first.shift}</div>
-              <div class="podium-pedestal pedestal-1">
-                <span class="pedestal-number">1</span>
-              </div>
-            </div>
-          ` : ''}
+            ` : ''}
 
-          <!-- Rank 3: Bronze (Right) -->
-          ${third ? `
-            <div class="podium-column podium-rank-3">
-              <div class="podium-avatar-wrap">
-                <span class="podium-badge-medal" style="background: #d97706; color: #fff;">🥉 #3</span>
-                <img src="${getAvatar(third)}" alt="${third.nameKh}" class="podium-avatar" onerror="this.src='assets/images/default-male.svg'">
+            <!-- Rank 3: Bronze (Right) -->
+            ${third ? `
+              <div class="podium-column podium-rank-3">
+                <div class="podium-avatar-wrap">
+                  <span class="podium-badge-medal" style="background: #d97706; color: #fff;">🥉 #3</span>
+                  <img src="${getAvatar(third)}" alt="${third.nameKh}" class="podium-avatar" onerror="this.src='assets/images/default-male.svg'">
+                </div>
+                <div class="podium-student-name">${third.nameKh}</div>
+                <div class="podium-student-score">${third.finalScore} ពិន្ទុ</div>
+                <div class="podium-student-course">${third.course} • វេន${third.shift}</div>
+                <div class="podium-pedestal pedestal-3">
+                  <span class="pedestal-number">3</span>
+                </div>
               </div>
-              <div class="podium-student-name">${third.nameKh}</div>
-              <div class="podium-student-score">${third.finalScore} ពិន្ទុ</div>
-              <div class="podium-student-course">${third.course} • វេន${third.shift}</div>
-              <div class="podium-pedestal pedestal-3">
-                <span class="pedestal-number">3</span>
-              </div>
-            </div>
-          ` : '<div style="flex: 1;"></div>'}
-        </div>
-      `;
+            ` : '<div style="flex: 1;"></div>'}
+          </div>
+        `;
+      }
     }
 
     // Render Leaderboard Table
@@ -260,9 +336,9 @@ const RankingsView = {
       tableBody.innerHTML = ranked.map((s, idx) => {
         const rank = idx + 1;
         let rankBadge = `<span class="badge" style="background: rgba(0,0,0,0.06); color: var(--text-muted); font-weight: 700; width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 0.8rem;">${rank}</span>`;
-        if (rank === 1) rankBadge = `<span style="font-size: 1.2rem;" title="លេខ ១ មេដាយមាស">🥇</span>`;
-        else if (rank === 2) rankBadge = `<span style="font-size: 1.2rem;" title="លេខ ២ មេដាយប្រាក់">🥈</span>`;
-        else if (rank === 3) rankBadge = `<span style="font-size: 1.2rem;" title="លេខ ៣ មេដាយសំរឹទ្ធ">🥉</span>`;
+        if (s.hasExamData && rank === 1) rankBadge = `<span style="font-size: 1.2rem;" title="លេខ ១ មេដាយមាស">🥇</span>`;
+        else if (s.hasExamData && rank === 2) rankBadge = `<span style="font-size: 1.2rem;" title="លេខ ២ មេដាយប្រាក់">🥈</span>`;
+        else if (s.hasExamData && rank === 3) rankBadge = `<span style="font-size: 1.2rem;" title="លេខ ៣ មេដាយសំរឹទ្ធ">🥉</span>`;
 
         const avatar = getAvatar(s);
 
@@ -281,14 +357,14 @@ const RankingsView = {
             <td>${s.gender || 'ប្រុស'}</td>
             <td><span class="badge" style="background: rgba(99, 102, 241, 0.1); color: #6366f1; font-weight: 700; padding: 3px 8px; border-radius: 6px;">${s.course}</span></td>
             <td>វេន${s.shift}</td>
-            <td style="text-align: center; font-weight: 800; font-size: 1.05rem; color: #0284c7;">${s.finalScore}</td>
+            <td style="text-align: center; font-weight: 800; font-size: 1.05rem; color: ${s.hasExamData ? '#0284c7' : 'var(--text-muted)'};">${s.scoreDisplay}</td>
             <td style="text-align: center;">
               <span class="badge" style="background: ${s.gradeColor}18; color: ${s.gradeColor}; font-weight: 700; padding: 4px 10px; border-radius: 8px;">
                 ${s.gradeText}
               </span>
             </td>
             <td style="text-align: center;">
-              ${rank <= 3 ? '<span class="badge" style="background: #fef3c7; color: #b45309; font-weight: 700; padding: 3px 8px; border-radius: 6px;"><i class="fa-solid fa-star"></i> សិស្សឆ្នើម</span>' : '<span style="color: var(--text-muted); font-size: 0.8rem;">ល្អ</span>'}
+              ${s.hasExamData && rank <= 3 ? '<span class="badge" style="background: #fef3c7; color: #b45309; font-weight: 700; padding: 3px 8px; border-radius: 6px;"><i class="fa-solid fa-star"></i> សិស្សឆ្នើម</span>' : (s.hasExamData ? '<span style="color: var(--text-muted); font-size: 0.8rem;">ល្អ</span>' : '<span style="color: var(--text-muted); font-size: 0.8rem;">រង់ចាំប្រឡង</span>')}
             </td>
           </tr>
         `;
