@@ -19,11 +19,14 @@ module.exports = (req, res) => {
   let reqUrl = req.url || '';
   try {
     const parsedUrl = new URL(reqUrl, 'http://localhost');
-    const matchParam = parsedUrl.searchParams.get('match');
+    const matchParam = parsedUrl.searchParams.get('match') || parsedUrl.searchParams.get('path');
     if (matchParam) {
       parsedUrl.searchParams.delete('match');
+      parsedUrl.searchParams.delete('path');
       const remaining = parsedUrl.searchParams.toString();
-      reqUrl = `/api/${matchParam}${remaining ? '?' + remaining : ''}`;
+      const isEnroll = req.url.startsWith('/enroll') || (req.headers['x-matched-path'] && req.headers['x-matched-path'].startsWith('/enroll'));
+      const prefix = isEnroll ? '/enroll/' : '/api/';
+      reqUrl = `${prefix}${matchParam}${remaining ? '?' + remaining : ''}`;
       req.url = reqUrl;
     } else if (req.headers['x-matched-path']) {
       const q = reqUrl.includes('?') ? '?' + reqUrl.split('?')[1] : '';

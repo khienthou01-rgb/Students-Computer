@@ -2,6 +2,8 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
+const { handleLabRoutes } = require('./server/lab_router');
+const labWsHub = require('./server/lab_ws');
 
 const PORT = process.env.PORT || 8080;
 const BASE_DIR = process.env.VERCEL ? process.cwd() : __dirname;
@@ -36,6 +38,20 @@ const server = http.createServer((req, res) => {
   }
 
   const urlPath = (req.url || '').split('?')[0];
+
+  // Computer Lab Management Endpoints & Enrollment Router (Phase 2)
+  if (urlPath.startsWith('/enroll') || urlPath.startsWith('/api/lab')) {
+    handleLabRoutes(req, res, urlPath, PORT, labWsHub).then(handled => {
+      if (!handled) {
+        res.writeHead(404, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Endpoint not found' }));
+      }
+    }).catch(err => {
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: err.message }));
+    });
+    return;
+  }
 
   // API Endpoint: /api/info for Server & LAN network telemetry
   if (req.method === 'GET' && (urlPath === '/api/info' || urlPath.startsWith('/api/info'))) {
@@ -363,6 +379,8 @@ const server = http.createServer((req, res) => {
 });
 
 if (!process.env.VERCEL) {
+  labWsHub.attach(server);
+
   server.listen(PORT, '0.0.0.0', () => {
     const ifaces = os.networkInterfaces();
     const lanIps = [];
@@ -380,6 +398,7 @@ if (!process.env.VERCEL) {
     lanIps.forEach(net => {
       console.log(`📱 LAN/Wi-Fi:  http://${net.ip}:${PORT}/  (${net.name})`);
     });
+    console.log(`⚡ WebSocket:  ws://localhost:${PORT}/ws/classroom`);
     console.log(`⚡ API Upload: http://localhost:${PORT}/api/upload`);
     console.log(`⏰ Telegram:   7:00 PM Daily Attendance Summary Scheduler Active`);
     console.log(`==========================================================\n`);

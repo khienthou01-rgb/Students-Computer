@@ -141,6 +141,15 @@ const App = {
       setTimeout(() => {
         this.switchTab(ghRedirectTab);
       }, 120);
+    } else {
+      try {
+        const savedTab = sessionStorage.getItem("tis_active_tab");
+        if (savedTab && savedTab !== "dashboard" && document.getElementById(`view-${savedTab}`)) {
+          setTimeout(() => {
+            this.switchTab(savedTab);
+          }, 120);
+        }
+      } catch (e) {}
     }
   },
 
@@ -571,6 +580,7 @@ const App = {
               ${typeof ReportsView !== "undefined" ? ReportsView.render() : ""}
               ${typeof ResourcesView !== "undefined" ? ResourcesView.render() : ""}
               ${SettingsView.render()}
+              ${typeof ComputerLabView !== "undefined" ? ComputerLabView.render() : ""}
             </div>
           </main>
         `;
@@ -618,6 +628,7 @@ const App = {
       if (typeof ReportsView !== "undefined") ReportsView.initEvents();
       if (typeof ResourcesView !== "undefined") ResourcesView.initEvents();
       SettingsView.initEvents();
+      if (typeof ComputerLabView !== "undefined") ComputerLabView.initEvents();
     }
   },
 
@@ -702,6 +713,11 @@ const App = {
   // Navigation & View Routing
   switchTab(tabId) {
     this.state.currentTab = tabId;
+    try {
+      if (tabId && tabId !== "register") {
+        sessionStorage.setItem("tis_active_tab", tabId);
+      }
+    } catch (e) {}
 
     // Update nav links
     document.querySelectorAll(".nav-link").forEach(item => {
@@ -807,6 +823,10 @@ const App = {
     } else if (tabId === "settings") {
       if (typeof SettingsView !== "undefined" && SettingsView.refreshTeachersGrid) {
         SettingsView.refreshTeachersGrid();
+      }
+    } else if (tabId === "computer-lab") {
+      if (typeof ComputerLabView !== "undefined" && ComputerLabView.onActivated) {
+        ComputerLabView.onActivated();
       }
     }
 

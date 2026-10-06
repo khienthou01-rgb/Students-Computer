@@ -469,9 +469,16 @@ const TelegramService = {
       return null;
     }
 
+    // Clean up any existing stale container if left behind
+    const prevContainer = document.getElementById("tis_attendance_pdf_render_container");
+    if (prevContainer && prevContainer.parentNode) {
+      prevContainer.parentNode.removeChild(prevContainer);
+    }
+
     const container = document.createElement("div");
+    container.id = "tis_attendance_pdf_render_container";
     container.style.position = "fixed";
-    container.style.left = "0";
+    container.style.left = "-9999px"; // Completely offscreen - never overlaps or leaks through dashboard
     container.style.top = "0";
     container.style.width = "794px"; // A4 width at 96 DPI
     container.style.padding = "24px 30px";
@@ -614,12 +621,12 @@ const TelegramService = {
       </div>
     `;
 
-    document.body.appendChild(container);
-
-    // Allow DOM layout and fonts to settle
-    await new Promise(r => setTimeout(r, 200));
-
     try {
+      document.body.appendChild(container);
+
+      // Allow DOM layout and fonts to settle
+      await new Promise(r => setTimeout(r, 200));
+
       const canvas = await h2c(container, {
         scale: 2,
         useCORS: true,
@@ -655,13 +662,269 @@ const TelegramService = {
         heightLeft -= usableHeight;
       }
 
-      const pdfBlob = pdf.output('blob');
-      if (container.parentNode) document.body.removeChild(container);
-      return pdfBlob;
+      return pdf.output('blob');
     } catch (e) {
       console.error("PDF generation failed:", e);
-      if (container.parentNode) document.body.removeChild(container);
       return null;
+    } finally {
+      if (container && container.parentNode) {
+        container.parentNode.removeChild(container);
+      }
+    }
+  },
+
+  // ========================================================================
+  // TELEGRAM ATTENDANCE DISPATCH PROGRESS HUD & MODAL CONTROLLER
+  // ========================================================================
+  _dispatchHudState: {
+    excelBlob: null,
+    excelName: null,
+    pdfBlob: null,
+    pdfName: null
+  },
+
+  showDispatchHUD(data = {}) {
+    this.closeDispatchHUD();
+
+    this._dispatchHudState = {
+      excelBlob: null,
+      excelName: null,
+      pdfBlob: null,
+      pdfName: null
+    };
+
+    const modal = document.createElement("div");
+    modal.id = "telegramDispatchHUDModal";
+    modal.className = "tg-dispatch-hud";
+    modal.innerHTML = `
+      <div class="tg-dispatch-card" onclick="event.stopPropagation()">
+        <!-- Header -->
+        <div class="tg-dispatch-header">
+          <div class="tg-dispatch-title-wrap">
+            <div class="tg-dispatch-icon-badge">
+              <i class="fa-brands fa-telegram"></i>
+            </div>
+            <div>
+              <h3 class="tg-dispatch-title">${data.title || "ផ្ញើរបាយការណ៍ទៅកាន់ Telegram Bot"}</h3>
+              <div class="tg-dispatch-subtitle">${data.subtitle || "មជ្ឈមណ្ឌល TIS Lab Computer • កំពុងដំណើរការ..."}</div>
+            </div>
+          </div>
+          <button type="button" class="tg-dispatch-close-btn" onclick="TelegramService.closeDispatchHUD()" title="បិទផ្ទាំង">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <!-- Body -->
+        <div class="tg-dispatch-body">
+          <!-- Stats Summary Row -->
+          <div class="tg-dispatch-stats-row">
+            <div class="tg-stat-pill">
+              <div class="tg-stat-label">សិស្សសរុប</div>
+              <div class="tg-stat-val" style="color: #38bdf8;">${data.stats?.total ?? 0}</div>
+            </div>
+            <div class="tg-stat-pill">
+              <div class="tg-stat-label">វត្តមាន</div>
+              <div class="tg-stat-val" style="color: #4ade80;">${data.stats?.present ?? 0}</div>
+            </div>
+            <div class="tg-stat-pill">
+              <div class="tg-stat-label">ច្បាប់</div>
+              <div class="tg-stat-val" style="color: #facc15;">${data.stats?.permission ?? 0}</div>
+            </div>
+            <div class="tg-stat-pill">
+              <div class="tg-stat-label">អវត្តមាន</div>
+              <div class="tg-stat-val" style="color: #f87171;">${data.stats?.absent ?? 0}</div>
+            </div>
+          </div>
+
+          <!-- Stepper Steps -->
+          <div class="tg-dispatch-stepper">
+            <!-- Step 1: Text message -->
+            <div class="tg-step-box running" id="tgStepBox1">
+              <div class="tg-step-left">
+                <div class="tg-step-icon" id="tgStepIcon1">
+                  <i class="fa-solid fa-spinner fa-spin"></i>
+                </div>
+                <div>
+                  <div class="tg-step-title">១. ផ្ញើសារសង្ខេបវត្តមាន (Daily Summary Text)</div>
+                  <div class="tg-step-desc" id="tgStepDesc1">កំពុងបញ្ជូនស្ថិតិវត្តមាន និងព័ត៌មានលម្អិតចូលគ្រុប Telegram...</div>
+                </div>
+              </div>
+              <span class="tg-step-badge badge-running" id="tgStepBadge1">
+                <i class="fa-solid fa-circle-notch fa-spin"></i> កំពុងផ្ញើ
+              </span>
+            </div>
+
+            <!-- Step 2: Excel Spreadsheet -->
+            <div class="tg-step-box" id="tgStepBox2">
+              <div class="tg-step-left">
+                <div class="tg-step-icon" id="tgStepIcon2">
+                  <i class="fa-solid fa-file-excel"></i>
+                </div>
+                <div>
+                  <div class="tg-step-title">២. តារាងទិន្នន័យ Excel (.xlsx)</div>
+                  <div class="tg-step-desc" id="tgStepDesc2">រៀបចំតារាងសិស្សតាមវេន និងវត្តមានផ្លូវការ</div>
+                </div>
+              </div>
+              <span class="tg-step-badge badge-pending" id="tgStepBadge2">រង់ចាំ</span>
+            </div>
+
+            <!-- Step 3: Official PDF Document -->
+            <div class="tg-step-box" id="tgStepBox3">
+              <div class="tg-step-left">
+                <div class="tg-step-icon" id="tgStepIcon3">
+                  <i class="fa-solid fa-file-pdf"></i>
+                </div>
+                <div>
+                  <div class="tg-step-title">៣. ឯកសារវត្តមានផ្លូវការ PDF (.pdf)</div>
+                  <div class="tg-step-desc" id="tgStepDesc3">បង្កើតឯកសារ A4 មានត្រា និងហត្ថលេខារួចផ្ញើជូន</div>
+                </div>
+              </div>
+              <span class="tg-step-badge badge-pending" id="tgStepBadge3">រង់ចាំ</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="tg-dispatch-footer" id="tgDispatchFooter">
+          <div style="font-size: 0.8rem; color: #94a3b8; display: flex; align-items: center; gap: 6px;">
+            <i class="fa-solid fa-shield-halved text-emerald-400"></i>
+            <span id="tgDispatchFooterStatus">កំពុងដំណើរការបញ្ជូនដោយសុវត្ថិភាព...</span>
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <button type="button" class="btn btn-outline" onclick="TelegramService.closeDispatchHUD()" style="font-size: 0.82rem; padding: 6px 14px;">
+              បិទផ្ទាំង
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(modal);
+  },
+
+  updateDispatchHUDStep(stepNumber, status, blob = null, filename = null) {
+    const box = document.getElementById(`tgStepBox${stepNumber}`);
+    const icon = document.getElementById(`tgStepIcon${stepNumber}`);
+    const badge = document.getElementById(`tgStepBadge${stepNumber}`);
+    const desc = document.getElementById(`tgStepDesc${stepNumber}`);
+
+    if (blob && filename) {
+      if (stepNumber === 2) {
+        this._dispatchHudState.excelBlob = blob;
+        this._dispatchHudState.excelName = filename;
+      } else if (stepNumber === 3) {
+        this._dispatchHudState.pdfBlob = blob;
+        this._dispatchHudState.pdfName = filename;
+      }
+    }
+
+    if (!box || !badge) return;
+
+    if (status === "running") {
+      box.className = "tg-step-box running";
+      if (icon) icon.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+      badge.className = "tg-step-badge badge-running";
+      badge.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> កំពុងដំណើរការ';
+      if (desc && stepNumber === 2) desc.innerText = "កំពុងបង្កើត និងបញ្ជូនឯកសារ Excel ទៅកាន់ Telegram...";
+      if (desc && stepNumber === 3) desc.innerText = "កំពុងបម្លែងជាឯកសារ PDF A4 និងបញ្ជូនទៅ Telegram...";
+    } else if (status === "success") {
+      box.className = "tg-step-box success";
+      if (icon) icon.innerHTML = '<i class="fa-solid fa-check text-emerald-400"></i>';
+      badge.className = "tg-step-badge badge-success";
+      badge.innerHTML = '<i class="fa-solid fa-check"></i> រួចរាល់';
+      if (desc) desc.innerText = "បានផ្ញើទៅកាន់ Telegram Bot ដោយជោគជ័យ!";
+    } else if (status === "error") {
+      box.className = "tg-step-box error";
+      if (icon) icon.innerHTML = '<i class="fa-solid fa-xmark text-rose-400"></i>';
+      badge.className = "tg-step-badge badge-error";
+      badge.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> បរាជ័យ';
+    }
+  },
+
+  finishDispatchHUD(status, message) {
+    const footer = document.getElementById("tgDispatchFooter");
+    const footerStatus = document.getElementById("tgDispatchFooterStatus");
+    if (!footer) return;
+
+    if (status === "success") {
+      if (footerStatus) {
+        footerStatus.innerHTML = `<span style="color: #34d399; font-weight: 700;"><i class="fa-solid fa-circle-check"></i> ${message}</span>`;
+      }
+
+      let downloadBtns = "";
+      if (this._dispatchHudState.excelBlob) {
+        downloadBtns += `
+          <button type="button" class="btn btn-outline" onclick="TelegramService.downloadDispatchedFile('excel')" style="font-size: 0.8rem; padding: 6px 12px; color: #34d399; border-color: rgba(52, 211, 153, 0.4);">
+            <i class="fa-solid fa-file-excel"></i> ទាញយក Excel
+          </button>
+        `;
+      }
+      if (this._dispatchHudState.pdfBlob) {
+        downloadBtns += `
+          <button type="button" class="btn btn-outline" onclick="TelegramService.downloadDispatchedFile('pdf')" style="font-size: 0.8rem; padding: 6px 12px; color: #f87171; border-color: rgba(248, 113, 113, 0.4);">
+            <i class="fa-solid fa-file-pdf"></i> ទាញយក PDF
+          </button>
+        `;
+      }
+
+      footer.innerHTML = `
+        <div style="font-size: 0.82rem; color: #34d399; display: flex; align-items: center; gap: 6px; font-weight: 700;">
+          <i class="fa-solid fa-circle-check"></i>
+          <span>${message}</span>
+        </div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          ${downloadBtns}
+          <button type="button" class="btn btn-primary" onclick="TelegramService.closeDispatchHUD()" style="font-size: 0.82rem; padding: 6px 16px;">
+            <i class="fa-solid fa-check"></i> រួចរាល់
+          </button>
+        </div>
+      `;
+
+      if (typeof App !== "undefined" && App.triggerConfetti) {
+        App.triggerConfetti();
+      }
+    } else {
+      if (footerStatus) {
+        footerStatus.innerHTML = `<span style="color: #f87171; font-weight: 700;"><i class="fa-solid fa-circle-xmark"></i> ${message}</span>`;
+      }
+      footer.innerHTML = `
+        <div style="font-size: 0.82rem; color: #f87171; display: flex; align-items: center; gap: 6px;">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+          <span>${message}</span>
+        </div>
+        <button type="button" class="btn btn-outline" onclick="TelegramService.closeDispatchHUD()" style="font-size: 0.82rem; padding: 6px 16px;">
+          បិទ
+        </button>
+      `;
+    }
+  },
+
+  downloadDispatchedFile(type) {
+    if (type === "excel" && this._dispatchHudState.excelBlob) {
+      const url = URL.createObjectURL(this._dispatchHudState.excelBlob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = this._dispatchHudState.excelName || "Daily_Attendance.xlsx";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } else if (type === "pdf" && this._dispatchHudState.pdfBlob) {
+      const url = URL.createObjectURL(this._dispatchHudState.pdfBlob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = this._dispatchHudState.pdfName || "Daily_Attendance.pdf";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+  },
+
+  closeDispatchHUD() {
+    const el = document.getElementById("telegramDispatchHUDModal");
+    if (el && el.parentNode) {
+      el.parentNode.removeChild(el);
     }
   },
 
@@ -999,9 +1262,28 @@ ${detailList}
 <i>ប្រព័ន្ធកត់ត្រាវត្តមានស្វ័យប្រវត្តិតាម Telegram Bot - TIS Lab Computer</i>
     `.trim();
 
+    if (forceSend) {
+      this.showDispatchHUD({
+        title: "របាយការណ៍វត្តមានសរុបប្រចាំថ្ងៃ (Daily Attendance)",
+        subtitle: `មជ្ឈមណ្ឌល TIS Lab Computer • ${khmerDateStr}`,
+        stats: {
+          total: totalActive,
+          present: presentCount,
+          permission: permissionCount,
+          absent: absentCount
+        }
+      });
+      this.updateDispatchHUDStep(1, "running");
+    }
+
     const ok = await this.sendMessage(text);
     if (ok) {
       localStorage.setItem(sentKey, Date.now().toString());
+      if (forceSend) {
+        this.updateDispatchHUDStep(1, "success");
+        this.updateDispatchHUDStep(2, "running");
+      }
+
       if (typeof StudentAPI !== "undefined" && StudentAPI.isCloudConnected()) {
         try {
           firebase.database().ref(`reports/daily_attendance/${dateStr}`).set({
@@ -1036,13 +1318,22 @@ ${detailList}
             excelName,
             `📊 <b>របាយការណ៍វត្តមានសរុបប្រចាំថ្ងៃ Excel (.xlsx)</b>\n🏫 TIS Lab Computer | <b>គ្រប់វេនទាំងអស់</b>\n📅 ${khmerDateStr}`
           );
+          if (forceSend) {
+            this.updateDispatchHUDStep(2, "success", excelBlob, excelName);
+          }
         }
       } catch (errExcel) {
         console.warn("Daily Excel generation/sending error:", errExcel);
+        if (forceSend) {
+          this.updateDispatchHUDStep(2, "error");
+        }
       }
 
       // Generate and send Daily Attendance PDF (.pdf)
       try {
+        if (forceSend) {
+          this.updateDispatchHUDStep(3, "running");
+        }
         const allStudentsWithStatus = activeStudents.map(s => ({
           ...s,
           attendanceStatus: dayRecords[s.ID] || "Unmarked"
@@ -1061,13 +1352,26 @@ ${detailList}
             pdfName,
             `📑 <b>ឯកសារវត្តមានផ្លូវការ PDF (.pdf)</b>\n🏫 TIS Lab Computer | <b>គ្រប់វេនទាំងអស់</b>\n📅 ${khmerDateStr}`
           );
+          if (forceSend) {
+            this.updateDispatchHUDStep(3, "success", pdfBlob, pdfName);
+          }
         }
       } catch (errPdf) {
         console.warn("Daily PDF generation/sending error:", errPdf);
+        if (forceSend) {
+          this.updateDispatchHUDStep(3, "error");
+        }
+      }
+
+      if (forceSend) {
+        this.finishDispatchHUD("success", "បានផ្ញើរបាយការណ៍វត្តមានសរុប និងឯកសារ PDF & Excel ទៅ Telegram រួចរាល់!");
       }
 
       return { success: true, message: "បានផ្ញើរបាយការណ៍វត្តមានសរុប និងឯកសារ PDF & Excel ទៅ Telegram ដោយជោគជ័យ!" };
     } else {
+      if (forceSend) {
+        this.finishDispatchHUD("error", "មិនអាចបញ្ជូនសារទៅកាន់ Telegram API បានទេ សូមពិនិត្យ Chat ID / Token");
+      }
       return { success: false, error: "មិនអាចបញ្ជូនសារទៅកាន់ Telegram API បានទេ សូមពិនិត្យ Chat ID / Token" };
     }
   },
@@ -1403,9 +1707,28 @@ ${presentSection}━━━━━━━━━━━━━━━━━━━━
 <i>ប្រព័ន្ធកត់ត្រាវត្តមានស្វ័យប្រវត្តិតាម Telegram Bot - TIS Lab Computer</i>
     `.trim();
 
+    if (!isAuto) {
+      this.showDispatchHUD({
+        title: `តារាងវត្តមានសិស្ស - ${shiftInfo.label}`,
+        subtitle: `មជ្ឈមណ្ឌល TIS Lab Computer • ${khmerDateStr}`,
+        stats: {
+          total: totalInShift,
+          present: presentCount,
+          permission: permissionCount,
+          absent: absentCount
+        }
+      });
+      this.updateDispatchHUDStep(1, "running");
+    }
+
     const targetChatId = this.getChatIdForShift(shiftInfo.id) || config.chatId;
     const ok = await this.sendMessage(text, null, targetChatId);
     if (ok) {
+      if (!isAuto) {
+        this.updateDispatchHUDStep(1, "success");
+        this.updateDispatchHUDStep(2, "running");
+      }
+
       // Prepare active students list with status for this shift
       const activeStudentsWithStatus = activeStudents.map(s => ({
         ...s,
@@ -1430,13 +1753,22 @@ ${presentSection}━━━━━━━━━━━━━━━━━━━━
             null,
             targetChatId
           );
+          if (!isAuto) {
+            this.updateDispatchHUDStep(2, "success", excelBlob, excelName);
+          }
         }
       } catch (errExcel) {
         console.warn("Shift Excel send error:", errExcel);
+        if (!isAuto) {
+          this.updateDispatchHUDStep(2, "error");
+        }
       }
 
       // Generate and send Shift Attendance PDF (.pdf)
       try {
+        if (!isAuto) {
+          this.updateDispatchHUDStep(3, "running");
+        }
         const pdfBlob = await this.generateAttendancePdf(
           activeStudentsWithStatus,
           `តារាងវត្តមានសិស្ស - ${shiftInfo.label}`,
@@ -1453,9 +1785,19 @@ ${presentSection}━━━━━━━━━━━━━━━━━━━━
             null,
             targetChatId
           );
+          if (!isAuto) {
+            this.updateDispatchHUDStep(3, "success", pdfBlob, pdfName);
+          }
         }
       } catch (errPdf) {
         console.warn("Shift PDF send error:", errPdf);
+        if (!isAuto) {
+          this.updateDispatchHUDStep(3, "error");
+        }
+      }
+
+      if (!isAuto) {
+        this.finishDispatchHUD("success", `បានផ្ញើរបាយការណ៍ ${shiftInfo.label} និងឯកសារ PDF & Excel ទៅ Telegram រួចរាល់!`);
       }
 
       if (typeof App !== "undefined" && App.showToast) {
@@ -1463,6 +1805,9 @@ ${presentSection}━━━━━━━━━━━━━━━━━━━━
       }
       return { success: true, message: `បានផ្ញើរបាយការណ៍វត្តមានសរុប ${shiftInfo.label} និងឯកសារ PDF & Excel ទៅ Telegram ជោគជ័យ!` };
     } else {
+      if (!isAuto) {
+        this.finishDispatchHUD("error", "បរាជ័យក្នុងការផ្ញើសារ Telegram សូមពិនិត្យ Chat ID / Token");
+      }
       if (typeof App !== "undefined" && App.showToast) {
         App.showToast(`⚠️ មិនអាចផ្ញើសារសរុបទៅ Telegram បានទេ សូមពិនិត្យ Chat ID / Token`, "error");
       }
@@ -2159,3 +2504,15 @@ ${holidayText}
   }
 };
 
+// Automatic cleanup for any stale PDF render containers
+if (typeof document !== "undefined") {
+  const cleanStaleContainers = () => {
+    const stale = document.getElementById("tis_attendance_pdf_render_container");
+    if (stale && stale.parentNode) stale.parentNode.removeChild(stale);
+  };
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", cleanStaleContainers);
+  } else {
+    cleanStaleContainers();
+  }
+}

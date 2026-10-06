@@ -1,0 +1,1165 @@
+<!DOCTYPE html>
+<html lang="km" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>វីដេអូបង្រៀន៖ របៀបដំឡើង និង Setup ប្រព័ន្ធគ្រប់គ្រងបន្ទប់កុំព្យូទ័រសិស្ស (TIS MasterSchool Lab)</title>
+  
+  <link rel="icon" type="image/png" href="assets/images/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Kantumruy+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" />
+
+  <style>
+    :root {
+      --bg-dark: #070510;
+      --card-bg: rgba(18, 12, 32, 0.85);
+      --card-border: rgba(139, 92, 246, 0.25);
+      --primary: #8b5cf6;
+      --primary-light: #a78bfa;
+      --accent: #06b6d4;
+      --accent-glow: rgba(6, 182, 212, 0.3);
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      background-image: 
+        radial-gradient(at 10% 15%, rgba(139, 92, 246, 0.15) 0px, transparent 50%),
+        radial-gradient(at 90% 85%, rgba(6, 182, 212, 0.12) 0px, transparent 50%),
+        radial-gradient(at 50% 50%, rgba(15, 23, 42, 0.8) 0px, transparent 100%);
+      color: var(--text-main);
+      font-family: 'Kantumruy Pro', 'Outfit', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Header & Navigation */
+    header {
+      background: rgba(10, 7, 20, 0.88);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--card-border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      padding: 14px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand-wrap {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .brand-logo {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
+      object-fit: cover;
+    }
+
+    .brand-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #fff, var(--primary-light), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .brand-badge {
+      font-size: 0.72rem;
+      padding: 3px 8px;
+      border-radius: 20px;
+      background: rgba(139, 92, 246, 0.2);
+      border: 1px solid var(--primary-light);
+      color: var(--primary-light);
+      margin-left: 8px;
+      font-weight: 600;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn {
+      padding: 9px 16px;
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.25s ease;
+      text-decoration: none;
+      border: 1px solid transparent;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #7c3aed, #4f46e5);
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(124, 58, 237, 0.4);
+    }
+    .btn-primary:hover {
+      box-shadow: 0 6px 24px rgba(124, 58, 237, 0.6);
+      transform: translateY(-2px);
+    }
+
+    .btn-outline {
+      background: rgba(255, 255, 255, 0.05);
+      color: #e2e8f0;
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+    .btn-outline:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* Main Container */
+    .main-layout {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 24px;
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 24px;
+    }
+
+    @media (max-width: 1100px) {
+      .main-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Video Player Mockup Container */
+    .player-section {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .video-viewport {
+      background: #030108;
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.6), 0 0 32px rgba(139, 92, 246, 0.15);
+      position: relative;
+      aspect-ratio: 16 / 9;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Stage Presentation Screen */
+    .video-stage {
+      flex: 1;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      padding: 32px 40px;
+      background: radial-gradient(circle at 50% 30%, rgba(30, 20, 56, 0.9), #070510 90%);
+      overflow: hidden;
+    }
+
+    .stage-watermark {
+      position: absolute;
+      top: 20px;
+      right: 24px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.8rem;
+      color: rgba(255, 255, 255, 0.4);
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    .stage-rec-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(239, 68, 68, 0.2);
+      border: 1px solid rgba(239, 68, 68, 0.5);
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.72rem;
+      color: #f87171;
+      font-weight: 700;
+    }
+
+    .rec-dot {
+      width: 8px;
+      height: 8px;
+      background: #ef4444;
+      border-radius: 50%;
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.3; transform: scale(0.85); }
+    }
+
+    /* Scene Content Box */
+    .scene-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      z-index: 2;
+      animation: fadeIn 0.4s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .scene-header {
+      margin-bottom: 18px;
+    }
+
+    .scene-chapter-badge {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      display: inline-block;
+      margin-bottom: 6px;
+    }
+
+    .scene-title {
+      font-size: 1.85rem;
+      font-weight: 800;
+      color: #ffffff;
+      line-height: 1.3;
+      margin-bottom: 8px;
+    }
+
+    .scene-desc {
+      font-size: 1rem;
+      color: #cbd5e1;
+      line-height: 1.6;
+      max-width: 850px;
+    }
+
+    /* Stage Visual Component Simulation */
+    .scene-visual-wrapper {
+      margin-top: 20px;
+      background: rgba(15, 10, 28, 0.92);
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      border-radius: 14px;
+      padding: 16px 20px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    }
+
+    /* Code Terminal Display */
+    .terminal-box {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.88rem;
+      color: #38bdf8;
+      background: #020617;
+      border-radius: 8px;
+      padding: 14px 16px;
+      position: relative;
+      overflow-x: auto;
+      border: 1px solid rgba(56, 189, 248, 0.2);
+    }
+
+    .terminal-box .cmd {
+      color: #4ade80;
+      font-weight: 600;
+    }
+
+    .terminal-box .comment {
+      color: #64748b;
+    }
+
+    .terminal-box .output {
+      color: #e2e8f0;
+      margin-top: 6px;
+      display: block;
+    }
+
+    /* Live Lab Simulation Cards */
+    .sim-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .sim-card {
+      background: rgba(30, 20, 50, 0.8);
+      border: 1px solid rgba(139, 92, 246, 0.25);
+      border-radius: 8px;
+      padding: 10px;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    .sim-card.online {
+      border-color: rgba(16, 185, 129, 0.6);
+      box-shadow: 0 0 12px rgba(16, 185, 129, 0.15);
+    }
+
+    .sim-card-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .sim-card-status {
+      font-size: 0.72rem;
+      color: #10b981;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      margin-top: 4px;
+    }
+
+    /* Player Controls Bar */
+    .video-controls {
+      background: rgba(12, 8, 22, 0.95);
+      border-top: 1px solid var(--card-border);
+      padding: 12px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    /* Progress bar */
+    .progress-track {
+      width: 100%;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 10px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #8b5cf6, #06b6d4);
+      width: 14%;
+      border-radius: 10px;
+      transition: width 0.3s ease;
+    }
+
+    .control-buttons-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .control-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .ctrl-btn {
+      background: none;
+      border: none;
+      color: #f8fafc;
+      font-size: 1.15rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      transition: all 0.2s;
+    }
+
+    .ctrl-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--accent);
+    }
+
+    .ctrl-play-btn {
+      background: var(--primary);
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      box-shadow: 0 0 14px rgba(139, 92, 246, 0.5);
+    }
+
+    .ctrl-play-btn:hover {
+      background: var(--primary-light);
+      transform: scale(1.06);
+    }
+
+    .time-display {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-left: 6px;
+    }
+
+    .control-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .speed-btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #e2e8f0;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* Subtitles / Khmer Voiceover Box */
+    .subtitles-banner {
+      background: rgba(18, 12, 32, 0.95);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 20px 24px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .subtitles-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .subtitles-tag {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--primary-light);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .voice-read-btn {
+      background: rgba(6, 182, 212, 0.15);
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    .voice-read-btn:hover {
+      background: var(--accent);
+      color: #000;
+    }
+
+    .subtitles-text {
+      font-size: 1.05rem;
+      line-height: 1.75;
+      color: #f1f5f9;
+      font-weight: 500;
+    }
+
+    /* Chapters Playlist (Sidebar) */
+    .chapters-sidebar {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 22px;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      height: fit-content;
+    }
+
+    .sidebar-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #fff;
+    }
+
+    .chapter-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .chapter-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+
+    .chapter-item:hover {
+      background: rgba(139, 92, 246, 0.12);
+      border-color: rgba(139, 92, 246, 0.3);
+      transform: translateX(4px);
+    }
+
+    .chapter-item.active {
+      background: linear-gradient(135deg, rgba(139, 92, 246, 0.25), rgba(6, 182, 212, 0.15));
+      border-color: var(--primary);
+      box-shadow: 0 4px 16px rgba(139, 92, 246, 0.2);
+    }
+
+    .chap-number {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--accent);
+      flex-shrink: 0;
+    }
+
+    .chapter-item.active .chap-number {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    .chap-info {
+      flex: 1;
+    }
+
+    .chap-title {
+      font-size: 0.92rem;
+      font-weight: 600;
+      color: #e2e8f0;
+      line-height: 1.4;
+      margin-bottom: 2px;
+    }
+
+    .chap-duration {
+      font-size: 0.74rem;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--text-muted);
+    }
+
+    /* Action bar below video */
+    .quick-tools-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 14px;
+    }
+
+    @media (max-width: 768px) {
+      .quick-tools-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .tool-card {
+      background: rgba(18, 12, 32, 0.7);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .tool-title {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: #f1f5f9;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .copy-pill {
+      background: #020617;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      color: #38bdf8;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .copy-pill:hover {
+      border-color: var(--accent);
+      background: #040d21;
+    }
+
+    .copy-pill i {
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation Header -->
+  <header>
+    <div class="brand-wrap">
+      <img src="assets/images/logo.png" alt="Logo" class="brand-logo" onerror="this.src='assets/logo.png'">
+      <div>
+        <div class="brand-title">
+          TIS MasterSchool Lab 
+          <span class="brand-badge">Full Tutorial & Setup</span>
+        </div>
+        <small style="color: var(--text-muted); font-size: 0.78rem;">វគ្គបង្រៀនដំឡើងប្រព័ន្ធគ្រប់គ្រងបន្ទប់កុំព្យូទ័រ ២០ ទៅ ៤០ គ្រឿង ពីដើមដល់ចប់</small>
+      </div>
+    </div>
+
+    <div class="header-actions">
+      <a href="http://localhost:8080/#computer-lab" target="_blank" class="btn btn-outline">
+        <i class="fa-solid fa-desktop"></i> បើកផ្ទាំងគ្រប់គ្រងជាក់ស្តែង
+      </a>
+      <a href="#guide-modal" onclick="showQuickInstructions()" class="btn btn-primary">
+        <i class="fa-solid fa-file-lines"></i> មគ្គុទ្ទេសក៍ជាអក្សរ
+      </a>
+    </div>
+  </header>
+
+  <!-- Main Presentation Layout -->
+  <main class="main-layout">
+    
+    <!-- Left Section: Interactive Video Player Viewport -->
+    <div class="player-section">
+      
+      <!-- Video Viewport Frame -->
+      <div class="video-viewport">
+        
+        <!-- Video Stage (Interactive Screen Simulation) -->
+        <div class="video-stage" id="video-stage">
+          <div class="stage-watermark">
+            <span class="stage-rec-indicator"><span class="rec-dot"></span> LIVE TUTORIAL</span>
+            <span>TIS COMPUTER LAB V2.0</span>
+          </div>
+
+          <div class="scene-content" id="scene-container">
+            <!-- Dynamic Scene Injected via JS -->
+          </div>
+        </div>
+
+        <!-- Video Player Controls Bar -->
+        <div class="video-controls">
+          <div class="progress-track" id="progress-track" onclick="handleScrub(event)">
+            <div class="progress-fill" id="progress-fill"></div>
+          </div>
+
+          <div class="control-buttons-row">
+            <div class="control-left">
+              <button class="ctrl-btn" onclick="prevChapter()" title="Previous Chapter">
+                <i class="fa-solid fa-backward-step"></i>
+              </button>
+              <button class="ctrl-btn ctrl-play-btn" id="play-pause-btn" onclick="togglePlay()" title="Play / Pause">
+                <i class="fa-solid fa-play" id="play-icon"></i>
+              </button>
+              <button class="ctrl-btn" onclick="nextChapter()" title="Next Chapter">
+                <i class="fa-solid fa-forward-step"></i>
+              </button>
+              <button class="ctrl-btn" onclick="restartChapter()" title="Replay Chapter">
+                <i class="fa-solid fa-rotate-left"></i>
+              </button>
+              <span class="time-display" id="time-display">00:00 / 10:00</span>
+            </div>
+
+            <div class="control-right">
+              <button class="speed-btn" id="speed-btn" onclick="cycleSpeed()">1.0x</button>
+              <button class="ctrl-btn" onclick="toggleFullscreen()" title="Fullscreen">
+                <i class="fa-solid fa-expand"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Subtitles & Khmer Voiceover Section -->
+      <div class="subtitles-banner">
+        <div class="subtitles-header">
+          <div class="subtitles-tag">
+            <i class="fa-solid fa-closed-captioning"></i> សំឡេងអាន និងការពន្យល់លម្អិត (VOICEOVER SCRIPT)
+          </div>
+          <button class="voice-read-btn" id="speak-btn" onclick="speakCurrentNarration()">
+            <i class="fa-solid fa-volume-high"></i> ចាក់សំឡេងពន្យល់ (Speech)
+          </button>
+        </div>
+        <p class="subtitles-text" id="subtitles-text">
+          សូមស្វាគមន៍មកកាន់វីដេអូបង្រៀនស្តីពីការ Setup ប្រព័ន្ធគ្រប់គ្រងបន្ទប់កុំព្យូទ័រសិស្ស (TIS Computer Lab Management System) ពីដើមដល់ចប់!
+        </p>
+      </div>
+
+      <!-- Quick Action Commands Grid -->
+      <div class="quick-tools-grid">
+        <div class="tool-card">
+          <div class="tool-title"><i class="fa-solid fa-server" style="color: #a78bfa;"></i> ១. បើក Server ម៉ាស៊ីនគ្រូ</div>
+          <div class="copy-pill" onclick="copyCode('node server.js')">
+            <span>node server.js</span>
+            <i class="fa-regular fa-copy"></i>
+          </div>
+          <small style="color: var(--text-muted); font-size: 0.74rem;">ដំណើរការលើ Terminal នៅ Root គម្រោង</small>
+        </div>
+
+        <div class="tool-card">
+          <div class="tool-title"><i class="fa-solid fa-laptop-code" style="color: #38bdf8;"></i> ២. ដំឡើងកុំព្យូទ័រសិស្ស</div>
+          <div class="copy-pill" onclick="copyCode('Install-Student-Agent.bat')">
+            <span>Install-Student-Agent.bat</span>
+            <i class="fa-regular fa-copy"></i>
+          </div>
+          <small style="color: var(--text-muted); font-size: 0.74rem;">Run លើម៉ាស៊ីនសិស្ស រួចវាយ Token ៦ខ្ទង់</small>
+        </div>
+
+        <div class="tool-card">
+          <div class="tool-title"><i class="fa-solid fa-network-wired" style="color: #34d399;"></i> ៣. អាសយដ្ឋាន LAN របស់គ្រូ</div>
+          <div class="copy-pill" onclick="copyCode('http://192.168.1.8:8080')">
+            <span>http://192.168.1.8:8080</span>
+            <i class="fa-regular fa-copy"></i>
+          </div>
+          <small style="color: var(--text-muted); font-size: 0.74rem;">Link សិស្សបើកទាញយក Agent តាម QR/Browser</small>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Right Section: Video Chapters & Outline -->
+    <aside class="chapters-sidebar">
+      <div class="sidebar-title">
+        <i class="fa-solid fa-list-check" style="color: var(--accent);"></i>
+        មាតិកាវីដេអូ (៧ វគ្គសំខាន់)
+      </div>
+
+      <div class="chapter-list" id="chapter-list">
+        <!-- Rendered by JS -->
+      </div>
+    </aside>
+
+  </main>
+
+  <script>
+    // Chapter Data for the Full Presentation
+    const CHAPTERS = [
+      {
+        id: 0,
+        badge: "ជំពូកទី ១ • 00:00 - 01:15",
+        title: "ស្ថាបត្យកម្មប្រព័ន្ធ & ការត្រៀមបណ្តាញ LAN",
+        desc: "ស្វែងយល់ពីរចនាសម្ព័ន្ធបណ្តាញ LAN-First រវាង Teacher Console និងកុំព្យូទ័រសិស្ស ២០ ទៅ ៤០ គ្រឿង ដោយប្រើ WebSocket Realtime គ្មានទាមទារ Internet ក្រៅឡើយ។",
+        narration: "សួស្តីលោកគ្រូអ្នកគ្រូ! នៅក្នុងវីដេអូនេះ ខ្ញុំនឹងណែនាំពីរបៀប Setup ប្រព័ន្ធគ្រប់គ្រងបន្ទប់កុំព្យូទ័រសិស្ស TIS Computer Lab Management System ពីដើមដល់ចប់។ ប្រព័ន្ធនេះដំណើរការតាមបណ្តាញ LAN ផ្ទៃក្នុង ទោះបីជាគ្មានអ៊ីនធឺណិតខាងក្រៅ ក៏លោកគ្រូអាចគ្រប់គ្រង មើលអេក្រង់ ចាក់សោ ឬផ្ញើឯកសារទៅកុំព្យូទ័រសិស្ស ៤០ គ្រឿងក្នុងពេលតែមួយបានយ៉ាងរលូន។",
+        visualHtml: `
+          <div class="scene-visual-wrapper">
+            <div style="display: flex; align-items: center; justify-content: space-around; gap: 16px; flex-wrap: wrap;">
+              <div style="text-align: center; padding: 12px; background: rgba(139, 92, 246, 0.2); border: 1px solid var(--primary); border-radius: 12px; min-width: 160px;">
+                <i class="fa-solid fa-chalkboard-user" style="font-size: 2rem; color: var(--primary-light);"></i>
+                <div style="font-weight: 700; margin-top: 6px;">Teacher PC</div>
+                <div style="font-size: 0.75rem; color: #cbd5e1;">Server Hub (Port 8080)</div>
+              </div>
+              <div style="display: flex; flex-direction: column; align-items: center; gap: 4px;">
+                <i class="fa-solid fa-arrow-right-arrow-left" style="font-size: 1.5rem; color: var(--accent);"></i>
+                <span style="font-size: 0.72rem; color: var(--accent); font-family: 'JetBrains Mono';">WebSocket LAN Sync</span>
+              </div>
+              <div style="text-align: center; padding: 12px; background: rgba(6, 182, 212, 0.2); border: 1px solid var(--accent); border-radius: 12px; min-width: 160px;">
+                <i class="fa-solid fa-network-wired" style="font-size: 2rem; color: var(--accent);"></i>
+                <div style="font-weight: 700; margin-top: 6px;">Gigabit Switch / Router</div>
+                <div style="font-size: 0.75rem; color: #cbd5e1;">Local Area Network</div>
+              </div>
+              <div style="display: flex; flex-direction: column; align-items: center; gap: 4px;">
+                <i class="fa-solid fa-arrow-right-arrow-left" style="font-size: 1.5rem; color: var(--accent);"></i>
+                <span style="font-size: 0.72rem; color: var(--accent); font-family: 'JetBrains Mono';">Zero-IP Client</span>
+              </div>
+              <div style="text-align: center; padding: 12px; background: rgba(16, 185, 129, 0.2); border: 1px solid var(--success); border-radius: 12px; min-width: 160px;">
+                <i class="fa-solid fa-desktop" style="font-size: 2rem; color: #34d399;"></i>
+                <div style="font-weight: 700; margin-top: 6px;">Student PCs</div>
+                <div style="font-size: 0.75rem; color: #cbd5e1;">20 to 40 Workstations</div>
+              </div>
+            </div>
+          </div>
+        `
+      },
+      {
+        id: 1,
+        badge: "ជំពូកទី ២ • 01:15 - 02:45",
+        title: "ការរៀបចំ និងបើក Server លើកុំព្យូទ័រគ្រូ",
+        desc: "បើក Terminal ឬ PowerShell ក្នុង root នៃ Folder masterSchool រួចដំណើរការ node server.js ដើម្បីចាប់ផ្តើមសេវាកម្ម HTTP និង WebSocket លើ Port 8080។",
+        narration: "ជំហានទី ១ គឺនៅលើកុំព្យូទ័ររបស់លោកគ្រូ។ លោកគ្រូបើក PowerShell ឬ CMD ចូលទៅក្នុងថត masterSchool ហើយវាយពាក្យបញ្ជា node server.js។ នៅពេលនេះ ប្រព័ន្ធនឹងចាប់ផ្តើមដំណើរការនៅលើ Port 8080 ហើយបង្ហាញអាសយដ្ឋាន LAN IP ដូចជា 192.168.1.8 សម្រាប់ឱ្យកុំព្យូទ័រសិស្សភ្ជាប់ចូល។",
+        visualHtml: `
+          <div class="scene-visual-wrapper">
+            <div class="terminal-box">
+              <span class="comment"># បើកដំណើរការម៉ាស៊ីនមេ Server លើកុំព្យូទ័រគ្រូ</span><br>
+              <span class="cmd">&gt; cd "d:\\System Student\\masterSchool\\masterSchool"</span><br>
+              <span class="cmd">&gt; node server.js</span><br>
+              <span class="output">⚡ Realtime Classroom WebSocket Hub attached at /ws/classroom</span><br>
+              <span class="output" style="color: #4ade80;">🚀 TIS Lab Computer - Modern School Server Active!</span><br>
+              <span class="output" style="color: #38bdf8;">🌐 Localhost:  http://localhost:8080/</span><br>
+              <span class="output" style="color: #facc15;">📱 LAN/Wi-Fi:  http://192.168.1.8:8080/ (Wi-Fi)</span><br>
+              <span class="output">⚡ WebSocket:  ws://localhost:8080/ws/classroom</span>
+            </div>
+          </div>
+        `
+      },
+      {
+        id: 2,
+        badge: "ជំពូកទី ៣ • 02:45 - 04:10",
+        title: "ចូលប្រើ Teacher Console & បង្កើត QR / Token",
+        desc: "បើក Browser ចូល http://localhost:8080 ចូលដោយគណនី khienthou / 11112222 រួចចុច Menu '🖥 បន្ទប់កុំព្យូទ័រ' &gt; 'ចុះឈ្មោះ &amp; QR' ដើម្បីបង្កើត One-Time Token (OTT 6 ខ្ទង់)។",
+        narration: "ជំហានទី ២ លោកគ្រូបើក Browser វាយ http://localhost:8080 រួច Login ចូលគណនី Admin ឬលោកគ្រូ ខៀន ធូ។ បន្ទាប់មក ចុចលើ Menu 🖥 បន្ទប់កុំព្យូទ័រ ហើយចូលទៅកាន់ផ្ទាំង 'ចុះឈ្មោះ & QR'។ នៅទីនេះ លោកគ្រូនឹងឃើញ QR Code និងលេខ Token ៦ ខ្ទង់ សម្រាប់ចាក់ផ្សាយលើ Projector ឱ្យសិស្សមើល។",
+        visualHtml: `
+          <div class="scene-visual-wrapper" style="display: flex; gap: 20px; align-items: center; justify-content: center;">
+            <div style="background: #ffffff; padding: 14px; border-radius: 12px; display: inline-block; text-align: center;">
+              <i class="fa-solid fa-qrcode" style="font-size: 5rem; color: #000000;"></i>
+              <div style="color: #000; font-weight: 700; font-size: 0.8rem; margin-top: 4px;">SCAN TO ENROLL</div>
+            </div>
+            <div style="max-width: 320px;">
+              <div style="font-size: 0.82rem; color: var(--accent); font-weight: 700;">ONE-TIME TOKEN (OTT)</div>
+              <div style="font-family: 'JetBrains Mono'; font-size: 2.2rem; font-weight: 800; color: #4ade80; letter-spacing: 4px;">TIS982</div>
+              <div style="font-size: 0.85rem; color: #cbd5e1; margin-top: 6px;">
+                សិស្សអាច Scan QR ពីលើក្តារខៀន ឬវាយកូដ Token ៦ខ្ទង់នេះ ចូលក្នុងកម្មវិធី Student Agent ដើម្បីចុះឈ្មោះស្វ័យប្រវត្តិ។
+              </div>
+            </div>
+          </div>
+        `
+      },
+      {
+        id: 3,
+        badge: "ជំពូកទី ៤ • 04:10 - 05:40",
+        title: "ការដំឡើង Student Agent លើកុំព្យូទ័រសិស្ស",
+        desc: "លើកុំព្យូទ័រសិស្ស ដំណើរការ Install-Student-Agent.bat រួចវាយ Token ឬប្រើ Quick Web Downloader។ កម្មវិធីនឹងរៀបចំ Python, Pillow, websockets និងចុះឈ្មោះដោយ Zero-IP Auto-Discovery។",
+        narration: "ជំហានទី ៣ គឺនៅលើកុំព្យូទ័រសិស្សទាំងអស់។ លោកគ្រូគ្រាន់តែ Copy ថត student-agent ដាក់ក្នុងកុំព្យូទ័រសិស្ស ឬឱ្យសិស្សបើក Browser ទៅកាន់ Link របស់គ្រូ រួចចុច Run លើឯកសារ Install-Student-Agent.bat។ កម្មវិធីនឹងត្រួតពិនិត្យ Python, ដំឡើងបណ្ណាល័យចាំបាច់ និងសួររក Token។ ពេលវាយ Token រួច កុំព្យូទ័រនោះនឹងចាប់ផ្តើមដំណើរការ Background Service ភ្លាម។",
+        visualHtml: `
+          <div class="scene-visual-wrapper">
+            <div class="terminal-box">
+              <span class="comment">===============================================================</span><br>
+              <span class="comment">   TIAN XIN INTERNATIONAL SCHOOL - STUDENT AGENT INSTALLER     </span><br>
+              <span class="comment">===============================================================</span><br>
+              <span class="output">[✓] Python is installed: Python 3.12.2</span><br>
+              <span class="output">[*] Installing Pillow, websockets... Done.</span><br>
+              <span class="output">[*] Deploying to C:\\ProgramData\\TIS-Lab-Agent...</span><br>
+              <span class="cmd">Enter 6-digit Classroom Enrollment Token: TIS982</span><br>
+              <span class="output" style="color: #4ade80;">[✓] SUCCESS: Machine Registered (MID-7F9A01) as PC-01!</span><br>
+              <span class="output" style="color: #38bdf8;">[✓] Windows Auto-Start Configured. Agent is now ONLINE.</span>
+            </div>
+          </div>
+        `
+      },
+      {
+        id: 4,
+        badge: "ជំពូកទី ៥ • 05:40 - 07:15",
+        title: "ការផ្ទៀងផ្ទាត់ និងតាមដានផ្ទាល់លើផ្ទាំងគ្រូ",
+        desc: "ពិនិត្យបញ្ជីកុំព្យូទ័រសិស្សដែលទើបភ្ជាប់ចូល (Online 🟢)។ ប្រព័ន្ធបង្ហាញ CPU, RAM, GPU, MAC Address, Resolution និង Thumbnail អេក្រង់របស់សិស្សគ្រប់ម៉ាស៊ីនក្នុងពេលជាក់ស្តែង។",
+        narration: "ត្រឡប់មកកាន់ផ្ទាំងរបស់គ្រូវិញ លោកគ្រូនឹងឃើញកុំព្យូទ័រសិស្សទាំងអស់លោតសញ្ញាពណ៌បៃតង Online ជាបន្តបន្ទាប់! នៅលើ Card នីមួយៗ បង្ហាញព័ត៌មានលម្អិតដូចជា CPU, RAM, GPU និងរូបភាពអេក្រង់បច្ចុប្បន្នរបស់សិស្ស។ លោកគ្រូក៏អាចប្តូរទៅមើល Matrix Screen Monitor 3x3 ឬ 4x4 ដើម្បីមើលសិស្ស ១៦ នាក់ក្នុងពេលតែមួយ។",
+        visualHtml: `
+          <div class="scene-visual-wrapper">
+            <div class="sim-grid">
+              <div class="sim-card online">
+                <div class="sim-card-title"><i class="fa-solid fa-desktop"></i> PC-01 (ចាន់ វណ្ណា)</div>
+                <div class="sim-card-status"><i class="fa-solid fa-circle"></i> ONLINE (32ms)</div>
+                <div style="font-size: 0.7rem; color: #94a3b8; margin-top: 4px;">CPU: 14% | RAM: 3.2GB</div>
+              </div>
+              <div class="sim-card online">
+                <div class="sim-card-title"><i class="fa-solid fa-desktop"></i> PC-02 (ស៊ូ សុខា)</div>
+                <div class="sim-card-status"><i class="fa-solid fa-circle"></i> ONLINE (28ms)</div>
+                <div style="font-size: 0.7rem; color: #94a3b8; margin-top: 4px;">CPU: 22% | RAM: 4.1GB</div>
+              </div>
+              <div class="sim-card online">
+                <div class="sim-card-title"><i class="fa-solid fa-desktop"></i> PC-03 (លី ម៉េងហ័រ)</div>
+                <div class="sim-card-status"><i class="fa-solid fa-circle"></i> ONLINE (35ms)</div>
+                <div style="font-size: 0.7rem; color: #94a3b8; margin-top: 4px;">CPU: 8% | RAM: 2.9GB</div>
+              </div>
+              <div class="sim-card online">
+                <div class="sim-card-title"><i class="fa-solid fa-desktop"></i> PC-04 (អ៊ុក ចិន្តា)</div>
+                <div class="sim-card-status"><i class="fa-solid fa-circle"></i> ONLINE (19ms)</div>
+                <div style="font-size: 0.7rem; color: #94a3b8; margin-top: 4px;">CPU: 18% | RAM: 3.8GB</div>
+              </div>
+            </div>
+          </div>
+        `
+      },
+      {
+        id: 5,
+        badge: "ជំពូកទី ៦ • 07:15 - 08:45",
+        title: "មុខងារសំខាន់ៗ៖ Lock, Broadcast, Remote Control & Files",
+        desc: "សាកល្បងចុច 'ចាក់សោអេក្រង់ទាំងអស់' (Lock All), ផ្សាយអេក្រង់គ្រូ (Teacher Broadcast), បញ្ជាម៉ាស៊ីនសិស្សពីចម្ងាយ (Interactive Remote Control) និងការចែករំលែកឯកសារមេរៀន។",
+        narration: "ឥឡូវនេះប្រព័ន្ធដំណើរការ ១០០% ហើយ! លោកគ្រូអាចប្រើប៊ូតុង Lock All ដើម្បីចាក់សោអេក្រង់សិស្សទាំងអស់ពេលគ្រូកំពុងពន្យល់ ឬចុច Broadcast ដើម្បីបញ្ចាំងអេក្រង់គ្រូទៅគ្រប់ម៉ាស៊ីនសិស្ស។ បើសិស្សណាត្រូវការជំនួយ លោកគ្រូអាចចុច Remote Control ដើម្បីគ្រប់គ្រងកណ្ដុរ និងក្តារចុចរបស់សិស្សនោះពីតុគ្រូបានយ៉ាងងាយស្រួល។",
+        visualHtml: `
+          <div class="scene-visual-wrapper">
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;">
+              <div style="background: rgba(239, 68, 68, 0.15); border: 1px solid var(--danger); padding: 12px; border-radius: 10px; text-align: center;">
+                <i class="fa-solid fa-lock" style="font-size: 1.5rem; color: #f87171;"></i>
+                <div style="font-weight: 700; font-size: 0.85rem; margin-top: 6px;">Lock Screens</div>
+                <small style="color: #cbd5e1; font-size: 0.72rem;">ចាក់សោអេក្រង់</small>
+              </div>
+              <div style="background: rgba(139, 92, 246, 0.15); border: 1px solid var(--primary); padding: 12px; border-radius: 10px; text-align: center;">
+                <i class="fa-solid fa-tower-broadcast" style="font-size: 1.5rem; color: var(--primary-light);"></i>
+                <div style="font-weight: 700; font-size: 0.85rem; margin-top: 6px;">Broadcast</div>
+                <small style="color: #cbd5e1; font-size: 0.72rem;">ផ្សាយអេក្រង់គ្រូ</small>
+              </div>
+              <div style="background: rgba(6, 182, 212, 0.15); border: 1px solid var(--accent); padding: 12px; border-radius: 10px; text-align: center;">
+                <i class="fa-solid fa-computer-mouse" style="font-size: 1.5rem; color: var(--accent);"></i>
+                <div style="font-weight: 700; font-size: 0.85rem; margin-top: 6px;">Remote Control</div>
+                <small style="color: #cbd5e1; font-size: 0.72rem;">បញ្ជាពីចម្ងាយ</small>
+              </div>
+              <div style="background: rgba(16, 185, 129, 0.15); border: 1px solid var(--success); padding: 12px; border-radius: 10px; text-align: center;">
+                <i class="fa-solid fa-folder-open" style="font-size: 1.5rem; color: #34d399;"></i>
+                <div style="font-weight: 700; font-size: 0.85rem; margin-top: 6px;">Distribute Files</div>
+                <small style="color: #cbd5e1; font-size: 0.72rem;">ចែករំលែកមេរៀន</small>
+              </div>
+            </div>
+          </div>
+        `
+      },
+      {
+        id: 6,
+        badge: "ជំពូកទី ៧ • 08:45 - 10:00",
+        title: "គន្លឹះដោះស្រាយបញ្ហាបច្ចេកទេស (Troubleshooting)",
+        desc: "វិធីដោះស្រាយនៅពេលសិស្សរកមិនឃើញ Server៖ បើក Windows Firewall Port 8080, ពិនិត្យបណ្តាញ LAN/Wi-Fi Subnet ដូចគ្នា និងរបៀប Reset Student Agent។",
+        narration: "ចុងក្រោយ គន្លឹះដោះស្រាយបញ្ហាសំខាន់ៗ៖ ប្រសិនបើសិស្សតភ្ជាប់មិនចូល សូមប្រាកដថាកុំព្យូទ័រគ្រូ និងសិស្សភ្ជាប់ Wi-Fi ឬខ្សែ LAN ក្នុង Router តែមួយ (Subnet ដូចគ្នា)។ លើកុំព្យូទ័រគ្រូ សូមអនុញ្ញាត Port 8080 ក្នុង Windows Firewall។ បើចង់ដោះកម្មវិធីសិស្សចេញវិញ គ្រាន់តែដំណើរការ Uninstall-Student-Agent.bat ជាការស្រេច។ សូមអរគុណ!",
+        visualHtml: `
+          <div class="scene-visual-wrapper">
+            <div style="display: flex; flex-direction: column; gap: 8px; font-size: 0.88rem;">
+              <div style="display: flex; align-items: center; gap: 10px; color: #facc15;">
+                <i class="fa-solid fa-shield-halved"></i>
+                <span><strong>Windows Firewall:</strong> អនុញ្ញាត Port 8080 Inbound TCP លើកុំព្យូទ័រគ្រូ។</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 10px; color: #38bdf8;">
+                <i class="fa-solid fa-network-wired"></i>
+                <span><strong>LAN Subnet:</strong> ត្រូវប្រាកដថា IP ស្ថិតក្នុង Range ដូចគ្នា (ឧ. 192.168.1.xxx)។</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 10px; color: #4ade80;">
+                <i class="fa-solid fa-trash-can"></i>
+                <span><strong>Uninstall Agent:</strong> Run Uninstall-Student-Agent.bat (Admin) ដើម្បីលុបចេញស្អាត។</span>
+              </div>
+            </div>
+          </div>
+        `
+      }
+    ];
+
+    let currentChapterIndex = 0;
+    let isPlaying = false;
+    let playInterval = null;
+    let playSpeed = 1.0;
+    let elapsedSeconds = 0;
+    const totalDurationSeconds = 600; // 10 minutes
+
+    // Render Chapters list in sidebar
+    function renderChapterList() {
+      const container = document.getElementById('chapter-list');
+      container.innerHTML = CHAPTERS.map((chap, idx) => `
+        <div class="chapter-item ${idx === currentChapterIndex ? 'active' : ''}" onclick="selectChapter(${idx})">
+          <div class="chap-number">${idx + 1}</div>
+          <div class="chap-info">
+            <div class="chap-title">${chap.title}</div>
+            <div class="chap-duration">${chap.badge}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Render current scene
+    function renderScene(idx) {
+      currentChapterIndex = idx;
+      const chap = CHAPTERS[idx];
+      
+      const container = document.getElementById('scene-container');
+      container.innerHTML = `
+        <div class="scene-header">
+          <span class="scene-chapter-badge"><i class="fa-solid fa-circle-play"></i> ${chap.badge}</span>
+          <h1 class="scene-title">${chap.title}</h1>
+          <p class="scene-desc">${chap.desc}</p>
+        </div>
+        ${chap.visualHtml}
+      `;
+
+      // Update Subtitles
+      document.getElementById('subtitles-text').innerText = chap.narration;
+
+      // Update Progress
+      const progressPercent = ((idx + 1) / CHAPTERS.length) * 100;
+      document.getElementById('progress-fill').style.width = progressPercent + '%';
+
+      // Update time display
+      updateTimeDisplay(idx);
+
+      renderChapterList();
+    }
+
+    function updateTimeDisplay(idx) {
+      const chapterStarts = [0, 75, 165, 250, 340, 435, 525];
+      const currentSec = chapterStarts[idx] || 0;
+      const min = String(Math.floor(currentSec / 60)).padStart(2, '0');
+      const sec = String(currentSec % 60).padStart(2, '0');
+      document.getElementById('time-display').innerText = `${min}:${sec} / 10:00`;
+    }
+
+    function selectChapter(idx) {
+      renderScene(idx);
+    }
+
+    function nextChapter() {
+      if (currentChapterIndex < CHAPTERS.length - 1) {
+        renderScene(currentChapterIndex + 1);
+      } else {
+        renderScene(0);
+      }
+    }
+
+    function prevChapter() {
+      if (currentChapterIndex > 0) {
+        renderScene(currentChapterIndex - 1);
+      }
+    }
+
+    function restartChapter() {
+      renderScene(currentChapterIndex);
+    }
+
+    function togglePlay() {
+      isPlaying = !isPlaying;
+      const playIcon = document.getElementById('play-icon');
+      if (isPlaying) {
+        playIcon.className = 'fa-solid fa-pause';
+        startAutoSlide();
+      } else {
+        playIcon.className = 'fa-solid fa-play';
+        stopAutoSlide();
+      }
+    }
+
+    function startAutoSlide() {
+      if (playInterval) clearInterval(playInterval);
+      const delay = 12000 / playSpeed; // 12 seconds per chapter
+      playInterval = setInterval(() => {
+        if (currentChapterIndex < CHAPTERS.length - 1) {
+          nextChapter();
+        } else {
+          togglePlay();
+        }
+      }, delay);
+    }
+
+    function stopAutoSlide() {
+      if (playInterval) {
+        clearInterval(playInterval);
+        playInterval = null;
+      }
+    }
+
+    function cycleSpeed() {
+      const speeds = [1.0, 1.25, 1.5, 2.0];
+      const curIdx = speeds.indexOf(playSpeed);
+      playSpeed = speeds[(curIdx + 1) % speeds.length];
+      document.getElementById('speed-btn').innerText = playSpeed + 'x';
+      if (isPlaying) {
+        startAutoSlide();
+      }
+    }
+
+    function handleScrub(e) {
+      const rect = e.currentTarget.getBoundingClientRect();
+      const clickPos = (e.clientX - rect.left) / rect.width;
+      const targetIdx = Math.min(CHAPTERS.length - 1, Math.floor(clickPos * CHAPTERS.length));
+      selectChapter(targetIdx);
+    }
+
+    function toggleFullscreen() {
+      const stage = document.getElementById('video-stage');
+      if (!document.fullscreenElement) {
+        stage.requestFullscreen().catch(err => alert("Fullscreen error: " + err.message));
+      } else {
+        document.exitFullscreen();
+      }
+    }
+
+    // Voice narration with SpeechSynthesis (Khmer or fallback)
+    function speakCurrentNarration() {
+      if (!('speechSynthesis' in window)) {
+        alert("កម្មវិធីរុករករបស់អ្នកមិនគាំទ្រ Speech Synthesis ទេ។");
+        return;
+      }
+      
+      window.speechSynthesis.cancel();
+      const text = CHAPTERS[currentChapterIndex].narration;
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.rate = 0.95;
+      
+      // Try to find Khmer voice if available
+      const voices = window.speechSynthesis.getVoices();
+      const khVoice = voices.find(v => v.lang.includes('km') || v.lang.includes('kh'));
+      if (khVoice) {
+        utterance.voice = khVoice;
+      }
+
+      const btn = document.getElementById('speak-btn');
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> កំពុងអាន...';
+      
+      utterance.onend = () => {
+        btn.innerHTML = '<i class="fa-solid fa-volume-high"></i> ចាក់សំឡេងពន្យល់ (Speech)';
+      };
+
+      utterance.onerror = () => {
+        btn.innerHTML = '<i class="fa-solid fa-volume-high"></i> ចាក់សំឡេងពន្យល់ (Speech)';
+      };
+
+      window.speechSynthesis.speak(utterance);
+    }
+
+    function copyCode(text) {
+      navigator.clipboard.writeText(text).then(() => {
+        alert("បានចម្លងពាក្យបញ្ជា៖ " + text);
+      }).catch(() => {
+        prompt("សូមចម្លងពាក្យបញ្ជានេះ៖", text);
+      });
+    }
+
+    function showQuickInstructions() {
+      alert("លោកគ្រូអាចមើលសេណារីយ៉ូពេញលេញ និងវិធីសាស្ត្រថតវីដេអូ ឬបើកផ្ទាំង Computer Lab ផ្ទាល់តាមប៊ូតុងខាងលើ!");
+    }
+
+    // Init
+    window.addEventListener('DOMContentLoaded', () => {
+      renderScene(0);
+      renderChapterList();
+    });
+  </script>
+</body>
+</html>

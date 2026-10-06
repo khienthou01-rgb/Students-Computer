@@ -22,8 +22,10 @@ Deploy-Vercel.bat
 serve.ps1
 
 # Ephemeral state & logs
+.lab_data/
 .sent_daily_att_*
 *.log
+test_*.js
 
 # OS files
 .DS_Store

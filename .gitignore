@@ -10,6 +10,7 @@ _smart_school_upgrade_backup/
 
 # Environment and temp
 .firebase/
+.lab_data/
 .sent_daily_att_*
 *.log
 

@@ -1,0 +1,11 @@
+{
+  "liveServer.settings.ignoreFiles": [
+    "**/data/**",
+    "**/.lab_data/**",
+    "**/*.json",
+    "**/*.log",
+    "**/*.bat",
+    "**/*.ps1",
+    "**/.git/**"
+  ]
+}
