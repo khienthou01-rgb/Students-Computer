@@ -31,7 +31,7 @@ const DashboardView = {
                 <i class="fa-solid fa-calendar-check text-emerald-400"></i>
                 <span>កត់ត្រាវត្តមាន</span>
               </button>
-              <button type="button" class="btn-secondary" onclick="App.switchTab('timetable')" style="height: 42px; padding: 0 16px; font-size: 0.88rem; font-weight: 700; border-radius: 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.12);">
+              <button type="button" class="btn-secondary" onclick="App.switchTab('computer-lab')" style="height: 42px; padding: 0 16px; font-size: 0.88rem; font-weight: 700; border-radius: 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.12);">
                 <i class="fa-solid fa-desktop text-cyan-400"></i>
                 <span>Lab Live Cockpit</span>
               </button>

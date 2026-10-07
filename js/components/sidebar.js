@@ -168,6 +168,10 @@ const SidebarComponent = {
                 <i class="fa-solid fa-sliders text-cyan-300"></i>
                 <span>ការកំណត់ (Settings)</span>
               </button>
+              <a href="video_tutorial.html" target="_blank" class="nav-link sub-link" style="color: #38bdf8;" title="វីដេអូបង្រៀនដំឡើង & Setup Lab">
+                <i class="fa-solid fa-circle-play text-cyan-400"></i>
+                <span style="font-weight: 600;">វីដេអូបង្រៀន Setup Lab 🎬</span>
+              </a>
             </div>
           </div>
 
