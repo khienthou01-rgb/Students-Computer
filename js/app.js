@@ -956,6 +956,122 @@ const App = {
     }
   },
 
+  // Toggle row action menu for student data table (Dropdown Portal)
+  toggleTableRowActionMenu(event, studentId) {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    const btn = event ? event.currentTarget : null;
+    if (!btn) return;
+
+    let menu = document.getElementById("tableRowActionDropdown");
+    if (!menu) {
+      menu = document.createElement("div");
+      menu.id = "tableRowActionDropdown";
+      menu.className = "table-action-dropdown";
+      document.body.appendChild(menu);
+
+      // Close on outside click
+      document.addEventListener("click", (e) => {
+        if (!e.target.closest("#tableRowActionDropdown") && !e.target.closest(".btn-more")) {
+          App.closeTableRowActionMenu();
+        }
+      });
+
+      // Close on escape
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+          App.closeTableRowActionMenu();
+        }
+      });
+
+      // Close on scroll or resize
+      window.addEventListener("resize", () => App.closeTableRowActionMenu());
+      window.addEventListener("scroll", () => App.closeTableRowActionMenu(), true);
+    }
+
+    // Toggle off if clicking the same open button
+    if (menu.classList.contains("show") && menu.dataset.activeStudentId === studentId) {
+      this.closeTableRowActionMenu();
+      return;
+    }
+
+    menu.dataset.activeStudentId = studentId;
+
+    // Active state indicator on button
+    document.querySelectorAll(".btn-more.active").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+
+    const s = this.state.students.find(st => String(st.ID).trim() === String(studentId).trim());
+    const studentName = s ? s.NameKh : studentId;
+
+    menu.innerHTML = `
+      <div class="table-action-dropdown-header">
+        <span><i class="fa-solid fa-user-graduate" style="color: #6366f1;"></i> ${this.escapeHtml(studentName)}</span>
+        <span class="badge badge-id font-mono">${this.escapeHtml(studentId)}</span>
+      </div>
+      <button type="button" class="table-action-dropdown-item" onclick="App.closeTableRowActionMenu(); App.openQuickContactModal('${studentId}')">
+        <i class="fa-solid fa-comments" style="color: #0088cc;"></i>
+        <span>មជ្ឈមណ្ឌលទំនាក់ទំនង (Contact Hub)</span>
+      </button>
+      <button type="button" class="table-action-dropdown-item" onclick="App.closeTableRowActionMenu(); App.openAttendanceForStudent('${studentId}')">
+        <i class="fa-solid fa-calendar-check" style="color: #059669;"></i>
+        <span>កត់ត្រាវត្តមានសិស្ស (Attendance)</span>
+      </button>
+      <button type="button" class="table-action-dropdown-item" onclick="App.closeTableRowActionMenu(); App.viewStudentDetails('${studentId}')">
+        <i class="fa-solid fa-id-card" style="color: #0284c7;"></i>
+        <span>មើលព័ត៌មាន & កាតសិស្ស (Details)</span>
+      </button>
+      <button type="button" class="table-action-dropdown-item" onclick="App.closeTableRowActionMenu(); App.openStudentReceiptModal('${studentId}')">
+        <i class="fa-solid fa-receipt" style="color: #10b981;"></i>
+        <span>ចេញវិក្កយបត្រ / បង់ប្រាក់ (Receipt)</span>
+      </button>
+      <button type="button" class="table-action-dropdown-item" onclick="App.closeTableRowActionMenu(); App.openEditModal('${studentId}')">
+        <i class="fa-solid fa-pen-to-square" style="color: #f59e0b;"></i>
+        <span>កែប្រែទិន្នន័យសិស្ស (Edit)</span>
+      </button>
+      <div class="table-action-dropdown-divider"></div>
+      <button type="button" class="table-action-dropdown-item item-danger" onclick="App.closeTableRowActionMenu(); App.confirmDeleteStudent('${studentId}')">
+        <i class="fa-solid fa-trash-can" style="color: #ef4444;"></i>
+        <span>លុបទិន្នន័យ (Delete)</span>
+      </button>
+    `;
+
+    menu.classList.add("show");
+
+    // Position popover
+    const rect = btn.getBoundingClientRect();
+    const menuWidth = 230;
+    const menuHeight = 240;
+
+    let left = rect.right - menuWidth;
+    if (left < 10) left = 10;
+    if (left + menuWidth > window.innerWidth - 10) {
+      left = window.innerWidth - menuWidth - 10;
+    }
+
+    const spaceBelow = window.innerHeight - rect.bottom;
+    let top;
+    if (spaceBelow < menuHeight && rect.top > menuHeight) {
+      top = rect.top - menuHeight - 4;
+    } else {
+      top = rect.bottom + 4;
+    }
+
+    menu.style.top = `${top}px`;
+    menu.style.left = `${left}px`;
+  },
+
+  closeTableRowActionMenu() {
+    const menu = document.getElementById("tableRowActionDropdown");
+    if (menu) {
+      menu.classList.remove("show");
+      delete menu.dataset.activeStudentId;
+    }
+    document.querySelectorAll(".btn-more.active").forEach(b => b.classList.remove("active"));
+  },
+
   // Search & Filter Algorithm
   applyFiltersAndSearch() {
     const query = this.state.searchQuery;

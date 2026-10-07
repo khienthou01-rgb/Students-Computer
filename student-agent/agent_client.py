@@ -116,6 +116,94 @@ class StudentAgentClient:
             return False, str(e)
 
     # -------------------------------------------------------------
+    # AUTO-DISCOVERY OF TEACHER SERVER WHEN WI-FI CHANGES
+    # -------------------------------------------------------------
+    def auto_discover_teacher_server(self):
+        """
+        Auto-discovers Teacher PC on LAN/Wi-Fi via UDP Beacon / Broadcast Ping & Local Subnet Probe.
+        Updates self.config_data with new IP and saves config automatically.
+        """
+        import socket
+        print("🔍 [Agent Auto-Discovery] Wi-Fi may have changed. Searching for Teacher Server on LAN...")
+        
+        # 1. Try UDP broadcast query / beacon listening
+        try:
+            udp = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            udp.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+            udp.settimeout(1.2)
+            # Send discovery ping to UDP port 8088
+            ping_msg = json.dumps({"type": "TIS_DISCOVER_TEACHER", "machineId": self.config_data.get("machineId")}).encode('utf-8')
+            udp.sendto(ping_msg, ('255.255.255.255', 8088))
+            
+            # Listen for beacon or reply
+            start_t = time.time()
+            while time.time() - start_t < 1.8:
+                try:
+                    data, addr = udp.recvfrom(2048)
+                    info = json.loads(data.decode('utf-8'))
+                    if info.get("service") == "tis-lab-teacher" and info.get("ip"):
+                        teacher_ip = info["ip"]
+                        teacher_port = info.get("port", 8080)
+                        print(f"🎉 [Agent Auto-Discovery] Found Teacher Server via UDP Beacon at {teacher_ip}:{teacher_port}!")
+                        self.config_data["serverUrl"] = f"http://{teacher_ip}:{teacher_port}"
+                        self.config_data["wsUrl"] = f"ws://{teacher_ip}:{teacher_port}/ws/classroom"
+                        config.save_config(self.config_data)
+                        udp.close()
+                        return True
+                except socket.timeout:
+                    break
+                except Exception:
+                    pass
+            udp.close()
+        except Exception:
+            pass
+
+        # 2. Try localhost / 127.0.0.1 (in case testing on same machine)
+        for host in ["localhost", "127.0.0.1"]:
+            try:
+                url = f"http://{host}:8080/api/health"
+                req = urllib.request.Request(url)
+                with urllib.request.urlopen(req, timeout=0.8) as res:
+                    if res.status == 200:
+                        self.config_data["serverUrl"] = f"http://{host}:8080"
+                        self.config_data["wsUrl"] = f"ws://{host}:8080/ws/classroom"
+                        config.save_config(self.config_data)
+                        print(f"🎉 [Agent Auto-Discovery] Found Teacher Server on {host}!")
+                        return True
+            except Exception:
+                pass
+
+        # 3. Quick Subnet Probe: Detect local IP and scan common teacher host endings
+        try:
+            s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            s.connect(("8.8.8.8", 80))
+            my_local_ip = s.getsockname()[0]
+            s.close()
+            prefix = ".".join(my_local_ip.split(".")[:3]) + "."
+            candidate_ips = [prefix + str(i) for i in [1, 2, 8, 9, 10, 100, 101, 105, 108, 120, 200]]
+            for cand_ip in candidate_ips:
+                if cand_ip == my_local_ip:
+                    continue
+                try:
+                    url = f"http://{cand_ip}:8080/api/health"
+                    req = urllib.request.Request(url)
+                    with urllib.request.urlopen(req, timeout=0.5) as res:
+                        if res.status == 200:
+                            data = json.loads(res.read().decode('utf-8'))
+                            if data.get("status") == "ok":
+                                print(f"🎉 [Agent Auto-Discovery] Found Teacher Server at {cand_ip}:8080!")
+                                self.config_data["serverUrl"] = f"http://{cand_ip}:8080"
+                                self.config_data["wsUrl"] = f"ws://{cand_ip}:8080/ws/classroom"
+                                config.save_config(self.config_data)
+                                return True
+                except Exception:
+                    pass
+        except Exception:
+            pass
+
+        return False
+
+    # -------------------------------------------------------------
     # 2. MAIN CONNECTION & RECONNECT LOOP
     # -------------------------------------------------------------
     async def start(self):
@@ -125,6 +213,7 @@ class StudentAgentClient:
 
         reconnect_delay = 1
         max_delay = 10
+        failed_attempts = 0
 
         while self.is_running:
             if not self.config_data.get("agentId") or not self.config_data.get("secretKey"):
@@ -147,6 +236,7 @@ class StudentAgentClient:
                 async with websockets.connect(ws_url, ping_interval=15, ping_timeout=10) as ws:
                     self.current_ws = ws
                     reconnect_delay = 1
+                    failed_attempts = 0
 
                     # Authenticate
                     auth_packet = {
@@ -184,8 +274,16 @@ class StudentAgentClient:
 
             except Exception as e:
                 self.last_error = str(e)
-                print(f"⚠️ Connection lost ({e}). Reconnecting in {reconnect_delay}s...")
+                failed_attempts += 1
+                print(f"⚠️ Connection lost ({e}). Reconnecting in {reconnect_delay}s... (Attempt #{failed_attempts})")
                 self.set_state(ConnectionState.NETWORK_LOST)
+
+                # If connection failed multiple times, Wi-Fi may have changed -> Auto-discover new teacher IP
+                if failed_attempts >= 2:
+                    discovered = self.auto_discover_teacher_server()
+                    if discovered:
+                        failed_attempts = 0
+                        reconnect_delay = 1
 
             self.current_ws = None
             await asyncio.sleep(reconnect_delay)
@@ -273,6 +371,15 @@ class StudentAgentClient:
 
                 elif msg_type == "STOP_REMOTE_CONTROL":
                     remote_controller.stop_control()
+
+                elif msg_type == "NETWORK_IP_CHANGED":
+                    new_ip = data.get("newIp")
+                    port = data.get("port", 8080)
+                    if new_ip:
+                        print(f"📡 [Agent] Teacher Wi-Fi / IP changed to {new_ip}! Updating config automatically...")
+                        self.config_data["serverUrl"] = f"http://{new_ip}:{port}"
+                        self.config_data["wsUrl"] = f"ws://{new_ip}:{port}/ws/classroom"
+                        config.save_config(self.config_data)
 
             except Exception as e:
                 print(f"[Command Receiver Error] {e}")

@@ -117,25 +117,25 @@ const DirectoryView = {
             <table class="data-table">
               <thead>
                 <tr>
-                  <th style="width: 50px; text-align: center;">ល.រ</th>
-                  <th class="sortable-th" data-sort="ID">
+                  <th style="width: 42px; text-align: center;">ល.រ</th>
+                  <th class="sortable-th" data-sort="ID" style="width: 75px; min-width: 70px;">
                     អត្តលេខ <i class="sort-icon fa-solid fa-sort text-muted"></i>
                   </th>
-                  <th class="sortable-th" data-sort="NameKh">
+                  <th class="sortable-th" data-sort="NameKh" style="min-width: 145px;">
                     ឈ្មោះសិស្ស <i class="sort-icon fa-solid fa-sort text-muted"></i>
                   </th>
-                  <th class="sortable-th" data-sort="Gender">
+                  <th class="sortable-th" data-sort="Gender" style="width: 65px; min-width: 60px; text-align: center;">
                     ភេទ <i class="sort-icon fa-solid fa-sort text-muted"></i>
                   </th>
-                  <th class="sortable-th" data-sort="Course">
+                  <th class="sortable-th" data-sort="Course" style="min-width: 95px; width: 100px;">
                     វគ្គសិក្សាកុំព្យូទ័រ <i class="sort-icon fa-solid fa-sort text-muted"></i>
                   </th>
-                  <th style="min-width: 160px;">រយៈពេល & ថ្ងៃបានរៀន</th>
-                  <th>ទំនាក់ទំនង & អាសយដ្ឋាន</th>
-                  <th class="sortable-th" data-sort="Status">
+                  <th style="min-width: 155px;">រយៈពេល & ថ្ងៃបានរៀន</th>
+                  <th style="min-width: 135px;">ទំនាក់ទំនង & អាសយដ្ឋាន</th>
+                  <th class="sortable-th" data-sort="Status" style="width: 95px; min-width: 90px; text-align: center;">
                     ស្ថានភាព <i class="sort-icon fa-solid fa-sort text-muted"></i>
                   </th>
-                  <th style="text-align: center; width: 120px;">សកម្មភាព</th>
+                  <th style="text-align: center; width: 130px; min-width: 125px;">សកម្មភាព</th>
                 </tr>
               </thead>
               <tbody id="studentTableBody">
@@ -367,13 +367,13 @@ const DirectoryView = {
             <div>
               <div class="font-bold student-name-link" onclick="App.viewStudentDetails('${s.ID}')">
                 ${App.escapeHtml(s.NameKh)}
-                ${App.isNewStudent(s) ? `<span class="badge-new-student" title="សិស្សចុះឈ្មោះថ្មី"><i class="fa-solid fa-sparkles"></i> សិស្សថ្មី</span>` : ''}
+                ${App.isNewStudent(s) ? `<span class="badge-new-student" title="សិស្សចុះឈ្មោះថ្មី"><i class="fa-solid fa-sparkles"></i> ថ្មី</span>` : ''}
               </div>
               <div class="text-xs text-muted font-sans">${App.escapeHtml(s.NameEn || '')}</div>
             </div>
           </div>
         </td>
-        <td>
+        <td class="text-center">
           <span class="gender-tag gender-${s.Gender === 'ប្រុស' ? 'male' : 'female'}">
             <i class="fa-solid fa-${s.Gender === 'ប្រុស' ? 'mars' : 'venus'}"></i>
             ${App.escapeHtml(s.Gender)}
@@ -390,20 +390,20 @@ const DirectoryView = {
             const attSummary = StudentAPI.getStudentAttendanceSummary(s.ID);
             const risk = (typeof StudentAPI !== "undefined" && StudentAPI.getStudentAtRiskStatus) ? StudentAPI.getStudentAtRiskStatus(s.ID) : { isAtRisk: false };
             return `
-              <div style="font-size: 0.82rem;">
+              <div style="font-size: 0.78rem;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
                   <span class="badge-days-studied"><i class="fa-regular fa-calendar-days"></i> ${daysInfo.durationLabel} (${daysInfo.daysElapsed}/${daysInfo.totalCourseDays}ថ្ងៃ)</span>
                   <span class="text-xs text-muted font-bold">${daysInfo.percent}%</span>
                 </div>
-                <div class="duration-progress-bar">
+                <div class="duration-progress-bar" style="margin: 3px 0;">
                   <div class="duration-progress-fill" style="width: ${daysInfo.percent}%;"></div>
                 </div>
-                <div class="text-xs text-muted" style="margin-top: 3px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 4px;">
-                  <span>ចូលរៀន: ${daysInfo.startDate} | នៅសល់: ${daysInfo.remainingLabel}</span>
+                <div class="text-xs text-muted" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 4px;">
+                  <span>ចូល: ${daysInfo.startDate} | សល់: ${daysInfo.remainingLabel}</span>
                   <span class="badge-attendance-rate ${attSummary.rate >= 85 ? 'rate-high' : attSummary.rate >= 70 ? 'rate-medium' : 'rate-low'}" title="អត្រាវត្តមាន">វត្តមាន ${attSummary.rate}%</span>
                 </div>
                 ${risk.isAtRisk ? `
-                  <div style="margin-top: 5px;">
+                  <div style="margin-top: 4px;">
                     <span class="badge-at-risk-pulse" onclick="event.stopPropagation(); App.openQuickContactModal('${s.ID}', 'absence')" title="អវត្តមាន ${risk.consecutive || risk.totalAbsent} ថ្ងៃ! ចុចដើម្បីបើក Contact Hub ផ្ញើសារតាមដាន">
                       <i class="fa-solid fa-triangle-exclamation"></i> អវត្តមាន ${risk.consecutive || risk.totalAbsent}ថ្ងៃ (At-Risk)
                     </span>
@@ -414,31 +414,31 @@ const DirectoryView = {
           })()}
         </td>
         <td>
-          <div style="display: flex; align-items: center; gap: 6px;">
+          <div style="display: flex; align-items: center; gap: 5px;">
             <div class="font-sans text-sm font-semibold student-name-link" onclick="App.openQuickContactModal('${s.ID}')" title="ចុចដើម្បីបើក Contact Hub">${App.escapeHtml(s.Phone || s.GuardianPhone || '—')}</div>
             ${s.Phone || s.GuardianPhone ? `
-              <div style="display: inline-flex; gap: 4px;">
-                <a href="tel:${s.Phone || s.GuardianPhone}" class="btn-action" style="width: 24px; height: 24px; font-size: 0.72rem; color: #10b981; background: rgba(16, 185, 129, 0.12); display: inline-flex; align-items: center; justify-content: center; border-radius: 4px;" title="Call ទៅសិស្ស/អាណាព្យាបាល">
+              <div style="display: inline-flex; gap: 3px;">
+                <a href="tel:${s.Phone || s.GuardianPhone}" class="btn-action" style="width: 22px; height: 22px; font-size: 0.68rem; color: #10b981; background: rgba(16, 185, 129, 0.12); display: inline-flex; align-items: center; justify-content: center; border-radius: 4px;" title="Call ទៅសិស្ស/អាណាព្យាបាល">
                   <i class="fa-solid fa-phone"></i>
                 </a>
-                <button type="button" class="btn-action" style="width: 24px; height: 24px; font-size: 0.72rem; color: #0088cc; background: rgba(0, 136, 204, 0.12); display: inline-flex; align-items: center; justify-content: center; border-radius: 4px;" onclick="event.stopPropagation(); App.openQuickContactModal('${s.ID}')" title="មជ្ឈមណ្ឌលទំនាក់ទំនង (Contact Hub)">
+                <button type="button" class="btn-action" style="width: 22px; height: 22px; font-size: 0.68rem; color: #0088cc; background: rgba(0, 136, 204, 0.12); display: inline-flex; align-items: center; justify-content: center; border-radius: 4px;" onclick="event.stopPropagation(); App.openQuickContactModal('${s.ID}')" title="មជ្ឈមណ្ឌលទំនាក់ទំនង (Contact Hub)">
                   <i class="fa-solid fa-comments"></i>
                 </button>
               </div>
             ` : ''}
           </div>
-          <div class="text-xs text-muted">
+          <div class="text-xs text-muted" style="margin-top: 2px;">
             ${App.escapeHtml(s.Address || '')}
-            ${s.GuardianPhone ? `<span style="color: #6366f1; display: block;">អាណាព្យាបាល: ${s.GuardianPhone}</span>` : ''}
+            ${s.GuardianPhone ? `<span style="color: #6366f1; display: block; font-size: 0.72rem;">អាណាព្យាបាល: ${s.GuardianPhone}</span>` : ''}
           </div>
         </td>
-        <td>
+        <td class="text-center">
           ${(() => {
             const isDropped = (s.Status === "Dropped" || s.Status === "Drop" || s.isBlocked === true);
             if (isDropped) {
-              return `<span class="status-indicator" style="background: rgba(239, 68, 68, 0.12); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); font-weight: 700; font-size: 0.78rem;"><i class="fa-solid fa-lock"></i> បោះបង់ (🔒 ប្រើលែងកើត)</span>`;
+              return `<span class="status-indicator" style="background: rgba(239, 68, 68, 0.12); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); font-weight: 700; font-size: 0.75rem;"><i class="fa-solid fa-lock"></i> បោះបង់</span>`;
             } else if (s.Status === 'Graduated') {
-              return `<span class="status-indicator" style="background: rgba(16, 185, 129, 0.12); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); font-weight: 700; font-size: 0.78rem;"><i class="fa-solid fa-graduation-cap"></i> បញ្ចប់ការសិក្សា</span>`;
+              return `<span class="status-indicator" style="background: rgba(16, 185, 129, 0.12); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); font-weight: 700; font-size: 0.75rem;"><i class="fa-solid fa-graduation-cap"></i> បញ្ចប់</span>`;
             } else if (s.Status === 'Inactive') {
               return `<span class="status-indicator status-inactive">ផ្អាក</span>`;
             }
@@ -447,23 +447,17 @@ const DirectoryView = {
         </td>
         <td class="text-center actions-cell">
           <div class="action-buttons-group">
-            <button type="button" class="btn-action" style="background: rgba(0, 136, 204, 0.12); color: #0088cc;" onclick="App.openQuickContactModal('${s.ID}')" title="មជ្ឈមណ្ឌលទំនាក់ទំនង (Telegram / Call / Templates)">
-              <i class="fa-solid fa-comments"></i>
-            </button>
-            <button type="button" class="btn-action" style="background: rgba(16, 185, 129, 0.12); color: #059669;" onclick="App.openStudentReceiptModal('${s.ID}')" title="ចេញវិក្កយបត្រ / បង្កាន់ដៃបង់ប្រាក់ (Receipt)">
-              <i class="fa-solid fa-receipt"></i>
-            </button>
             <button type="button" class="btn-action btn-view" onclick="App.viewStudentDetails('${s.ID}')" title="មើលព័ត៌មានលម្អិត & កាតសិស្ស">
               <i class="fa-solid fa-id-card"></i>
             </button>
-            <button type="button" class="btn-action" onclick="App.openAttendanceForStudent('${s.ID}')" title="កត់ត្រាវត្តមានសិស្ស" style="background: rgba(16, 185, 129, 0.12); color: #059669;">
-              <i class="fa-solid fa-calendar-check"></i>
+            <button type="button" class="btn-action btn-receipt" onclick="App.openStudentReceiptModal('${s.ID}')" title="ចេញវិក្កយបត្រ / បង្កាន់ដៃបង់ប្រាក់ (Receipt)">
+              <i class="fa-solid fa-receipt"></i>
             </button>
             <button type="button" class="btn-action btn-edit" onclick="App.openEditModal('${s.ID}')" title="កែប្រែទិន្នន័យ">
               <i class="fa-solid fa-pen-to-square"></i>
             </button>
-            <button type="button" class="btn-action btn-delete" onclick="App.confirmDeleteStudent('${s.ID}')" title="លុបទិន្នន័យ">
-              <i class="fa-solid fa-trash-can"></i>
+            <button type="button" class="btn-action btn-more" onclick="App.toggleTableRowActionMenu(event, '${s.ID}')" title="ជម្រើសផ្សេងៗ (More Options)">
+              <i class="fa-solid fa-ellipsis-vertical"></i>
             </button>
           </div>
         </td>

@@ -390,6 +390,16 @@ class ClassroomWsHub {
     });
   }
 
+  broadcastAll(data) {
+    const msg = typeof data === 'string' ? data : JSON.stringify(data);
+    this.teacherSockets.forEach((tWs) => {
+      if (tWs.readyState === 1) tWs.send(msg);
+    });
+    this.agentSockets.forEach((aWs) => {
+      if (aWs.readyState === 1) aWs.send(msg);
+    });
+  }
+
   getLiveCounts() {
     return {
       connectedAgents: this.agentSockets.size,

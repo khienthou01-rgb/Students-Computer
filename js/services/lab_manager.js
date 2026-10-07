@@ -19,6 +19,9 @@ const LabManagerService = {
   broadcastStream: null,
   broadcastInterval: null,
   activeRemoteSession: null, // agentId
+  activeLanIp: null, // dynamically auto-detected Wi-Fi / LAN IP
+  allLanIps: [],
+  _networkWatcherTimer: null,
 
   // Get base URLs (automatically points to Node.js backend on port 8080 if running in VS Code Live Server / dev ports)
   getBaseUrl() {
@@ -26,7 +29,7 @@ const LabManagerService = {
       const port = window.location.port;
       const hostname = window.location.hostname;
       // If served via VS Code Live Server (e.g. port 5500) or other static dev servers
-      if (port && port !== "8080" && (hostname === "localhost" || hostname === "127.0.0.1" || hostname.startsWith("192.168."))) {
+      if (port && port !== "8080" && (hostname === "localhost" || hostname === "127.0.0.1" || hostname.startsWith("192.168.") || hostname.startsWith("10.") || hostname.startsWith("172."))) {
         return `http://${hostname}:8080`;
       }
       return window.location.origin;
@@ -38,7 +41,7 @@ const LabManagerService = {
     if (typeof window !== "undefined" && window.location) {
       const port = window.location.port;
       const hostname = window.location.hostname;
-      if (port && port !== "8080" && (hostname === "localhost" || hostname === "127.0.0.1" || hostname.startsWith("192.168."))) {
+      if (port && port !== "8080" && (hostname === "localhost" || hostname === "127.0.0.1" || hostname.startsWith("192.168.") || hostname.startsWith("10.") || hostname.startsWith("172."))) {
         return `ws://${hostname}:8080/ws/classroom`;
       }
       const loc = window.location;
@@ -98,6 +101,7 @@ const LabManagerService = {
         });
 
         this.emit("connection_status", { status: "connected" });
+        this.startNetworkWatcher();
       };
 
       this.ws.onmessage = (event) => {
@@ -227,7 +231,52 @@ const LabManagerService = {
     } else if (type === "TEACHER_BROADCAST_ACTIVE") {
       this.activeBroadcast = msg.active;
       this.emit("broadcast_state", { active: msg.active });
+    } else if (type === "NETWORK_IP_CHANGED") {
+      console.log("📡 [Lab WS] Wi-Fi / Server IP Changed:", msg.newIp);
+      this.activeLanIp = msg.newIp;
+      this.allLanIps = msg.allLanIps || [];
+      if (this.currentEnrollmentToken) {
+        this.currentEnrollmentToken.realLanIp = msg.newIp;
+        this.currentEnrollmentToken.targetHost = msg.newIp;
+        this.currentEnrollmentToken.allLanIps = msg.allLanIps || [];
+        this.currentEnrollmentToken.enrollUrl = `http://${msg.newIp}:${msg.port || 8080}/enroll/${this.currentEnrollmentToken.token}`;
+      }
+      this.emit("network_ip_changed", msg);
     }
+  },
+
+  startNetworkWatcher() {
+    if (this._networkWatcherTimer) clearInterval(this._networkWatcherTimer);
+    const checkNet = async () => {
+      try {
+        const net = await this.getNetworkInfo();
+        if (net && net.primaryIp && net.primaryIp !== "localhost") {
+          if (this.activeLanIp && this.activeLanIp !== net.primaryIp) {
+            console.log(`📡 [LabManager] Auto-detected Wi-Fi change: ${this.activeLanIp} -> ${net.primaryIp}`);
+            const oldIp = this.activeLanIp;
+            this.activeLanIp = net.primaryIp;
+            this.allLanIps = net.allIps || [];
+            if (this.currentEnrollmentToken) {
+              this.currentEnrollmentToken.realLanIp = net.primaryIp;
+              this.currentEnrollmentToken.targetHost = net.primaryIp;
+              this.currentEnrollmentToken.allLanIps = net.allIps || [];
+              this.currentEnrollmentToken.enrollUrl = `http://${net.primaryIp}:${net.port || 8080}/enroll/${this.currentEnrollmentToken.token}`;
+            }
+            this.emit("network_ip_changed", {
+              oldIp,
+              newIp: net.primaryIp,
+              port: net.port || 8080,
+              allLanIps: net.allIps
+            });
+          } else if (!this.activeLanIp) {
+            this.activeLanIp = net.primaryIp;
+            this.allLanIps = net.allIps || [];
+          }
+        }
+      } catch (e) {}
+    };
+    this._networkWatcherTimer = setInterval(checkNet, 3000);
+    checkNet();
   },
 
   getCurrentTeacher() {
@@ -266,6 +315,8 @@ const LabManagerService = {
 
       const data = JSON.parse(text);
       if (data && data.success) {
+        if (data.realLanIp) this.activeLanIp = data.realLanIp;
+        if (Array.isArray(data.allLanIps)) this.allLanIps = data.allLanIps;
         this.currentEnrollmentToken = data;
         return data;
       }
@@ -274,8 +325,10 @@ const LabManagerService = {
       console.warn("createEnrollmentToken failed:", err.message);
       // Fallback: If backend is completely offline or unreachable, return local offline token so UI does not freeze
       const fallbackToken = "LAB-" + Math.floor(100000 + Math.random() * 900000);
-      const fallbackHost = preferredHost || "192.168.1.7";
-      const fallbackUrl = `http://${fallbackHost}:8080/enroll/${fallbackToken}`;
+      const activeHost = this.activeLanIp || (typeof window !== "undefined" && window.location.hostname && window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1" ? window.location.hostname : "localhost");
+      const fallbackHost = preferredHost || activeHost;
+      const fallbackPort = (typeof window !== "undefined" && window.location.port) ? window.location.port : 8080;
+      const fallbackUrl = `http://${fallbackHost}:${fallbackPort}/enroll/${fallbackToken}`;
       const fallbackData = {
         success: true,
         token: fallbackToken,
@@ -287,7 +340,7 @@ const LabManagerService = {
         realLanIp: fallbackHost,
         allLanIps: [{ name: "Wi-Fi", ip: fallbackHost }],
         targetHost: fallbackHost,
-        port: 8080,
+        port: fallbackPort,
         isOfflineFallback: true
       };
       this.currentEnrollmentToken = fallbackData;
@@ -297,10 +350,20 @@ const LabManagerService = {
 
   async getNetworkInfo() {
     try {
-      const res = await fetch(`${this.getBaseUrl()}/api/lab/network-info`);
-      return await res.json();
+      const controller = (typeof AbortController !== "undefined") ? new AbortController() : null;
+      const timeoutId = controller ? setTimeout(() => controller.abort(), 2500) : null;
+      const res = await fetch(`${this.getBaseUrl()}/api/lab/network-info`, {
+        signal: controller ? controller.signal : undefined
+      });
+      if (timeoutId) clearTimeout(timeoutId);
+      const data = await res.json();
+      if (data && data.primaryIp) {
+        this.activeLanIp = data.primaryIp;
+        if (Array.isArray(data.allIps)) this.allLanIps = data.allIps;
+      }
+      return data;
     } catch (e) {
-      return { primaryIp: "localhost", allIps: [], port: 8080 };
+      return { primaryIp: this.activeLanIp || "localhost", allIps: this.allLanIps || [], port: 8080 };
     }
   },
 

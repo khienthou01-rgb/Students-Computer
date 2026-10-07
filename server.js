@@ -2,8 +2,9 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
-const { handleLabRoutes } = require('./server/lab_router');
+const { handleLabRoutes, getPrimaryLanIp, getAllLanIps } = require('./server/lab_router');
 const labWsHub = require('./server/lab_ws');
+const { startUdpDiscovery } = require('./server/udp_discovery');
 
 const PORT = process.env.PORT || 8080;
 const BASE_DIR = process.env.VERCEL ? process.cwd() : __dirname;
@@ -69,6 +70,7 @@ const server = http.createServer((req, res) => {
       status: 'online',
       server: 'TIS Lab Computer HostImg Server v2.1',
       port: PORT,
+      primaryIp: getPrimaryLanIp(),
       lanIps,
       uptime: process.uptime()
     }));
@@ -342,6 +344,12 @@ const server = http.createServer((req, res) => {
     return null;
   }
 
+  if (safePath.startsWith('.env') || safePath === 'server.js' || safePath.startsWith('server/') || safePath.startsWith('api/')) {
+    res.writeHead(403, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'Access forbidden' }));
+    return;
+  }
+
   let targetFile = resolveStaticFilePath(safePath);
   const ext = path.extname(safePath);
 
@@ -381,24 +389,78 @@ const server = http.createServer((req, res) => {
 if (!process.env.VERCEL) {
   labWsHub.attach(server);
 
-  server.listen(PORT, '0.0.0.0', () => {
-    const ifaces = os.networkInterfaces();
-    const lanIps = [];
-    for (const name in ifaces) {
-      for (const iface of ifaces[name]) {
-        if (iface.family === 'IPv4' && !iface.internal) {
-          lanIps.push({ name, ip: iface.address });
+  // 1. Start UDP Discovery Beacon so Student Agents auto-discover Teacher PC on LAN/Wi-Fi
+  startUdpDiscovery(() => PORT, getPrimaryLanIp);
+
+  // 2. Active Wi-Fi / LAN Network Change Monitor & Realtime IP Watcher
+  let lastKnownPrimaryIp = getPrimaryLanIp();
+
+  function checkNetworkInterfaceChange() {
+    try {
+      const currentIp = getPrimaryLanIp();
+      if (currentIp && currentIp !== 'localhost' && lastKnownPrimaryIp && currentIp !== lastKnownPrimaryIp) {
+        const oldIp = lastKnownPrimaryIp;
+        lastKnownPrimaryIp = currentIp;
+        const allIps = getAllLanIps();
+
+        console.log(`\n==========================================================`);
+        console.log(`📡 [Wi-Fi Network Changed] Auto-detected new IP: ${currentIp}`);
+        console.log(`🔄 Previous IP: ${oldIp} ➡️ New Active LAN IP: http://${currentIp}:${PORT}/`);
+        console.log(`⚡ Auto-broadcasting new IP to all connected Teacher and Student devices...`);
+        console.log(`==========================================================\n`);
+
+        // Broadcast to WebSocket clients (Teacher dashboards & Student agents)
+        if (labWsHub && typeof labWsHub.broadcastAll === 'function') {
+          labWsHub.broadcastAll({
+            type: 'NETWORK_IP_CHANGED',
+            oldIp,
+            newIp: currentIp,
+            port: PORT,
+            allLanIps: allIps,
+            timestamp: Date.now(),
+            messageKh: `ប្រព័ន្ធបានរកឃើញការប្តូរ Wi-Fi! IP ថ្មី៖ ${currentIp}`
+          });
         }
+
+        // Trigger UDP beacon immediately
+        if (global.sendUdpBeacon) {
+          global.sendUdpBeacon();
+        }
+      } else if (!lastKnownPrimaryIp && currentIp) {
+        lastKnownPrimaryIp = currentIp;
       }
+    } catch (err) {
+      console.warn('[Network Watcher Error]', err.message);
     }
+  }
+
+  setInterval(checkNetworkInterfaceChange, 2000);
+
+  server.on('error', (err) => {
+    if (err.code === 'EADDRINUSE') {
+      console.log(`\n⚠️ Port ${PORT} is already in use by another running instance.`);
+      console.log(`✅ TIS Lab Computer Server is already running at http://localhost:${PORT}/\n`);
+      process.exit(0);
+    } else {
+      console.error('[Server Error]', err.message);
+    }
+  });
+
+  server.listen(PORT, '0.0.0.0', () => {
+    const primaryIp = getPrimaryLanIp();
+    const allIps = getAllLanIps();
 
     console.log(`\n==========================================================`);
     console.log(`🚀 TIS Lab Computer - Modern School Server (HostImg Pro)`);
-    console.log(`🌐 Localhost:  http://localhost:${PORT}/`);
-    lanIps.forEach(net => {
-      console.log(`📱 LAN/Wi-Fi:  http://${net.ip}:${PORT}/  (${net.name})`);
+    console.log(`🌐 Localhost (Teacher PC):  http://localhost:${PORT}/`);
+    console.log(`📱 Primary Wi-Fi / LAN IP:  http://${primaryIp}:${PORT}/`);
+    allIps.forEach(net => {
+      if (net.address !== primaryIp) {
+        console.log(`   Adapter (${net.name}): http://${net.address}:${PORT}/`);
+      }
     });
     console.log(`⚡ WebSocket:  ws://localhost:${PORT}/ws/classroom`);
+    console.log(`📡 UDP Beacon: Port 8088 (Auto-Discovery Active)`);
     console.log(`⚡ API Upload: http://localhost:${PORT}/api/upload`);
     console.log(`⏰ Telegram:   7:00 PM Daily Attendance Summary Scheduler Active`);
     console.log(`==========================================================\n`);

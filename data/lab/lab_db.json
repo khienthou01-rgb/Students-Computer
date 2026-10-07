@@ -26,7 +26,7 @@
       "seatNumber": "A01",
       "assignedStudentId": "TX01",
       "assignedStudentName": "ចាន់ តារា (Chan Dara)",
-      "ipAddress": "192.168.1.105",
+      "ipAddress": "192.168.1.9",
       "macAddress": "00:1A:2B:3C:4D:5E",
       "osVersion": "Windows 11 Pro 64-bit",
       "cpu": "11th Gen Intel Core i5-11400 @ 2.60GHz",
@@ -53,7 +53,7 @@
       "seatNumber": "",
       "assignedStudentId": null,
       "assignedStudentName": null,
-      "ipAddress": "192.168.1.105",
+      "ipAddress": "192.168.1.9",
       "macAddress": "D0:AB:D5:97:C4:08",
       "osVersion": "Microsoft Windows 11 Pro Insider Preview (AMD64)",
       "cpu": "Intel(R) Core(TM) i7-9750H CPU @ 2.60GHz",
@@ -4700,7 +4700,7 @@
       "target": "STUDENT-PC-05",
       "details": "Successfully enrolled STUDENT-PC-05 (STUDENT-PC-05) into Computer Lab A using token 2096E9",
       "teacherName": "Teacher",
-      "ip": "192.168.1.105"
+      "ip": "192.168.1.9"
     },
     {
       "logId": "log_1791243740664_sbpg",
@@ -5546,7 +5546,7 @@
       "target": "STUDENT-PC-05",
       "details": "Successfully enrolled STUDENT-PC-05 (STUDENT-PC-05) into Computer Lab A using token 88D50D",
       "teacherName": "Teacher",
-      "ip": "192.168.1.105"
+      "ip": "192.168.1.9"
     },
     {
       "logId": "log_1791243351129_ij50",
@@ -6392,7 +6392,7 @@
       "target": "STUDENT-PC-05",
       "details": "Successfully enrolled STUDENT-PC-05 (STUDENT-PC-05) into Computer Lab A using token B41C7E",
       "teacherName": "Teacher",
-      "ip": "192.168.1.105"
+      "ip": "192.168.1.9"
     },
     {
       "logId": "log_1791241924283_h4zq",
@@ -7031,7 +7031,7 @@
       "target": "PC-01",
       "details": "Successfully enrolled PC-01 (PC-01) into Computer Lab A using token 4DC4A7",
       "teacherName": "លោកគ្រូ ខៀន ធូ",
-      "ip": "192.168.1.105"
+      "ip": "192.168.1.9"
     },
     {
       "logId": "log_1791239990463_ssgu",

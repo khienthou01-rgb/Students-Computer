@@ -168,7 +168,7 @@ const HeaderComponent = {
             <!-- Fast Add Student Button (Teachers Only) -->
             <button type="button" class="btn-primary header-btn-register" data-action="quick-register" title="ចុះឈ្មោះសិស្សថ្មីចូលប្រព័ន្ធ">
               <i class="fa-solid fa-user-plus"></i>
-              <span>ចុះឈ្មោះសិស្សថ្មី</span>
+              <span>ចុះឈ្មោះថ្មី</span>
             </button>
           ` : ''}
 

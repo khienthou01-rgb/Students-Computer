@@ -106,19 +106,50 @@
 .student-profile-header-card {
   background: #ffffff;
   border: 1px solid #e2e8f0;
-  border-radius: 14px;
-  padding: 16px 20px;
+  border-radius: 16px;
+  padding: 16px 20px 14px;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 18px;
+  flex-direction: column;
+  gap: 14px;
   margin-bottom: 16px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+  position: relative;
 }
 
 [data-theme="dark"] .student-profile-header-card {
   background: #1e293b;
   border-color: #334155;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+}
+
+/* Fallback support for direct children (CSS grid) if .profile-header-main is not used */
+.student-profile-header-card:not(:has(.profile-header-main)) {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto auto;
+  gap: 14px 18px;
+  align-items: center;
+}
+.student-profile-header-card:not(:has(.profile-header-main)) .profile-avatar-wrapper {
+  grid-column: 1;
+  grid-row: 1;
+}
+.student-profile-header-card:not(:has(.profile-header-main)) .profile-info-center {
+  grid-column: 2;
+  grid-row: 1;
+}
+.student-profile-header-card:not(:has(.profile-header-main)) .profile-actions-right {
+  grid-column: 1 / -1;
+  grid-row: 2;
+}
+
+/* Top Row: Avatar & Information Group */
+.profile-header-main {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  width: 100%;
+  min-width: 0;
 }
 
 .profile-avatar-wrapper {
@@ -170,16 +201,24 @@
 .profile-info-center {
   flex: 1;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 6px;
 }
 
 .profile-name-title {
-  font-size: 1.65rem;
+  font-size: 1.6rem;
   font-weight: 800;
   color: #0f172a;
-  margin: 0 0 8px 0;
+  margin: 0;
   line-height: 1.25;
   font-family: "Kantumruy Pro", sans-serif;
   letter-spacing: -0.01em;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
 [data-theme="dark"] .profile-name-title {
@@ -203,6 +242,7 @@
   font-weight: 600;
   line-height: 1.4;
   border: 1px solid transparent;
+  white-space: nowrap;
 }
 
 .profile-badge-id {
@@ -211,10 +251,22 @@
   border-color: #bae6fd;
 }
 
+[data-theme="dark"] .profile-badge-id {
+  background: rgba(2, 132, 199, 0.18);
+  color: #38bdf8;
+  border-color: rgba(2, 132, 199, 0.35);
+}
+
 .profile-badge-course {
   background: #e0f2fe;
   color: #0284c7;
   border-color: #bae6fd;
+}
+
+[data-theme="dark"] .profile-badge-course {
+  background: rgba(14, 165, 233, 0.18);
+  color: #38bdf8;
+  border-color: rgba(14, 165, 233, 0.35);
 }
 
 .profile-badge-fee-paid {
@@ -223,10 +275,22 @@
   border-color: #bbf7d0;
 }
 
+[data-theme="dark"] .profile-badge-fee-paid {
+  background: rgba(22, 163, 74, 0.2);
+  color: #4ade80;
+  border-color: rgba(22, 163, 74, 0.35);
+}
+
 .profile-badge-fee-partial {
   background: #fef3c7;
   color: #b45309;
   border-color: #fde68a;
+}
+
+[data-theme="dark"] .profile-badge-fee-partial {
+  background: rgba(217, 119, 6, 0.2);
+  color: #fbbf24;
+  border-color: rgba(217, 119, 6, 0.35);
 }
 
 .profile-badge-fee-unpaid {
@@ -235,28 +299,94 @@
   border-color: #fecaca;
 }
 
-/* Header Right Action Buttons */
+[data-theme="dark"] .profile-badge-fee-unpaid {
+  background: rgba(220, 38, 38, 0.2);
+  color: #f87171;
+  border-color: rgba(220, 38, 38, 0.35);
+}
+
+/* Header Action Buttons Toolbar (Dedicated full-width row) */
 .profile-actions-right {
   display: flex;
   align-items: center;
   gap: 8px;
   flex-wrap: wrap;
-  flex-shrink: 0;
+  width: 100%;
+  padding-top: 12px;
+  border-top: 1px solid #f1f5f9;
+}
+
+[data-theme="dark"] .profile-actions-right {
+  border-top-color: rgba(255, 255, 255, 0.08);
 }
 
 .btn-pill-action {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 8px 18px;
-  border-radius: 24px;
-  font-size: 0.85rem;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.82rem;
   font-weight: 700;
   cursor: pointer;
   border: 1px solid transparent;
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   white-space: nowrap;
   font-family: inherit;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.btn-pill-action:hover {
+  transform: translateY(-1px);
+}
+
+.btn-pill-action i {
+  font-size: 0.85rem;
+}
+
+/* Button Variants */
+.btn-pill-contact {
+  background: rgba(0, 136, 204, 0.1);
+  color: #0284c7;
+  border: 1px solid rgba(0, 136, 204, 0.28);
+}
+.btn-pill-contact:hover {
+  background: #0284c7;
+  color: #ffffff;
+  border-color: #0284c7;
+  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
+}
+
+[data-theme="dark"] .btn-pill-contact {
+  background: rgba(56, 189, 248, 0.12);
+  color: #38bdf8;
+  border-color: rgba(56, 189, 248, 0.3);
+}
+[data-theme="dark"] .btn-pill-contact:hover {
+  background: #0284c7;
+  color: #ffffff;
+}
+
+.btn-pill-receipt {
+  background: rgba(16, 185, 129, 0.1);
+  color: #059669;
+  border: 1px solid rgba(16, 185, 129, 0.28);
+}
+.btn-pill-receipt:hover {
+  background: #10b981;
+  color: #ffffff;
+  border-color: #10b981;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+[data-theme="dark"] .btn-pill-receipt {
+  background: rgba(52, 211, 153, 0.12);
+  color: #34d399;
+  border-color: rgba(52, 211, 153, 0.3);
+}
+[data-theme="dark"] .btn-pill-receipt:hover {
+  background: #059669;
+  color: #ffffff;
 }
 
 .btn-pill-blue {
@@ -266,7 +396,6 @@
 }
 .btn-pill-blue:hover {
   background: #0369a1;
-  transform: translateY(-1px);
   box-shadow: 0 5px 14px rgba(2, 132, 199, 0.35);
 }
 
@@ -277,28 +406,130 @@
 }
 .btn-pill-amber:hover {
   background: #d97706;
-  transform: translateY(-1px);
   box-shadow: 0 5px 14px rgba(245, 158, 11, 0.35);
+}
+
+.btn-pill-drop {
+  background: rgba(239, 68, 68, 0.08);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+.btn-pill-drop:hover {
+  background: #ef4444;
+  color: #ffffff;
+  border-color: #ef4444;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+[data-theme="dark"] .btn-pill-drop {
+  background: rgba(248, 113, 113, 0.12);
+  color: #f87171;
+  border-color: rgba(248, 113, 113, 0.3);
+}
+[data-theme="dark"] .btn-pill-drop:hover {
+  background: #dc2626;
+  color: #ffffff;
+}
+
+.btn-pill-graduate {
+  background: rgba(16, 185, 129, 0.08);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+.btn-pill-graduate:hover {
+  background: #10b981;
+  color: #ffffff;
+  border-color: #10b981;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+[data-theme="dark"] .btn-pill-graduate {
+  background: rgba(52, 211, 153, 0.12);
+  color: #34d399;
+  border-color: rgba(52, 211, 153, 0.3);
+}
+[data-theme="dark"] .btn-pill-graduate:hover {
+  background: #059669;
+  color: #ffffff;
 }
 
 .btn-pill-outline-yellow {
   background: #fefce8;
   color: #ca8a04;
-  border-color: #fde047;
+  border: 1px solid #fde047;
 }
 .btn-pill-outline-yellow:hover {
   background: #fef9c3;
   color: #a16207;
 }
 
+[data-theme="dark"] .btn-pill-outline-yellow {
+  background: rgba(250, 204, 21, 0.1);
+  color: #facc15;
+  border-color: rgba(250, 204, 21, 0.3);
+}
+[data-theme="dark"] .btn-pill-outline-yellow:hover {
+  background: rgba(250, 204, 21, 0.2);
+  color: #fde047;
+}
+
 .btn-pill-grey {
   background: #f8fafc;
   color: #475569;
-  border-color: #cbd5e1;
+  border: 1px solid #cbd5e1;
 }
 .btn-pill-grey:hover {
   background: #f1f5f9;
   color: #1e293b;
+}
+
+[data-theme="dark"] .btn-pill-grey {
+  background: rgba(148, 163, 184, 0.12);
+  color: #cbd5e1;
+  border-color: rgba(148, 163, 184, 0.28);
+}
+[data-theme="dark"] .btn-pill-grey:hover {
+  background: rgba(148, 163, 184, 0.25);
+  color: #ffffff;
+}
+
+/* Mobile & Tablet Responsiveness */
+@media (max-width: 768px) {
+  .student-profile-header-card {
+    padding: 14px 16px 12px;
+    gap: 12px;
+  }
+  .profile-name-title {
+    font-size: 1.4rem;
+  }
+  .profile-actions-right {
+    gap: 6px;
+    padding-top: 10px;
+  }
+  .btn-pill-action {
+    padding: 5px 12px;
+    font-size: 0.78rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .profile-header-main {
+    flex-direction: column;
+    text-align: center;
+    gap: 12px;
+  }
+  .profile-info-center {
+    align-items: center;
+  }
+  .profile-name-title {
+    justify-content: center;
+  }
+  .profile-badges-row {
+    justify-content: center;
+  }
+  .profile-actions-right {
+    justify-content: center;
+  }
 }
 
 /* Dropdown Menu for "ផ្សេងៗ ▼" */

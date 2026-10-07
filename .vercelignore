@@ -14,18 +14,21 @@ _smart_school_upgrade_backup/
 .github/
 
 # Local server helper scripts
-Start-Server.bat
-Stop-Server.bat
-Start-Background.vbs
-Deploy-GitHub.bat
-Deploy-Vercel.bat
-serve.ps1
+*.bat
+*.vbs
+*.ps1
+
+# Python student agent & deployment docs (not needed on Vercel cloud)
+student-agent/
+google-apps-script/
+deploy/
 
 # Ephemeral state & logs
 .lab_data/
 .sent_daily_att_*
 *.log
 test_*.js
+.vscode/
 
 # OS files
 .DS_Store

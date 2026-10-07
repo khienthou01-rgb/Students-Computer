@@ -1347,11 +1347,15 @@ const ComputerLabView = {
           </div>
 
           <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+            <div id="enrollLanPill" style="display: inline-flex; align-items: center; gap: 8px; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.35); color: #34d399; padding: 7px 14px; border-radius: 10px; font-size: 0.82rem; font-weight: 700;">
+              <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #10b981; box-shadow: 0 0 8px #10b981;"></span>
+              <span id="enrollLanStatusBadge">Wi-Fi IP: កំពុងពិនិត្យ...</span>
+            </div>
             <button type="button" class="lab-btn lab-btn-cyan" onclick="ComputerLabView.openProjectorMode()" style="padding: 8px 18px; font-size: 0.85rem;">
               <i class="fa-solid fa-expand"></i> <span>Projector Mode (ផ្ទាំងធំ)</span>
             </button>
-            <button type="button" class="lab-btn lab-btn-dark" onclick="ComputerLabView.loadEnrollmentData(true)" style="padding: 8px 16px; font-size: 0.85rem;">
-              <i class="fa-solid fa-rotate"></i> <span>Regenerate</span>
+            <button type="button" class="lab-btn lab-btn-dark" onclick="ComputerLabView.loadEnrollmentData(true)" style="padding: 8px 16px; font-size: 0.85rem;" title="ចុចដើម្បី Refresh ស្វែងរក IP ថ្មីភ្លាមៗ">
+              <i class="fa-solid fa-rotate"></i> <span>Auto Sync IP</span>
             </button>
           </div>
         </div>
@@ -1431,7 +1435,7 @@ const ComputerLabView = {
                 <i class="fa-solid fa-terminal text-emerald-400"></i> ដំណើរការរហ័សតាម PowerShell One-Liner (Run on Student PC):
               </label>
               <div style="display: flex; align-items: center; gap: 8px; background: #020617; padding: 10px 14px; border-radius: 12px; border: 1px solid rgba(16, 185, 129, 0.3); flex-wrap: wrap;">
-                <code id="enrollPsCode" style="font-family: var(--font-mono); font-size: 0.84rem; color: #34d399; flex: 1; word-break: break-all; min-width: 220px;">irm http://192.168.1.7:8080/api/lab/enroll/run?t=... | iex</code>
+                <code id="enrollPsCode" style="font-family: var(--font-mono); font-size: 0.84rem; color: #34d399; flex: 1; word-break: break-all; min-width: 220px;">កំពុងរៀបចំ PowerShell Command តាម Wi-Fi IP...</code>
                 <button type="button" class="btn-sm btn-outline" onclick="ComputerLabView.copyEnrollmentPsCommand()" style="border-color: rgba(16, 185, 129, 0.4); color: #34d399;">
                   <i class="fa-solid fa-copy"></i> ចម្លង Command
                 </button>
@@ -1499,8 +1503,21 @@ const ComputerLabView = {
     this.isLoadingEnrollment = true;
 
     try {
+      if (forceRefresh) {
+        this.selectedEnrollHost = null;
+      }
       const room = this.classroomFilter === "ALL" ? "lab_a" : this.classroomFilter;
-      const data = await LabManagerService.createEnrollmentToken(room, 30, this.selectedEnrollHost);
+      let data = await LabManagerService.createEnrollmentToken(room, 30, this.selectedEnrollHost);
+
+      // Auto-detect Wi-Fi change: if previously selected host no longer exists on current network, auto-switch to active Wi-Fi
+      if (this.selectedEnrollHost && data.realLanIp && this.selectedEnrollHost !== data.realLanIp) {
+        const isStillValid = Array.isArray(data.allLanIps) && data.allLanIps.some(n => (n.ip || n.address) === this.selectedEnrollHost);
+        if (!isStillValid) {
+          this.selectedEnrollHost = null;
+          data = await LabManagerService.createEnrollmentToken(room, 30, null);
+        }
+      }
+
       this.enrollmentData = data;
 
       // 1. Populate Host / IP Selector dropdown if needed
@@ -1551,12 +1568,31 @@ const ComputerLabView = {
       const qrTarget = document.getElementById("qrCodeTarget");
       const classBadge = document.getElementById("enrollClassroomBadge");
       const lanStatus = document.getElementById("enrollLanStatusText");
+      const lanBadge = document.getElementById("enrollLanStatusBadge");
 
       if (tokenEl) tokenEl.innerText = data.token;
       if (urlEl) urlEl.innerText = data.enrollUrl;
       if (classBadge) classBadge.innerText = `🖥 ${data.classroomName || 'Computer Lab'}`;
       if (lanStatus && data.targetHost) {
         lanStatus.innerText = `🌐 Real LAN IP: ${data.targetHost}:${data.port || 8080} (Active)`;
+      }
+      if (lanBadge && data.targetHost) {
+        lanBadge.innerText = `Wi-Fi IP: ${data.targetHost}`;
+      }
+
+      // Bind realtime network watcher listener once
+      if (!this._networkChangeListenerBound) {
+        this._networkChangeListenerBound = true;
+        LabManagerService.on("network_ip_changed", (evt) => {
+          console.log("📡 [ComputerLabView] Wi-Fi network change detected:", evt);
+          this.selectedEnrollHost = null; // Reset selection so it automatically binds to the new primary IP
+          this.loadEnrollmentData(true);
+          const liveBadge = document.getElementById("enrollLanStatusBadge");
+          if (liveBadge) liveBadge.innerText = `Wi-Fi IP: ${evt.newIp}`;
+          if (typeof App !== "undefined" && App.showToast) {
+            App.showToast(`📡 បានប្តូរ IP ស្វ័យប្រវត្តិទៅតាម Wi-Fi ថ្មី៖ ${evt.newIp}`, "success");
+          }
+        });
       }
 
       const hostBase = data.enrollUrl ? data.enrollUrl.replace(new RegExp(`/enroll/${data.token}.*`), "") : `${LabManagerService.getBaseUrl()}`;

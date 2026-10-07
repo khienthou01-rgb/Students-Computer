@@ -51,7 +51,7 @@ module.exports = (req, res) => {
   }
 
   // Direct fast path for /api/health
-  if (req.method === 'GET' && (urlPath === '/api/health' || urlPath.endsWith('/health') || urlPath === '/api' || urlPath === '/api/')) {
+  if (req.method === 'GET' && (urlPath === '/api/health' || urlPath.endsWith('/health') || urlPath === '/api' || urlPath === '/api/' || urlPath === '/api/index.js' || urlPath.endsWith('/index.js'))) {
     res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
     res.end(JSON.stringify({
       status: 'ok',

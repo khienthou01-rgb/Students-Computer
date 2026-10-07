@@ -40,13 +40,34 @@ function getAllLanIps() {
 function getPrimaryLanIp() {
   const list = getAllLanIps();
   if (list.length === 0) return 'localhost';
-  // 1. Prefer active physical Wi-Fi or Ethernet adapter
-  const physical = list.find(item => /wi-?fi|ethernet|local area|lan|wlan0|eth0/i.test(item.name) && !item.address.startsWith('169.254.'));
-  if (physical) return physical.address;
-  // 2. Next prefer any standard class C/A private LAN address
-  const standard = list.find(item => (item.address.startsWith('192.168.') || item.address.startsWith('10.') || item.address.startsWith('172.')) && !item.address.startsWith('169.254.'));
+
+  // Exclude virtual/container adapters if possible
+  const isVirtual = (name) => /virtual|vbox|vmware|vethernet|hyper-v|wsl|loopback|pseudo/i.test(name);
+
+  // 1. Prefer active physical Wi-Fi or Ethernet adapter (non-virtual)
+  const physicalWifiOrEth = list.find(item => 
+    !isVirtual(item.name) &&
+    /wi-?fi|wireless|ethernet|local area|lan|wlan\d|eth\d/i.test(item.name) && 
+    !item.address.startsWith('169.254.')
+  );
+  if (physicalWifiOrEth) return physicalWifiOrEth.address;
+
+  // 2. Next prefer any standard class C/A private LAN address (non-virtual)
+  const nonVirtualStandard = list.find(item => 
+    !isVirtual(item.name) &&
+    (item.address.startsWith('192.168.') || item.address.startsWith('10.') || item.address.startsWith('172.')) && 
+    !item.address.startsWith('169.254.')
+  );
+  if (nonVirtualStandard) return nonVirtualStandard.address;
+
+  // 3. Any standard private LAN address
+  const standard = list.find(item => 
+    (item.address.startsWith('192.168.') || item.address.startsWith('10.') || item.address.startsWith('172.')) && 
+    !item.address.startsWith('169.254.')
+  );
   if (standard) return standard.address;
-  // 3. Any non-APIPA IP
+
+  // 4. Any non-APIPA IP
   const nonApipa = list.find(item => !item.address.startsWith('169.254.'));
   if (nonApipa) return nonApipa.address;
   return list[0].address || 'localhost';
@@ -74,9 +95,13 @@ function parseJsonBody(req) {
 }
 
 async function handleLabRoutes(req, res, urlPath, port, wsHub = null) {
-  const hostHeader = (req.headers.host || '').split(':')[0] || getPrimaryLanIp();
   const primaryIp = getPrimaryLanIp();
-  const effectiveHost = (hostHeader === 'localhost' || hostHeader === '127.0.0.1') ? primaryIp : hostHeader;
+  const allLanIps = getAllLanIps();
+  const hostHeader = (req.headers.host || '').split(':')[0] || primaryIp;
+  
+  // Verify if hostHeader is still valid on current machine (e.g. if user switched Wi-Fi, old IP in URL is dead)
+  const isHostHeaderCurrent = hostHeader === 'localhost' || hostHeader === '127.0.0.1' || allLanIps.some(n => n.address === hostHeader);
+  const effectiveHost = (hostHeader === 'localhost' || hostHeader === '127.0.0.1' || !isHostHeaderCurrent) ? primaryIp : hostHeader;
 
   // 1. Student Web Enrollment Page: GET /enroll/:token
   if (req.method === 'GET' && (urlPath.startsWith('/enroll/') || urlPath === '/enroll')) {
@@ -120,9 +145,14 @@ async function handleLabRoutes(req, res, urlPath, port, wsHub = null) {
       const record = labStore.createEnrollmentToken(classroomId, teacherId, teacherName, ttlMinutes);
       
       const realLanIp = getPrimaryLanIp();
-      const allLanIps = getAllLanIps();
-      // If client explicitly selected an IP/host, use that; otherwise use the real LAN IP!
-      const targetHost = requestedHost || realLanIp || effectiveHost;
+      const currentLanIps = getAllLanIps();
+      // Auto-validate requestedHost: if requestedHost no longer exists on active Wi-Fi/Ethernet, auto-switch to realLanIp!
+      const isRequestedHostValid = requestedHost && (
+        requestedHost === 'localhost' ||
+        requestedHost === '127.0.0.1' ||
+        currentLanIps.some(n => n.address === requestedHost)
+      );
+      const targetHost = (isRequestedHostValid ? requestedHost : null) || realLanIp || effectiveHost;
       const enrollUrl = `http://${targetHost}:${port}/enroll/${record.token}`;
 
       // Generate real, offline, crisp vector SVG & PNG DataURL
@@ -188,9 +218,60 @@ async function handleLabRoutes(req, res, urlPath, port, wsHub = null) {
       success: true,
       primaryIp: getPrimaryLanIp(),
       allIps: getAllLanIps(),
+      hostname: os.hostname(),
       port
     }));
     return true;
+  }
+
+  // Server Auto-Start Management Endpoints: GET / POST / DELETE /api/lab/server/autostart
+  if (urlPath === '/api/lab/server/autostart') {
+    const { exec } = require('child_process');
+    const startupFolder = path.join(process.env.APPDATA || '', 'Microsoft', 'Windows', 'Start Menu', 'Programs', 'Startup');
+    const lnkPath = path.join(startupFolder, 'TIS-Lab-Server.lnk');
+    const vbsPath = path.join(__dirname, '..', 'Start-Background.vbs');
+    const baseDir = path.join(__dirname, '..');
+
+    if (req.method === 'GET') {
+      const lnkExists = fs.existsSync(lnkPath);
+      res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+      res.end(JSON.stringify({
+        success: true,
+        enabled: lnkExists,
+        startupPath: lnkPath
+      }));
+      return true;
+    }
+
+    if (req.method === 'POST') {
+      const regCmd = `reg add "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run" /v "TISLabServer" /t REG_SZ /d "wscript.exe \\"${vbsPath}\\" /autostart" /f`;
+      const psCmd = `powershell -NoProfile -ExecutionPolicy Bypass -Command "$ws = New-Object -ComObject WScript.Shell; $s = $ws.CreateShortcut('${lnkPath.replace(/'/g, "''")}'); $s.TargetPath = 'wscript.exe'; $s.Arguments = '\\"${vbsPath.replace(/'/g, "''")}\\" /autostart'; $s.WorkingDirectory = '${baseDir.replace(/'/g, "''")}'; $s.Save()"`;
+      
+      exec(`${regCmd} && ${psCmd}`, (err) => {
+        res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+        res.end(JSON.stringify({
+          success: !err,
+          enabled: true,
+          messageKh: err ? 'មិនអាចកំណត់បានទេ: ' + err.message : 'បានកំណត់ឱ្យ Server ដំណើរការស្វ័យប្រវត្តិតាម Windows រួចរាល់!'
+        }));
+      });
+      return true;
+    }
+
+    if (req.method === 'DELETE') {
+      try {
+        if (fs.existsSync(lnkPath)) fs.unlinkSync(lnkPath);
+      } catch (e) {}
+      exec('reg delete "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run" /v "TISLabServer" /f', () => {
+        res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+        res.end(JSON.stringify({
+          success: true,
+          enabled: false,
+          messageKh: 'បានបិទមុខងារ Auto-Start រួចរាល់!'
+        }));
+      });
+      return true;
+    }
   }
 
   // 4. Agent Registration: POST /api/lab/enroll/register
@@ -571,4 +652,4 @@ async function handleLabRoutes(req, res, urlPath, port, wsHub = null) {
   return false;
 }
 
-module.exports = { handleLabRoutes };
+module.exports = { handleLabRoutes, getPrimaryLanIp, getAllLanIps };

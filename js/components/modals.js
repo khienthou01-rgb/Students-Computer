@@ -22,37 +22,40 @@ const ModalsComponent = {
           <div class="student-modal-body">
             <!-- Top Profile Summary Card -->
             <div class="student-profile-header-card">
-              <!-- Left: Avatar with Camera Badge -->
-              <div class="profile-avatar-wrapper">
-                <img id="profileHeaderAvatar" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%23e2e8f0'/%3E%3Cpath d='M50 48a16 16 0 100-32 16 16 0 000 32zm0 8c-18 0-32 12-32 26v4h64v-4c0-14-14-26-32-26z' fill='%2394a3b8'/%3E%3C/svg%3E" alt="Avatar" class="profile-avatar-img">
-                <label for="profileAvatarFileInput" class="profile-camera-badge" title="ផ្លាស់ប្តូររូបថតសិស្ស">
-                  <i class="fa-solid fa-camera"></i>
-                  <input type="file" id="profileAvatarFileInput" accept="image/*" style="display: none;">
-                </label>
-              </div>
+              <!-- Top Row: Avatar & Student Information -->
+              <div class="profile-header-main">
+                <!-- Left: Avatar with Camera Badge -->
+                <div class="profile-avatar-wrapper">
+                  <img id="profileHeaderAvatar" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%23e2e8f0'/%3E%3Cpath d='M50 48a16 16 0 100-32 16 16 0 000 32zm0 8c-18 0-32 12-32 26v4h64v-4c0-14-14-26-32-26z' fill='%2394a3b8'/%3E%3C/svg%3E" alt="Avatar" class="profile-avatar-img">
+                  <label for="profileAvatarFileInput" class="profile-camera-badge" title="ផ្លាស់ប្តូររូបថតសិស្ស">
+                    <i class="fa-solid fa-camera"></i>
+                    <input type="file" id="profileAvatarFileInput" accept="image/*" style="display: none;">
+                  </label>
+                </div>
 
-              <!-- Center: Student Name & Badges -->
-              <div class="profile-info-center">
-                <h2 id="profileHeaderNameKh" class="profile-name-title">ឈ្មោះសិស្ស</h2>
-                <div class="profile-badges-row">
-                  <span class="profile-badge-pill profile-badge-id">
-                    <i class="fa-solid fa-id-card"></i> ID: <strong id="profileHeaderId" class="font-mono">TX01</strong>
-                  </span>
-                  <span class="profile-badge-pill profile-badge-course">
-                    <i class="fa-solid fa-graduation-cap"></i> <span id="profileHeaderCourse">ថ្នាក់កុំព្យូទ័រ</span>
-                  </span>
-                  <span id="profileHeaderFeeStatus" class="profile-badge-pill profile-badge-fee-paid">
-                    <i class="fa-solid fa-circle-info"></i> <i class="fa-solid fa-check"></i> <span id="profileHeaderFeeStatusText">បង់រួចរាល់</span>
-                  </span>
+                <!-- Center: Student Name & Badges -->
+                <div class="profile-info-center">
+                  <h2 id="profileHeaderNameKh" class="profile-name-title">ឈ្មោះសិស្ស</h2>
+                  <div class="profile-badges-row">
+                    <span class="profile-badge-pill profile-badge-id">
+                      <i class="fa-solid fa-id-card"></i> ID: <strong id="profileHeaderId" class="font-mono">TX01</strong>
+                    </span>
+                    <span class="profile-badge-pill profile-badge-course">
+                      <i class="fa-solid fa-graduation-cap"></i> <span id="profileHeaderCourse">ថ្នាក់កុំព្យូទ័រ</span>
+                    </span>
+                    <span id="profileHeaderFeeStatus" class="profile-badge-pill profile-badge-fee-paid">
+                      <i class="fa-solid fa-circle-info"></i> <i class="fa-solid fa-check"></i> <span id="profileHeaderFeeStatusText">បង់រួចរាល់</span>
+                    </span>
+                  </div>
                 </div>
               </div>
 
-              <!-- Right: Action Buttons Group -->
+              <!-- Bottom Row: Action Buttons Toolbar -->
               <div class="profile-actions-right">
-                <button type="button" id="profileBtnContactHub" class="btn-pill-action" style="background: rgba(0, 136, 204, 0.12); color: #0088cc; border: 1px solid rgba(0, 136, 204, 0.35); font-weight: 700;" title="មជ្ឈមណ្ឌលទំនាក់ទំនង (Call, Telegram, Templates)">
+                <button type="button" id="profileBtnContactHub" class="btn-pill-action btn-pill-contact" title="មជ្ឈមណ្ឌលទំនាក់ទំនង (Call, Telegram, Templates)">
                   <i class="fa-solid fa-comments"></i> <span>ទំនាក់ទំនង</span>
                 </button>
-                <button type="button" id="profileBtnReceipt" class="btn-pill-action" style="background: rgba(16, 185, 129, 0.12); color: #059669; border: 1px solid rgba(16, 185, 129, 0.35); font-weight: 700;" title="ចេញបង្កាន់ដៃ & បោះពុម្ព (Print Receipt)">
+                <button type="button" id="profileBtnReceipt" class="btn-pill-action btn-pill-receipt" title="ចេញបង្កាន់ដៃ & បោះពុម្ព (Print Receipt)">
                   <i class="fa-solid fa-receipt"></i> <span>បង្កាន់ដៃ</span>
                 </button>
                 <button type="button" id="profileBtnAddPayment" class="btn-pill-action btn-pill-blue" title="កត់ត្រាការបង់ប្រាក់បន្ថែម">
@@ -61,10 +64,10 @@ const ModalsComponent = {
                 <button type="button" id="profileBtnEdit" class="btn-pill-action btn-pill-amber" title="កែប្រែទិន្នន័យសិស្ស">
                   <i class="fa-solid fa-pen-to-square"></i> <span>កែប្រែ</span>
                 </button>
-                <button type="button" id="profileBtnMarkDrop" class="btn-pill-action" style="border: 1px solid #ef4444; color: #ef4444; background: rgba(239, 68, 68, 0.08);" title="កំណត់ជាសិស្សបោះបង់ការសិក្សា (ID នឹងត្រូវចាក់សោរ)">
+                <button type="button" id="profileBtnMarkDrop" class="btn-pill-action btn-pill-drop" title="កំណត់ជាសិស្សបោះបង់ការសិក្សា (ID នឹងត្រូវចាក់សោរ)">
                   <i class="fa-solid fa-user-xmark"></i> <span>បោះបង់</span>
                 </button>
-                <button type="button" id="profileBtnMarkGraduate" class="btn-pill-action" style="border: 1px solid #10b981; color: #10b981; background: rgba(16, 185, 129, 0.08);" title="កំណត់ជាសិស្សបញ្ចប់ការសិក្សា">
+                <button type="button" id="profileBtnMarkGraduate" class="btn-pill-action btn-pill-graduate" title="កំណត់ជាសិស្សបញ្ចប់ការសិក្សា">
                   <i class="fa-solid fa-user-graduate"></i> <span>បញ្ចប់</span>
                 </button>
                 <button type="button" id="profileBtnToggleStatus" class="btn-pill-action btn-pill-outline-yellow" title="ផ្លាស់ប្តូរស្ថានភាពសិស្ស">
