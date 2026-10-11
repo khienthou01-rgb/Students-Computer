@@ -92,6 +92,7 @@
   <script src="js/services/image_host.js?v=20261007_175000"></script>
   <script src="js/services/gemini_ai.js?v=20261011_174500"></script>
   <script src="js/services/question_bank.js?v=20261011_180000"></script>
+  <script src="js/services/book_study_engine.js?v=20261011_183000"></script>
 
   <!-- 3. UI Components -->
   <script src="js/components/sidebar.js?v=20261011_170000"></script>
@@ -470,7 +471,7 @@
   <!-- PWA Service Worker Registration & Live Auto-Update Orchestrator -->
   <script>
     (function() {
-      const APP_BUILD_VER = "20261011_180000";
+      const APP_BUILD_VER = "20261011_183000";
       try {
         const storedVer = localStorage.getItem("tis_client_build_ver");
         if (storedVer && storedVer !== APP_BUILD_VER) {

@@ -4,7 +4,7 @@
  */
 
 // NOTE: CACHE_NAME is auto-updated on deployment
-const CACHE_NAME = "tis-portal-v3.0.20261011_180000";
+const CACHE_NAME = "tis-portal-v3.0.20261011_183000";
 
 const ASSETS_TO_CACHE = [
   "./",
@@ -32,6 +32,7 @@ const ASSETS_TO_CACHE = [
   "./js/services/image_host.js",
   "./js/services/gemini_ai.js",
   "./js/services/question_bank.js",
+  "./js/services/book_study_engine.js",
   "./js/components/sidebar.js",
   "./js/components/header.js",
   "./js/components/modals.js",

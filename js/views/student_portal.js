@@ -263,6 +263,41 @@ const StudentPortalView = {
           }).join("")}
         </div>
 
+        <!-- 3.5 OFFICIAL SCHOOL E-BOOK & PRE-EXAM STUDY GUIDE -->
+        <div class="card" style="margin-top: 24px; padding: 20px 24px; background: linear-gradient(135deg, rgba(30, 27, 75, 0.9), rgba(49, 46, 129, 0.9)); border: 1.5px solid rgba(168, 85, 247, 0.4); border-radius: 16px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+          <div style="display: flex; align-items: center; gap: 16px;">
+            <div style="width: 56px; height: 56px; border-radius: 14px; background: rgba(168, 85, 247, 0.25); border: 1.5px solid #a855f7; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; color: #d8b4fe;">
+              <i class="fa-solid fa-book-bookmark"></i>
+            </div>
+            <div>
+              <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 4px;">
+                <h3 style="margin: 0; font-size: 1.15rem; font-weight: 800; color: #fff;">
+                  សៀវភៅមូលដ្ឋានគ្រឹះកុំព្យូទ័ររដ្ឋបាល & IT (កម្រាស់ ១២០ ទំព័រ)
+                </h3>
+                <span class="badge" style="background: #10b981; color: #fff; font-size: 0.72rem; padding: 2px 8px; border-radius: 6px;">សៀវភៅផ្លូវការរបស់សាលា</span>
+              </div>
+              <p style="margin: 0; font-size: 0.84rem; color: #cbd5e1;">
+                មេរៀនគ្រឹះកុំព្យូទ័រ, Windows 10, Typing, MS Word, PowerPoint និង Excel 2019 រួមទាំងគន្លឹះ និងសំណួររំលឹកមុនប្រឡង
+              </p>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <button type="button" class="btn-primary" onclick="BookStudyEngine.openBookReaderModal()" style="height: 40px; padding: 0 18px; font-size: 0.88rem; background: linear-gradient(135deg, #8b5cf6, #6366f1); border: none; box-shadow: 0 4px 14px rgba(139, 92, 246, 0.4); font-weight: 700; border-radius: 10px; display: inline-flex; align-items: center; gap: 8px;">
+              <i class="fa-solid fa-book-open"></i>
+              <span>📖 បើកអានសៀវភៅ (E-Book)</span>
+            </button>
+            <button type="button" class="btn-primary" onclick="BookStudyEngine.openPreExamReviewModal('${activeCourseKey}')" style="height: 40px; padding: 0 18px; font-size: 0.88rem; background: linear-gradient(135deg, #ec4899, #d946ef); border: none; box-shadow: 0 4px 14px rgba(236, 72, 153, 0.4); font-weight: 700; border-radius: 10px; display: inline-flex; align-items: center; gap: 8px;">
+              <i class="fa-solid fa-graduation-cap"></i>
+              <span>🎯 សំណួររំលឹកមុនប្រឡង</span>
+            </button>
+            <a href="assets/books/computer_basics_book.pdf" download="សៀវភៅមូលដ្ឋានកុំព្យូទ័រ_TIS_LAB.pdf" class="btn-secondary" style="height: 40px; padding: 0 16px; font-size: 0.86rem; border-radius: 10px; display: inline-flex; align-items: center; gap: 8px; text-decoration: none;">
+              <i class="fa-solid fa-download"></i>
+              <span>ទាញយក PDF</span>
+            </a>
+          </div>
+        </div>
+
         <!-- 4. PROFILE DETAILS & ATTENDANCE STATS SECTION -->
         <div class="portal-bottom-grid mt-5">
           <!-- Left: Digital ID Card Preview -->

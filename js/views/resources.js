@@ -21,6 +21,10 @@ const ResourcesView = {
           </div>
 
           <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+            <button type="button" class="btn-primary" style="height: 38px; padding: 0 16px; font-size: 0.88rem; background: linear-gradient(135deg, #8b5cf6, #6366f1); border: none; box-shadow: 0 4px 14px rgba(139, 92, 246, 0.35); font-weight: 700;" onclick="BookStudyEngine.openBookReaderModal()">
+              <i class="fa-solid fa-book-open"></i>
+              <span>📖 អានសៀវភៅមូលដ្ឋាន (120ទំព័រ)</span>
+            </button>
             <button type="button" class="btn-primary" style="height: 38px; padding: 0 16px; font-size: 0.88rem; background: #10b981; border-color: #10b981; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);" onclick="ResourcesView.openCreateAssignmentModal()">
               <i class="fa-solid fa-circle-plus"></i>
               <span>+ បង្កើតកិច្ចការថ្មី</span>

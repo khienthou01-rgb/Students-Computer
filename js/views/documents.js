@@ -8,6 +8,18 @@ const DocumentsView = {
 
   defaultDocs: [
     {
+      id: "DOC-BOOK-001",
+      title: "សៀវភៅមូលដ្ឋានគ្រឹះកុំព្យូទ័ររដ្ឋបាល & IT (Windows 10, Typing, Word, Excel, PowerPoint 2019)",
+      category: "lessons",
+      type: "pdf",
+      size: "8.8 MB",
+      date: "2026-10-11",
+      downloads: 620,
+      url: "assets/books/computer_basics_book.pdf",
+      isOfficialBook: true,
+      desc: "សៀវភៅសិក្សាផ្លូវការកម្រាស់ ១២០ ទំព័រ របស់សាលា អន្តរជាតិ ធានស៊ីន (TIS LAB) សម្រាប់សិស្សរៀន និងមើលរំលឹកមុនប្រឡង។"
+    },
+    {
       id: "DOC-001",
       title: "កម្រងលំហាត់អនុវត្តន៍រូបមន្ត Excel ពីកម្រិតដំបូងដល់កម្រិតខ្ពស់",
       category: "exercises",
@@ -253,8 +265,13 @@ const DocumentsView = {
             </div>
 
             <div style="display: flex; gap: 8px;">
+              ${d.isOfficialBook ? `
+                <button type="button" class="btn-primary" onclick="BookStudyEngine.openBookReaderModal()" style="height: 36px; padding: 0 12px; font-size: 0.8rem; font-weight: 700; border-radius: 10px; background: linear-gradient(135deg, #8b5cf6, #6366f1); border: none; display: inline-flex; align-items: center; justify-content: center; gap: 6px;">
+                  <i class="fa-solid fa-book-open"></i> អាន E-Book
+                </button>
+              ` : ''}
               <button type="button" class="btn-primary" onclick="DocumentsView.downloadDoc('${d.id}')" style="flex: 1; height: 36px; font-size: 0.82rem; font-weight: 700; border-radius: 10px; background: ${meta.color}; border-color: ${meta.color}; display: inline-flex; align-items: center; justify-content: center; gap: 6px;">
-                <i class="fa-solid fa-download"></i> ទាញយក (Download)
+                <i class="fa-solid fa-download"></i> ទាញយក
               </button>
               <button type="button" class="btn-secondary" onclick="DocumentsView.handleDelete('${d.id}')" style="height: 36px; padding: 0 12px; font-size: 0.82rem; border-radius: 10px; color: #ef4444;" title="លុប">
                 <i class="fa-solid fa-trash"></i>
@@ -274,6 +291,16 @@ const DocumentsView = {
     d.downloads = (d.downloads || 0) + 1;
     this.saveDocs(docs);
     this.renderGrid();
+
+    if (d.url) {
+      const a = document.createElement("a");
+      a.href = d.url;
+      a.download = d.url.split("/").pop();
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      return;
+    }
 
     // Create realistic downloadable text blob
     const content = `TIS LAB COMPUTER\n====================\nTitle: ${d.title}\nCategory: ${d.category}\nDate: ${d.date}\n\n${d.desc}\n\nOfficial Material for Student Training 2026.`;
