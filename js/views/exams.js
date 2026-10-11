@@ -88,6 +88,10 @@ const ExamsView = {
               <i class="fa-solid fa-file-signature"></i>
               <span>📑 ឃ្លាំងវិញ្ញាសាប្រឡង</span>
             </button>
+            <button type="button" id="btnOpenQuestionBankModal" onclick="QuestionBankView.openModal()" class="btn-primary" style="height: 38px; padding: 0 16px; font-size: 0.88rem; background: linear-gradient(135deg, #6366f1, #8b5cf6); border: none; box-shadow: 0 4px 14px rgba(139, 92, 246, 0.4); font-weight: 700;" title="ធនាគារសំណួរទុកប្រឡង និងបង្កើតវិញ្ញាសា">
+              <i class="fa-solid fa-boxes-stacked"></i>
+              <span>📚 ធនាគារសំណួរ & បង្កើតវិញ្ញាសា</span>
+            </button>
             <button type="button" id="btnOpenPasteExcelModal" class="btn-secondary" style="height: 38px; padding: 0 14px; font-size: 0.85rem; color: #107c41; border-color: rgba(16, 124, 65, 0.35); background: rgba(16, 124, 65, 0.08);" title="Paste ពិន្ទុពី Excel">
               <i class="fa-solid fa-file-excel"></i>
               <span>Paste ពី Excel</span>
@@ -1197,6 +1201,10 @@ const ExamsView = {
       return;
     }
 
+    if (typeof QuestionBankService !== "undefined") {
+      QuestionBankService.syncCustomExamsToExamPapersData();
+    }
+
     let papers = [];
     if (!courseFilter || courseFilter === "all") {
       Object.keys(EXAM_PAPERS_DATA).forEach(k => {
@@ -1229,6 +1237,11 @@ const ExamsView = {
               <span class="badge font-mono" style="background: ${meta.color}18; color: ${meta.color}; font-weight: 800; font-size: 0.85rem; padding: 4px 8px; border-radius: 6px;">
                 ${p.id}
               </span>
+              ${p.source === 'question_bank' ? `
+                <span class="badge" style="background: rgba(139, 92, 246, 0.2); color: #c084fc; font-weight: 800; font-size: 0.78rem; border: 1px solid rgba(139, 92, 246, 0.35);">
+                  <i class="fa-solid fa-boxes-stacked"></i> ដកស្រង់ពីធនាគារសំណួរ
+                </span>
+              ` : ''}
               <span class="badge" style="background: var(--border-light); color: var(--text-main); font-weight: 700; font-size: 0.78rem;">
                 <i class="fa-solid ${meta.icon}" style="color: ${meta.color};"></i> ${meta.label}
               </span>
@@ -1325,6 +1338,11 @@ const ExamsView = {
   },
 
   printOfficialExamPaper(paperId, courseId) {
+    if (typeof QuestionBankService !== "undefined" && paperId && (paperId.startsWith("EXM-") || QuestionBankService.getAllCustomExams().some(e => e.id === paperId))) {
+      QuestionBankService.printExamSheet(paperId, "student");
+      return;
+    }
+
     let paper = null;
 
     if (paperId) {
@@ -1777,8 +1795,14 @@ const ExamsView = {
   setupPracticalCourseExam(courseKey, paperId) {
     this.stopPracticalTimer();
 
-    const papers = EXAM_PAPERS_DATA[courseKey] || [];
-    const paper = (paperId ? papers.find(p => p.id === paperId) : null) || papers[0];
+    let paper = null;
+    if (typeof QuestionBankService !== "undefined" && paperId) {
+      paper = QuestionBankService.getAllCustomExams().find(p => p.id === paperId);
+    }
+    if (!paper) {
+      const papers = EXAM_PAPERS_DATA[courseKey] || [];
+      paper = (paperId ? papers.find(p => p.id === paperId) : null) || papers[0];
+    }
 
     if (!paper || !paper.questions || paper.questions.length === 0) {
       const qMount = document.getElementById("practicalQuestionsList");

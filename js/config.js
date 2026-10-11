@@ -42,6 +42,8 @@ const APP_CONFIG = {
   STORAGE_KEY_ASSIGNMENTS: "master_school_assignments",
   STORAGE_KEY_ASSIGNMENT_SUBS: "master_school_assignment_subs",
   STORAGE_KEY_GEMINI: "master_school_gemini_config",
+  STORAGE_KEY_QUESTION_BANK: "master_school_question_bank",
+  STORAGE_KEY_CUSTOM_EXAMS: "master_school_custom_exams",
   DEFAULT_COURSE_DURATION_MONTHS: 4,
 
   // Google Gemini AI Configuration (AI Photo Studio & Background Intelligence)

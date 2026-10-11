@@ -158,6 +158,10 @@ const SidebarComponent = {
               <i class="fa-solid fa-chevron-down group-arrow"></i>
             </button>
             <div class="sidebar-sub-menu">
+              <button type="button" class="sub-link action-btn" onclick="QuestionBankView.openModal()" title="ធនាគារសំណួរទុកប្រឡង & បង្កើតវិញ្ញាសា">
+                <i class="fa-solid fa-boxes-stacked text-purple-400"></i>
+                <span style="font-weight: 700; color: #c084fc;">📚 ធនាគារសំណួរ & បង្កើតវិញ្ញាសា</span>
+              </button>
               <button type="button" class="sub-link action-btn" onclick="ModalsComponent.openQuickBatchGradingModal()" title="បញ្ចូលពិន្ទុរហ័សតាមវេន (Spreadsheet Entry)">
                 <i class="fa-solid fa-table-cells text-amber-400"></i>
                 <span style="font-weight: 700; color: #fbbf24;">⚡ បញ្ចូលពិន្ទុរហ័សតាមវេន</span>
