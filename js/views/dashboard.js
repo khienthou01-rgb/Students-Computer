@@ -31,6 +31,14 @@ const DashboardView = {
                 <i class="fa-solid fa-calendar-check text-emerald-400"></i>
                 <span>កត់ត្រាវត្តមាន</span>
               </button>
+              <button type="button" class="btn-secondary" onclick="ModalsComponent.openAiQuizGeneratorModal()" style="height: 42px; padding: 0 16px; font-size: 0.88rem; font-weight: 700; border-radius: 12px; background: linear-gradient(135deg, rgba(168, 85, 247, 0.2), rgba(6, 182, 212, 0.2)); border: 1px solid rgba(168, 85, 247, 0.45); color: #f3e8ff; box-shadow: 0 4px 14px rgba(168, 85, 247, 0.2);" title="បង្កើតកម្រងសំណួរពហុជ្រើសរើស និងលំហាត់កុំព្យូទ័រតាម Gemini AI">
+                <i class="fa-solid fa-brain" style="color: #c084fc;"></i>
+                <span>✨ AI បង្កើតកម្រងសំណួរ</span>
+              </button>
+              <button type="button" class="btn-secondary" onclick="ModalsComponent.openAiStudentInsightModal()" style="height: 42px; padding: 0 16px; font-size: 0.88rem; font-weight: 700; border-radius: 12px; background: linear-gradient(135deg, rgba(6, 182, 212, 0.2), rgba(16, 185, 129, 0.2)); border: 1px solid rgba(6, 182, 212, 0.45); color: #cffafe; box-shadow: 0 4px 14px rgba(6, 182, 212, 0.2);" title="វិភាគការសិក្សា ដំណឹងសិស្សអវត្តមាន និងពិន្ទុធ្លាក់ចុះ">
+                <i class="fa-solid fa-chart-line-up" style="color: #38bdf8;"></i>
+                <span>📊 AI វិភាគការសិក្សាសិស្ស</span>
+              </button>
             </div>
           </div>
 
@@ -167,6 +175,38 @@ const DashboardView = {
             <div class="kpi-icon-box" style="width: 48px; height: 48px; font-size: 1.25rem;">
               <i class="fa-solid fa-award"></i>
             </div>
+          </div>
+        </div>
+
+        <!-- 3. Futuristic Gemini AI Assistant Studio Banner -->
+        <div class="card motion-fade-up" style="margin-bottom: 22px; padding: 22px 26px; background: linear-gradient(135deg, rgba(30, 27, 75, 0.85) 0%, rgba(15, 23, 42, 0.95) 100%); border: 1px solid rgba(168, 85, 247, 0.35); border-radius: 20px; box-shadow: 0 14px 36px rgba(0,0,0,0.4), 0 0 24px rgba(168, 85, 247, 0.15); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 18px;">
+          <div style="display: flex; align-items: center; gap: 16px; flex: 1; min-width: 290px;">
+            <div style="width: 52px; height: 52px; border-radius: 16px; background: linear-gradient(135deg, #a855f7, #06b6d4); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: #fff; box-shadow: 0 8px 20px rgba(168, 85, 247, 0.4); flex-shrink: 0;">
+              <i class="fa-solid fa-wand-magic-sparkles"></i>
+            </div>
+            <div>
+              <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 4px;">
+                <h3 style="margin: 0; font-size: 1.15rem; font-weight: 800; color: #f8fafc; display: flex; align-items: center; gap: 8px;">
+                  Gemini AI Assistant • សាលា អន្តរជាតិ ធានស៊ីន
+                </h3>
+                <span class="badge" style="background: rgba(168, 85, 247, 0.2); color: #c084fc; font-size: 0.72rem; padding: 3px 8px; border-radius: 20px; border: 1px solid rgba(168, 85, 247, 0.3);">
+                  <i class="fa-solid fa-bolt"></i> Gemini 3.8 Flash
+                </span>
+              </div>
+              <p style="margin: 0; font-size: 0.84rem; color: #94a3b8; line-height: 1.5;">
+                បង្កើតកម្រងសំណួរពហុជ្រើសរើស និងលំហាត់កុំព្យូទ័រដោយស្វ័យប្រវត្តិតាមមេរៀន • វិភាគអវត្តមាន & ពិន្ទុធ្លាក់ចុះដើម្បីទប់ស្កាត់ការបោះបង់ទាន់ពេល
+              </p>
+            </div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+            <button type="button" class="btn-primary" onclick="ModalsComponent.openAiQuizGeneratorModal()" style="height: 40px; padding: 0 18px; font-size: 0.86rem; font-weight: 800; border-radius: 12px; background: linear-gradient(135deg, #a855f7, #6366f1); border: none; box-shadow: 0 4px 16px rgba(168, 85, 247, 0.4);">
+              <i class="fa-solid fa-brain"></i>
+              <span>✨ បង្កើតកម្រងសំណួរ & លំហាត់</span>
+            </button>
+            <button type="button" class="btn-secondary" onclick="ModalsComponent.openAiStudentInsightModal()" style="height: 40px; padding: 0 18px; font-size: 0.86rem; font-weight: 800; border-radius: 12px; background: rgba(6, 182, 212, 0.15); border: 1px solid rgba(6, 182, 212, 0.4); color: #22d3ee;">
+              <i class="fa-solid fa-chart-line-up"></i>
+              <span>📊 វិភាគការសិក្សាសិស្ស</span>
+            </button>
           </div>
         </div>
 

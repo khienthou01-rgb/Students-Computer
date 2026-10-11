@@ -4,7 +4,7 @@
  */
 
 // NOTE: CACHE_NAME is auto-updated on deployment
-const CACHE_NAME = "tis-portal-v3.0.20261011_162000";
+const CACHE_NAME = "tis-portal-v3.0.20261011_170000";
 
 const ASSETS_TO_CACHE = [
   "./",

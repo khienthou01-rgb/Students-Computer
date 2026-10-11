@@ -11,7 +11,7 @@ const SidebarComponent = {
       if (saved) return JSON.parse(saved);
     } catch (e) {}
     // Default open groups
-    return ["students", "lab", "exams", "comm", "finance"];
+    return ["students", "lab", "exams", "ai_assistant", "comm", "finance"];
   },
 
   saveOpenGroups(groups) {
@@ -123,7 +123,30 @@ const SidebarComponent = {
             </div>
           </div>
 
-          <!-- 3. វិញ្ញាសា & ការប្រឡង (Exams & Exercises) -->
+          <!-- 3. AI Assistant Group (Gemini AI Assistant) -->
+          <div class="menu-category">បញ្ញាសិប្បនិម្មិត AI (GEMINI AI STUDIO)</div>
+
+          <div class="sidebar-group ${isGroupOpen('ai_assistant')}" data-group="ai_assistant">
+            <button type="button" class="sidebar-group-toggle" onclick="SidebarComponent.toggleGroup('ai_assistant')">
+              <div class="group-toggle-left">
+                <i class="fa-solid fa-wand-magic-sparkles text-amber-400"></i>
+                <span style="font-weight: 800; background: linear-gradient(135deg, #c084fc, #38bdf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Gemini AI Assistant</span>
+              </div>
+              <i class="fa-solid fa-chevron-down group-arrow"></i>
+            </button>
+            <div class="sidebar-sub-menu">
+              <button type="button" class="sub-link action-btn" onclick="ModalsComponent.openAiQuizGeneratorModal()" title="AI បង្កើតកម្រងសំណួរពហុជ្រើសរើស និងលំហាត់កុំព្យូទ័រស្វ័យប្រវត្តិ">
+                <i class="fa-solid fa-brain text-purple-400"></i>
+                <span style="font-weight: 700; color: #d8b4fe;">✨ AI បង្កើតកម្រងសំណួរ & លំហាត់</span>
+              </button>
+              <button type="button" class="sub-link action-btn" onclick="ModalsComponent.openAiStudentInsightModal()" title="AI វិភាគការសិក្សារបស់សិស្ស ដំណឹងអវត្តមាន & ពិន្ទុធ្លាក់ចុះ">
+                <i class="fa-solid fa-chart-line-up text-cyan-400"></i>
+                <span style="font-weight: 700; color: #67e8f9;">📊 AI វិភាគការសិក្សាសិស្ស & ដំណឹង</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- 4. វិញ្ញាសា & ការប្រឡង (Exams & Exercises) -->
           <div class="menu-category">ឧបករណ៍ជំនួយគ្រូ & ប្រឡង (TEACHER TOOLS)</div>
 
           <div class="sidebar-group ${isGroupOpen('exams')}" data-group="exams">
