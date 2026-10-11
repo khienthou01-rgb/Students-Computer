@@ -477,16 +477,61 @@ const App = {
     }
   },
 
-  async handleLogin(username, password, rememberMe) {
-    const user = await AuthService.login(username, password, rememberMe);
+  async handleLogin(username, password, rememberMe, targetSchoolId = null) {
+    const user = await AuthService.login(username, password, rememberMe, targetSchoolId);
     this.state.currentUser = user;
-    this.showToast(`🎉 ស្វាគមន៍ ${user.nameKh} មកកាន់ TIS Lab Computer!`, "success");
+    const schoolName = "សាលា អន្តរជាតិ ធានស៊ីន";
+    this.showToast(`🎉 ស្វាគមន៍ ${user.nameKh} មកកាន់ ${schoolName}!`, "success");
     this.triggerConfetti();
 
     this.mountDOM();
     this.bindEvents();
     this.setupAutoSync();
     await this.loadData();
+  },
+
+  async switchActiveSchool(schoolId) {
+    if (!schoolId) return;
+    if (typeof AuthService !== "undefined") {
+      AuthService.setActiveSchool(schoolId);
+      if (this.state.currentUser) {
+        this.state.currentUser.activeSchoolId = schoolId;
+        this.state.currentUser.schoolId = schoolId;
+        const s = AuthService.getActiveSchool();
+        if (s) this.state.currentUser.schoolName = s.nameKh;
+      }
+    }
+    const school = (typeof AuthService !== "undefined" && AuthService.getActiveSchool) ? AuthService.getActiveSchool() : null;
+    const schoolName = (school && school.nameKh) || "សាលារៀន";
+    
+    // Close school dropdown menu if open
+    const dropdown = document.getElementById("headerSchoolDropdownMenu");
+    if (dropdown) dropdown.style.display = "none";
+
+    this.showToast(`🔄 កំពុងប្តូរទៅកាន់ "${schoolName}"...`, "info");
+    this.showLoader(true);
+
+    try {
+      // Re-mount DOM shell so Header and Sidebar reflect new school branding
+      this.mountDOM();
+      this.bindEvents();
+
+      // Clear search query or filters
+      this.state.searchQuery = "";
+      this.state.filterCourse = "";
+      this.state.filterShift = "";
+
+      // Load isolated data for this active school
+      await this.loadData(true);
+
+      this.showToast(`✅ បានប្តូរទៅកាន់ "${schoolName}" ដោយជោគជ័យ!`, "success");
+      if (typeof this.triggerConfetti === "function") this.triggerConfetti();
+    } catch (err) {
+      console.error("Switch school error:", err);
+      this.showToast("កំហុសក្នុងការប្តូរសាលា: " + err.message, "error");
+    } finally {
+      this.showLoader(false);
+    }
   },
 
   async handleStudentLogin(idOrPhone, pin, rememberMe) {
@@ -580,7 +625,6 @@ const App = {
               ${typeof ReportsView !== "undefined" ? ReportsView.render() : ""}
               ${typeof ResourcesView !== "undefined" ? ResourcesView.render() : ""}
               ${SettingsView.render()}
-              ${typeof ComputerLabView !== "undefined" ? ComputerLabView.render() : ""}
             </div>
           </main>
         `;
@@ -628,7 +672,6 @@ const App = {
       if (typeof ReportsView !== "undefined") ReportsView.initEvents();
       if (typeof ResourcesView !== "undefined") ResourcesView.initEvents();
       SettingsView.initEvents();
-      if (typeof ComputerLabView !== "undefined") ComputerLabView.initEvents();
     }
   },
 
@@ -737,7 +780,7 @@ const App = {
       view.classList.remove("active", "motion-fade-up");
     });
 
-    const targetView = document.getElementById(`view-${tabId}`);
+    let targetView = document.getElementById(`view-${tabId}`);
     if (targetView) {
       void targetView.offsetWidth; // Trigger DOM reflow for fresh animation
       targetView.classList.add("active", "motion-fade-up");
@@ -823,10 +866,6 @@ const App = {
     } else if (tabId === "settings") {
       if (typeof SettingsView !== "undefined" && SettingsView.refreshTeachersGrid) {
         SettingsView.refreshTeachersGrid();
-      }
-    } else if (tabId === "computer-lab") {
-      if (typeof ComputerLabView !== "undefined" && ComputerLabView.onActivated) {
-        ComputerLabView.onActivated();
       }
     }
 
@@ -3681,8 +3720,16 @@ const App = {
   showLoader(show) {
     const loader = document.getElementById("globalLoader");
     if (!loader) return;
-    if (show) loader.classList.add("active");
-    else loader.classList.remove("active");
+    if (show) {
+      loader.classList.add("active");
+      clearTimeout(this._loaderSafetyTimeout);
+      this._loaderSafetyTimeout = setTimeout(() => {
+        loader.classList.remove("active");
+      }, 6000);
+    } else {
+      clearTimeout(this._loaderSafetyTimeout);
+      loader.classList.remove("active");
+    }
   },
 
   triggerConfetti() {

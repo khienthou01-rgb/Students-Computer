@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 350" width="100%" height="100%">
+  <!-- Female Formal Blazer with White Inner Top -->
+  <defs>
+    <linearGradient id="femBlazerGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1e1b4b"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Blazer Shoulders -->
+  <path d="M 50 350 L 135 90 L 210 70 L 250 120 L 290 70 L 365 90 L 450 350 Z" fill="url(#femBlazerGrad)" stroke="#312e81" stroke-width="2"/>
+
+  <!-- Inner Soft White V-Neck Blouse -->
+  <path d="M 210 70 Q 250 90 290 70 L 250 200 Z" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5"/>
+
+  <!-- Left Shawl/Notch Lapel -->
+  <path d="M 210 70 L 250 215 L 185 175 L 195 95 Z" fill="#1e1b4b" stroke="#3730a3" stroke-width="1.8"/>
+  <!-- Right Lapel -->
+  <path d="M 290 70 L 250 215 L 315 175 L 305 95 Z" fill="#1e1b4b" stroke="#3730a3" stroke-width="1.8"/>
+
+  <!-- Single Tailored Button -->
+  <circle cx="250" cy="225" r="5" fill="#f59e0b" stroke="#d97706" stroke-width="1.5"/>
+
+  <!-- Waist Shape Contours -->
+  <path d="M 175 180 Q 190 250 180 345" stroke="#312e81" stroke-width="1.5" fill="none"/>
+  <path d="M 325 180 Q 310 250 320 345" stroke="#312e81" stroke-width="1.5" fill="none"/>
+</svg>

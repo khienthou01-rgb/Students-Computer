@@ -50,9 +50,16 @@ const ClassesView = {
     }
   ],
 
+  getClassesKey() {
+    if (typeof StudentAPI !== "undefined" && StudentAPI.getStorageKey) {
+      return StudentAPI.getStorageKey("ms_classes_list_2026_v4");
+    }
+    return "ms_classes_list_2026_v4";
+  },
+
   resetToDefaults() {
-    localStorage.setItem("ms_classes_list_2026_v4", JSON.stringify(this.defaultClasses));
-    localStorage.setItem("ms_classes_list_2026", JSON.stringify(this.defaultClasses));
+    const key = this.getClassesKey();
+    localStorage.setItem(key, JSON.stringify(this.defaultClasses));
     this.renderGrid();
     if (typeof App !== "undefined" && App.showToast) {
       App.showToast("បានស្ដារថ្នាក់កុំព្យូទ័រទាំងអស់មកវិញដូចដើមរួចរាល់!", "success");
@@ -61,7 +68,8 @@ const ClassesView = {
 
   getClasses() {
     try {
-      const stored = localStorage.getItem("ms_classes_list_2026_v4");
+      const key = this.getClassesKey();
+      const stored = localStorage.getItem(key);
       if (stored) {
         const parsed = JSON.parse(stored);
         if (Array.isArray(parsed) && parsed.length >= this.defaultClasses.length) {
@@ -70,14 +78,14 @@ const ClassesView = {
         }
       }
     } catch (e) {}
-    localStorage.setItem("ms_classes_list_2026_v4", JSON.stringify(this.defaultClasses));
-    localStorage.setItem("ms_classes_list_2026", JSON.stringify(this.defaultClasses));
+    const key = this.getClassesKey();
+    localStorage.setItem(key, JSON.stringify(this.defaultClasses));
     return JSON.parse(JSON.stringify(this.defaultClasses));
   },
 
   saveClasses(classes) {
-    localStorage.setItem("ms_classes_list_2026_v4", JSON.stringify(classes));
-    localStorage.setItem("ms_classes_list_2026", JSON.stringify(classes));
+    const key = this.getClassesKey();
+    localStorage.setItem(key, JSON.stringify(classes));
   },
 
   render() {

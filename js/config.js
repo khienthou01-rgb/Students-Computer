@@ -2,8 +2,8 @@
  * Configuration file for Student Management System
  */
 const APP_CONFIG = {
-  appName: "ប្រព័ន្ធគ្រប់គ្រងសិស្ស - TIS Lab Computer",
-  appVersion: "2.1.20260925",
+  appName: "សាលា អន្តរជាតិ ធានស៊ីន - TIS LAB COMPUTER",
+  appVersion: "3.0.20261011",
   studentIdPrefix: "TX",
   
   // Firebase Realtime Database Configuration
@@ -26,6 +26,8 @@ const APP_CONFIG = {
   STORAGE_KEY_EXAMS: "master_school_exams_db",
   STORAGE_KEY_AUTH: "master_school_auth_teacher",
   STORAGE_KEY_TEACHERS: "master_school_teachers_db",
+  STORAGE_KEY_SCHOOLS: "master_school_schools_db",
+  STORAGE_KEY_ACTIVE_SCHOOL: "master_school_active_school_id",
   STORAGE_KEY_FEES: "master_school_fees_db",
   STORAGE_KEY_CERTIFICATES: "master_school_certificates_db",
   STORAGE_KEY_TELEGRAM: "master_school_telegram_config",
@@ -39,7 +41,17 @@ const APP_CONFIG = {
   STORAGE_KEY_LEAVE_REQUESTS: "master_school_leave_requests",
   STORAGE_KEY_ASSIGNMENTS: "master_school_assignments",
   STORAGE_KEY_ASSIGNMENT_SUBS: "master_school_assignment_subs",
+  STORAGE_KEY_GEMINI: "master_school_gemini_config",
   DEFAULT_COURSE_DURATION_MONTHS: 4,
+
+  // Google Gemini AI Configuration (AI Photo Studio & Background Intelligence)
+  geminiConfig: {
+    apiKey: "",
+    model: "gemini-3.8-flash",
+    fallbackModels: ["gemini-3.5-flash", "gemini-3.5-flash-lite"],
+    enabled: true
+  },
+  geminiApiKey: "",
   
   // Telegram Bot Notifications Configuration
   telegramConfig: {
@@ -167,7 +179,33 @@ const APP_CONFIG = {
       notes: "អ្នកគ្រប់គ្រងបច្ចេកទេស និងបន្ទប់កុំព្យូទ័រ TIS Lab",
       avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=250",
       gender: "ប្រុស",
-      permissions: ["all"]
+      permissions: ["all"],
+      schoolId: "tis",
+      schoolName: "សាលា អន្តរជាតិ ធានស៊ីន"
+    }
+  ],
+
+  // Default School (សាលា អន្តរជាតិ ធានស៊ីន)
+  defaultSchools: [
+    {
+      id: "tis",
+      code: "TIS",
+      nameKh: "សាលា អន្តរជាតិ ធានស៊ីន",
+      nameEn: "Tian Xin International School",
+      tagline: "TIS Lab Computer & Modern Academy",
+      type: "សាលាអន្តរជាតិ (International)",
+      province: "ខេត្តកំពត",
+      logo: "assets/images/logo.png",
+      adminName: "លោកគ្រូ ខៀន ធូ",
+      adminUsername: "khienthou",
+      phone: "017 589 489 / 071 721 030 7",
+      email: "khienthou01@gmail.com",
+      status: "សកម្ម",
+      isDefault: true,
+      studentsCount: 34,
+      teachersCount: 2,
+      classesCount: 3,
+      createdAt: "2024-01-01"
     }
   ]
 };

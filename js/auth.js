@@ -60,12 +60,17 @@ const AuthService = {
               email: found.email,
               phone: found.phone,
               avatar: found.avatar,
-              gender: found.gender
+              gender: found.gender,
+              schoolId: this._currentUser.schoolId || found.schoolId || "tis"
             };
             const storage = localStorage.getItem(APP_CONFIG.STORAGE_KEY_AUTH) ? localStorage : sessionStorage;
             storage.setItem(APP_CONFIG.STORAGE_KEY_AUTH, JSON.stringify(this._currentUser));
           }
         }
+        // Ensure active school is restored accurately from localStorage or user session
+        const savedActive = localStorage.getItem(APP_CONFIG.STORAGE_KEY_ACTIVE_SCHOOL);
+        const effectiveId = savedActive || (this._currentUser && (this._currentUser.activeSchoolId || this._currentUser.schoolId)) || "tis";
+        this.setActiveSchool(effectiveId);
       }
     } catch (e) {
       this._currentUser = null;
@@ -267,7 +272,7 @@ const AuthService = {
     return id;
   },
 
-  async login(username, password, rememberMe = true) {
+  async login(username, password, rememberMe = true, targetSchoolId = null) {
     if (!username || !username.trim()) {
       throw new Error("សូមបញ្ចូលឈ្មោះគណនី (Username)!");
     }
@@ -295,6 +300,17 @@ const AuthService = {
       throw new Error("ឈ្មោះគណនី ឬលេខសម្ងាត់មិនត្រឹមត្រូវឡើយ! សូមពិនិត្យមើលម្តងទៀត។");
     }
 
+    // Determine the active school:
+    // 1. Explicit targetSchoolId passed from login selector
+    // 2. Previously selected school in localStorage
+    // 3. The teacher's assigned schoolId
+    // 4. Default to 'tis'
+    const storedActive = localStorage.getItem(APP_CONFIG.STORAGE_KEY_ACTIVE_SCHOOL);
+    const effectiveSchoolId = targetSchoolId || storedActive || teacher.schoolId || "tis";
+
+    const schools = this.getSchools();
+    const currentSchool = schools.find(s => s.id === effectiveSchoolId || s.code === effectiveSchoolId) || schools[0];
+
     const safeUser = {
       id: teacher.id,
       username: teacher.username,
@@ -305,11 +321,15 @@ const AuthService = {
       phone: teacher.phone,
       avatar: teacher.avatar,
       gender: teacher.gender,
+      schoolId: effectiveSchoolId,
+      activeSchoolId: effectiveSchoolId,
+      schoolName: currentSchool ? currentSchool.nameKh : (teacher.schoolName || "សាលា អន្តរជាតិ ធានស៊ីន"),
       permissions: teacher.permissions || ["all"],
       loggedInAt: new Date().toISOString()
     };
 
     this._currentUser = safeUser;
+    this.setActiveSchool(effectiveSchoolId);
 
     try {
       if (rememberMe) {
@@ -464,5 +484,137 @@ const AuthService = {
   isTeacher() {
     const user = this.getCurrentUser();
     return !!(user && user.role !== "student");
+  },
+
+  // =========================================================================
+  // DEDICATED SCHOOL IDENTITY: សាលា អន្តរជាតិ ធានស៊ីន (TIAN XIN INTERNATIONAL SCHOOL)
+  // =========================================================================
+  getSchools() {
+    return APP_CONFIG.defaultSchools || [{
+      id: "tis",
+      code: "TIS",
+      nameKh: "សាលា អន្តរជាតិ ធានស៊ីន",
+      nameEn: "Tian Xin International School",
+      tagline: "TIS Lab Computer & Modern Academy",
+      type: "សាលាអន្តរជាតិ (International)",
+      province: "ខេត្តកំពត",
+      logo: "assets/images/logo.png",
+      adminName: "លោកគ្រូ ខៀន ធូ",
+      adminUsername: "khienthou",
+      phone: "017 589 489 / 071 721 030 7",
+      email: "khienthou01@gmail.com",
+      status: "សកម្ម",
+      isDefault: true,
+      studentsCount: 34,
+      teachersCount: 2,
+      classesCount: 3,
+      createdAt: "2024-01-01"
+    }];
+  },
+
+  async saveSchools(schools) {
+    try {
+      localStorage.setItem(APP_CONFIG.STORAGE_KEY_SCHOOLS, JSON.stringify(this.getSchools()));
+    } catch (e) {}
+  },
+
+  async fetchSchoolsCloud() {
+    return this.getSchools();
+  },
+
+  getActiveSchool() {
+    return (APP_CONFIG.defaultSchools && APP_CONFIG.defaultSchools[0]) || {
+      id: "tis",
+      code: "TIS",
+      nameKh: "សាលា អន្តរជាតិ ធានស៊ីន",
+      nameEn: "Tian Xin International School",
+      tagline: "TIS Lab Computer & Modern Academy",
+      type: "សាលាអន្តរជាតិ (International)",
+      province: "ខេត្តកំពត"
+    };
+  },
+
+  setActiveSchool(schoolId) {
+    localStorage.setItem(APP_CONFIG.STORAGE_KEY_ACTIVE_SCHOOL, "tis");
+    if (this._currentUser) {
+      this._currentUser.activeSchoolId = "tis";
+      this._currentUser.schoolId = "tis";
+      const storage = localStorage.getItem(APP_CONFIG.STORAGE_KEY_AUTH) ? localStorage : sessionStorage;
+      storage.setItem(APP_CONFIG.STORAGE_KEY_AUTH, JSON.stringify(this._currentUser));
+    }
+  },
+
+  async registerSchool(data) {
+    if (!data.nameKh || !data.nameKh.trim()) {
+      throw new Error("សូមបញ្ចូលឈ្មោះសាលារៀនជាភាសាខ្មែរ!");
+    }
+    if (!data.adminUsername || !data.adminUsername.trim()) {
+      throw new Error("សូមបញ្ចូលឈ្មោះគណនី (Username ឬ Email) សម្រាប់អ្នកគ្រប់គ្រង!");
+    }
+    if (!data.password || !data.password.trim()) {
+      throw new Error("សូមកំណត់លេខសម្ងាត់សម្រាប់ចូលប្រើ!");
+    }
+
+    const cleanCode = (data.code || data.nameEn || "SCH" + Date.now().toString().slice(-4))
+      .trim().toUpperCase().replace(/[^A-Z0-9_-]/g, "");
+    const schools = this.getSchools();
+
+    if (schools.some(s => (s.code || "").toUpperCase() === cleanCode)) {
+      throw new Error(`លេខកូដសាលា "${cleanCode}" នេះមានរួចហើយ! សូមប្តូរកូដផ្សេង។`);
+    }
+
+    const schoolId = "sch_" + cleanCode.toLowerCase() + "_" + Date.now().toString().slice(-4);
+    const newSchool = {
+      id: schoolId,
+      code: cleanCode,
+      nameKh: data.nameKh.trim(),
+      nameEn: (data.nameEn || "").trim() || data.nameKh.trim(),
+      tagline: (data.tagline || "").trim() || "សមាជិកបណ្តាញ KPKT LAB COMPUTER",
+      type: data.type || "វិទ្យាល័យ",
+      province: data.province || "រាជធានីភ្នំពេញ",
+      logo: (data.logo || "").trim() || "assets/images/logo.png",
+      adminName: (data.adminName || "អ្នកគ្រប់គ្រង").trim(),
+      adminUsername: data.adminUsername.trim().toLowerCase(),
+      phone: (data.phone || "").trim(),
+      email: (data.email || data.adminUsername).trim(),
+      status: "សកម្ម",
+      isDefault: false,
+      studentsCount: 0,
+      teachersCount: 1,
+      classesCount: 1,
+      createdAt: new Date().toISOString()
+    };
+
+    schools.push(newSchool);
+    await this.saveSchools(schools);
+
+    // Create Teacher Admin Account for this school
+    const newAdmin = {
+      id: "TCH-" + Date.now().toString().slice(-4),
+      username: data.adminUsername.trim().toLowerCase(),
+      password: data.password.trim(),
+      nameKh: (data.adminName || "លោកនាយកសាលា").trim(),
+      nameEn: (data.adminNameEn || "School Principal").trim(),
+      role: "នាយកសាលា & Admin",
+      subject: "គ្រប់គ្រងទូទៅ",
+      schoolId: newSchool.id,
+      schoolCode: newSchool.code,
+      schoolName: newSchool.nameKh,
+      email: (data.email || "").trim(),
+      phone: (data.phone || "").trim(),
+      gender: data.gender || "ប្រុស",
+      avatar: "assets/images/default-male.svg",
+      permissions: ["all"],
+      createdAt: new Date().toISOString()
+    };
+
+    await this.addTeacher(newAdmin);
+    this.setActiveSchool(newSchool.id);
+
+    return {
+      success: true,
+      school: newSchool,
+      admin: newAdmin
+    };
   }
 };

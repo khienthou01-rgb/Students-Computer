@@ -9,28 +9,37 @@ const HeaderComponent = {
     return `
       <header class="top-header">
         <div class="header-left">
-          ${isStudent ? `
-            <div class="student-header-brand" style="display: flex; align-items: center; gap: 12px;">
-              <div class="header-brand-logo">
-                <img src="assets/images/logo.png" alt="Tian Xin International School" class="header-logo-img">
-              </div>
-              <div class="page-title">
-                <h2>សាលា អន្តរជាតិ ធានស៊ីន - គណនីសិស្ស</h2>
-                <p>Tian Xin International School (TIS) • តាមដានការសិក្សា</p>
-              </div>
-            </div>
-          ` : `
-            <button type="button" id="mobileToggle" class="mobile-toggle" aria-label="បើកម៉ឺនុយ">
-              <i class="fa-solid fa-bars"></i>
-            </button>
-            <div class="header-brand-logo" style="display: none;" id="mobileHeaderLogo">
-              <img src="assets/images/logo.png" alt="Tian Xin International School" class="header-logo-img">
-            </div>
-            <div class="page-title">
-              <h2>សាលា អន្តរជាតិ ធានស៊ីន</h2>
-              <p>Tian Xin International School (TIS) • ប្រព័ន្ធគ្រប់គ្រងសិស្ស</p>
-            </div>
-          `}
+          ${(() => {
+            if (isStudent) {
+              return `
+                <div class="student-header-brand" style="display: flex; align-items: center; gap: 12px;">
+                  <div class="header-brand-logo">
+                    <img src="assets/images/logo.png" alt="សាលា អន្តរជាតិ ធានស៊ីន" class="header-logo-img" onerror="this.src='assets/images/logo.png'">
+                  </div>
+                  <div class="page-title">
+                    <h2>សាលា អន្តរជាតិ ធានស៊ីន - គណនីសិស្ស</h2>
+                    <p>Tian Xin International School • តាមដានការសិក្សា</p>
+                  </div>
+                </div>
+              `;
+            } else {
+              return `
+                <button type="button" id="mobileToggle" class="mobile-toggle" aria-label="បើកម៉ឺនុយ">
+                  <i class="fa-solid fa-bars"></i>
+                </button>
+                <div class="header-brand-logo" id="mobileHeaderLogo" style="display: flex; align-items: center;">
+                  <img src="assets/images/logo.png" alt="សាលា អន្តរជាតិ ធានស៊ីន" class="header-logo-img" onerror="this.src='assets/images/logo.png'">
+                </div>
+                <div class="page-title" style="margin-left: 10px;">
+                  <div style="display: flex; align-items: center; gap: 8px;">
+                    <h2 style="margin: 0; font-size: 1.12rem; font-weight: 800; color: var(--text-main);">សាលា អន្តរជាតិ ធានស៊ីន</h2>
+                    <span class="header-school-badge" style="background: linear-gradient(135deg, #4f46e5, #06b6d4); color: #fff; padding: 2px 7px; border-radius: 6px; font-size: 0.7rem; font-weight: 800; letter-spacing: 0.5px;">TIS LAB</span>
+                  </div>
+                  <p style="margin: 2px 0 0 0; font-size: 0.76rem; color: var(--text-muted);">Tian Xin International School • បន្ទប់កុំព្យូទ័រ TIS Lab Computer</p>
+                </div>
+              `;
+            }
+          })()}
         </div>
 
         <div class="header-right">
@@ -159,7 +168,12 @@ const HeaderComponent = {
             </div>
           ` : ''}
 
-          <!-- 4. Theme Mode Switcher -->
+          <!-- 4. PWA Install App Button -->
+          <button type="button" id="headerPwaInstallBtn" onclick="if(window.triggerPwaInstall) window.triggerPwaInstall();" class="theme-btn" style="color: #38bdf8; border-color: rgba(6, 182, 212, 0.4);" title="ដំឡើង App លើទូរស័ព្ទ (Install App)" aria-label="ដំឡើង App">
+            <i class="fa-solid fa-mobile-screen-button"></i>
+          </button>
+
+          <!-- 5. Theme Mode Switcher -->
           <button type="button" id="themeToggleBtn" class="theme-btn" title="ប្តូរ Dark / Light Mode" aria-label="ប្តូរពណ៌ Theme">
             <i id="themeIcon" class="fa-solid fa-moon"></i>
           </button>
@@ -277,6 +291,13 @@ const HeaderComponent = {
       if (ttContainer && ttMenu && !ttContainer.contains(e.target)) {
         ttMenu.style.display = "none";
       }
+
+      // Close school switcher dropdown when clicking outside
+      const switcherWrap = document.querySelector(".header-school-switcher-wrap");
+      const schoolDropdown = document.getElementById("headerSchoolDropdownMenu");
+      if (schoolDropdown && switcherWrap && !switcherWrap.contains(e.target)) {
+        schoolDropdown.style.display = "none";
+      }
     });
 
     // Initialize Realtime Digital Clock HUD
@@ -284,6 +305,26 @@ const HeaderComponent = {
 
     // Check student birthdays
     this.checkTodayBirthdays();
+  },
+
+  toggleSchoolDropdown() {
+    const el = document.getElementById("headerSchoolDropdownMenu");
+    if (!el) return;
+    const isShowing = el.style.display === "block";
+    const notif = document.getElementById("notifDropdownMenu");
+    if (notif) notif.style.display = "none";
+    const tools = document.getElementById("teacherToolsDropdownMenu");
+    if (tools) tools.style.display = "none";
+
+    el.style.display = isShowing ? "none" : "block";
+  },
+
+  openRegisterNewSchool() {
+    const el = document.getElementById("headerSchoolDropdownMenu");
+    if (el) el.style.display = "none";
+    if (typeof LoginView !== "undefined" && LoginView.openRegisterSchoolModal) {
+      LoginView.openRegisterSchoolModal();
+    }
   },
 
   toggleNotifDropdown() {

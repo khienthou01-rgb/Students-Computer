@@ -13,6 +13,9 @@ _smart_school_upgrade_backup/
 .lab_data/
 .sent_daily_att_*
 *.log
+__pycache__/
+*.pyc
+test_*.js
 
 # OS generated files
 .DS_Store

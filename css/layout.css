@@ -809,3 +809,102 @@
     display: none;
   }
 }
+
+/* ==========================================================================
+   TABLET & MOBILE RESPONSIVE OPTIMIZATIONS (TABLES, CARDS, MODALS, INPUTS)
+   ========================================================================== */
+
+/* Universal Responsive Table Wrapper */
+.table-responsive,
+.table-container,
+.data-table-wrap,
+.responsive-table-scroll,
+.table-wrapper {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin-bottom: 16px;
+  border-radius: 14px;
+}
+
+.table-responsive::-webkit-scrollbar,
+.table-container::-webkit-scrollbar,
+.data-table-wrap::-webkit-scrollbar {
+  height: 6px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb,
+.table-container::-webkit-scrollbar-thumb,
+.data-table-wrap::-webkit-scrollbar-thumb {
+  background: rgba(99, 102, 241, 0.35);
+  border-radius: 6px;
+}
+
+/* Tablet view adjustments (max-width: 1024px) */
+@media (max-width: 1024px) {
+  .kpi-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 14px !important;
+  }
+  .modal-dialog,
+  .modal-container {
+    max-width: 88vw !important;
+  }
+}
+
+/* Mobile view adjustments (max-width: 640px) */
+@media (max-width: 640px) {
+  .top-header {
+    height: 58px;
+    padding: 0 10px;
+    gap: 8px;
+  }
+  .page-title h2 {
+    font-size: 1.05rem !important;
+  }
+  .content-body {
+    padding: 14px 10px 36px !important;
+  }
+  .kpi-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+  .kpi-card {
+    padding: 16px !important;
+  }
+  .kpi-number {
+    font-size: 1.8rem !important;
+  }
+  .modal-dialog,
+  .modal-container {
+    width: 95vw !important;
+    max-width: 95vw !important;
+    margin: 8px auto !important;
+    border-radius: 18px !important;
+    padding: 18px 14px !important;
+  }
+  .form-grid-2,
+  .form-row-2 {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+  input, select, textarea {
+    font-size: 16px !important; /* Prevents iOS auto-zoom on input tap */
+    min-height: 44px;
+  }
+  button, .btn {
+    min-height: 42px;
+  }
+}
+
+/* Extra small mobile (max-width: 380px) */
+@media (max-width: 380px) {
+  .top-header {
+    padding: 0 6px;
+  }
+  .content-body {
+    padding: 10px 6px 30px !important;
+  }
+}
+

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 24" width="200" height="24">
+  <!-- Cambodian Royal Motto Ornamental Flourish -->
+  <path d="M 10,12 C 40,6 70,18 100,12 C 130,6 160,18 190,12" fill="none" stroke="#0f172a" stroke-width="1.5" stroke-linecap="round"/>
+  <path d="M 30,12 C 60,8 85,16 100,12 C 115,8 140,16 170,12" fill="none" stroke="#d97706" stroke-width="1" stroke-linecap="round"/>
+  <circle cx="100" cy="12" r="3" fill="#d97706"/>
+  <circle cx="10" cy="12" r="1.5" fill="#0f172a"/>
+  <circle cx="190" cy="12" r="1.5" fill="#0f172a"/>
+</svg>

@@ -9,8 +9,23 @@ const StudentAPI = {
     return typeof firebase !== "undefined" && firebase.apps && firebase.apps.length > 0;
   },
 
+  // Single-School Core Helpers (សាលា អន្តរជាតិ ធានស៊ីន - TIS Lab Computer)
+  getActiveSchoolId() {
+    return "tis";
+  },
+
+  getStorageKey(baseKey) {
+    return baseKey;
+  },
+
+  getCloudPath(collection) {
+    return collection;
+  },
+
   // Student ID Helpers (TX01, TX02, ...)
-  formatStudentId(num, prefix = (typeof APP_CONFIG !== "undefined" && APP_CONFIG.studentIdPrefix) || "TX") {
+  formatStudentId(num, customPrefix = null) {
+    const activeSchool = (typeof AuthService !== "undefined" && AuthService.getActiveSchool) ? AuthService.getActiveSchool() : null;
+    const prefix = customPrefix || (activeSchool && activeSchool.code ? activeSchool.code.slice(0, 4).toUpperCase() : ((typeof APP_CONFIG !== "undefined" && APP_CONFIG.studentIdPrefix) || "TX"));
     const n = parseInt(num, 10) || 1;
     return `${prefix}${String(n).padStart(2, "0")}`;
   },
@@ -142,7 +157,8 @@ const StudentAPI = {
     if (this.isCloudConnected()) {
       try {
         this._isFetching = true;
-        const snapshot = await firebase.database().ref("students").once("value");
+        const cloudPath = this.getCloudPath("students");
+        const snapshot = await firebase.database().ref(cloudPath).once("value");
         const val = snapshot.val();
         
         if (val) {
@@ -181,16 +197,16 @@ const StudentAPI = {
 
           this.saveLocalStudents(students);
           this._lastSyncedTime = new Date();
-          console.log(`✅ ទាញទិន្នន័យពី Firebase Realtime Database ជោគជ័យ: ${students.length} នាក់`);
+          console.log(`✅ [${this.getActiveSchoolId()}] ទាញទិន្នន័យពី Firebase Realtime Database ជោគជ័យ: ${students.length} នាក់`);
 
           // Proactively patch Firebase RTDB in the background if any record lacked Grade or needs TX01 ID migration
           if (needsCloudSync) {
             const updates = {};
             students.forEach(s => {
-              updates[`students/${s.ID}`] = s;
+              updates[`${cloudPath}/${s.ID}`] = s;
             });
             oldIdsToDelete.forEach(oldId => {
-              updates[`students/${oldId}`] = null;
+              updates[`${cloudPath}/${oldId}`] = null;
             });
             firebase.database().ref().update(updates).catch(e => console.warn("Background normalization sync notice:", e));
 
@@ -341,7 +357,11 @@ const StudentAPI = {
   // Add new student and save to Firebase Realtime Database
   async createStudent(studentData) {
     const students = this.getLocalStudents();
-    const prefix = (typeof APP_CONFIG !== "undefined" && APP_CONFIG.studentIdPrefix) || "TX";
+    const schoolId = this.getActiveSchoolId();
+    const activeSchool = typeof AuthService !== "undefined" ? AuthService.getActiveSchool() : null;
+    studentData.schoolId = schoolId;
+    studentData.schoolName = (activeSchool && activeSchool.nameKh) || "";
+    const prefix = (activeSchool && activeSchool.code) ? activeSchool.code.slice(0, 4).toUpperCase() : ((typeof APP_CONFIG !== "undefined" && APP_CONFIG.studentIdPrefix) || "TX");
 
     // Auto-generate ID if not yet generated
     if (!studentData.ID || String(studentData.ID).trim() === "" || studentData.ID === "AUTO") {
@@ -364,8 +384,9 @@ const StudentAPI = {
     // If connected to Firebase, send directly to Firebase Realtime Database
     if (this.isCloudConnected()) {
       try {
-        await firebase.database().ref(`students/${studentData.ID}`).set(studentData);
-        console.log(`✅ បានបញ្ចូលទិន្នន័យក្នុង Firebase RTDB: ${studentData.ID}`);
+        const cloudPath = this.getCloudPath("students");
+        await firebase.database().ref(`${cloudPath}/${studentData.ID}`).set(studentData);
+        console.log(`✅ [${schoolId}] បានបញ្ចូលទិន្នន័យក្នុង Firebase RTDB: ${studentData.ID}`);
       } catch (err) {
         console.warn("⚠️ បញ្ចូលក្នុង Firebase បរាជ័យ កំពុងរក្សាទុកក្នុង Local:", err);
       }
@@ -385,7 +406,9 @@ const StudentAPI = {
     }
 
     const currentStudents = this.getLocalStudents();
-    const prefix = (typeof APP_CONFIG !== "undefined" && APP_CONFIG.studentIdPrefix) || "TX";
+    const schoolId = this.getActiveSchoolId();
+    const activeSchool = typeof AuthService !== "undefined" ? AuthService.getActiveSchool() : null;
+    const prefix = (activeSchool && activeSchool.code) ? activeSchool.code.slice(0, 4).toUpperCase() : ((typeof APP_CONFIG !== "undefined" && APP_CONFIG.studentIdPrefix) || "TX");
     
     // Find current max ID number
     let maxIdNum = 0;
@@ -396,8 +419,11 @@ const StudentAPI = {
 
     const processedList = [];
     const firebaseUpdates = {};
+    const cloudPath = this.getCloudPath("students");
 
     newStudentsList.forEach((st) => {
+      st.schoolId = schoolId;
+      st.schoolName = (activeSchool && activeSchool.nameKh) || "";
       if (!st.ID || String(st.ID).trim() === "" || st.ID === "AUTO") {
         maxIdNum += 1;
         st.ID = this.formatStudentId(maxIdNum, prefix);
@@ -411,7 +437,7 @@ const StudentAPI = {
       }
       const normalized = this.normalizeStudent(st, currentStudents.length + processedList.length);
       processedList.push(normalized);
-      firebaseUpdates[`students/${normalized.ID}`] = normalized;
+      firebaseUpdates[`${cloudPath}/${normalized.ID}`] = normalized;
     });
 
     // Save locally (new students at the top)
@@ -422,7 +448,7 @@ const StudentAPI = {
     if (this.isCloudConnected()) {
       try {
         await firebase.database().ref().update(firebaseUpdates);
-        console.log(`✅ បានបញ្ចូលសិស្សជាក្រុម ${processedList.length} នាក់ ទៅក្នុង Firebase RTDB`);
+        console.log(`✅ [${schoolId}] បានបញ្ចូលសិស្សជាក្រុម ${processedList.length} នាក់ ទៅក្នុង Firebase RTDB`);
       } catch (err) {
         console.warn("⚠️ Batch insert Firebase error:", err);
       }
@@ -439,8 +465,9 @@ const StudentAPI = {
 
     if (this.isCloudConnected()) {
       try {
-        await firebase.database().ref(`students/${studentData.ID}`).update(studentData);
-        console.log(`✅ បានកែប្រែទិន្នន័យក្នុង Firebase RTDB: ${studentData.ID}`);
+        const cloudPath = this.getCloudPath("students");
+        await firebase.database().ref(`${cloudPath}/${studentData.ID}`).update(studentData);
+        console.log(`✅ [${this.getActiveSchoolId()}] បានកែប្រែទិន្នន័យក្នុង Firebase RTDB: ${studentData.ID}`);
       } catch (err) {
         console.warn("⚠️ កែប្រែក្នុង Firebase បរាជ័យ:", err);
       }
@@ -464,8 +491,9 @@ const StudentAPI = {
 
     if (this.isCloudConnected()) {
       try {
-        await firebase.database().ref(`students/${studentId}`).remove();
-        console.log(`✅ បានលុបទិន្នន័យក្នុង Firebase RTDB: ${studentId}`);
+        const cloudPath = this.getCloudPath("students");
+        await firebase.database().ref(`${cloudPath}/${studentId}`).remove();
+        console.log(`✅ [${this.getActiveSchoolId()}] បានលុបទិន្នន័យក្នុង Firebase RTDB: ${studentId}`);
       } catch (err) {
         console.warn("⚠️ លុបពី Firebase បរាជ័យ:", err);
       }
@@ -614,7 +642,8 @@ const StudentAPI = {
   // LocalStorage Cache
   getLocalStudents() {
     try {
-      const data = localStorage.getItem(APP_CONFIG.STORAGE_KEY_STUDENTS);
+      const key = this.getStorageKey(APP_CONFIG.STORAGE_KEY_STUDENTS);
+      const data = localStorage.getItem(key);
       const list = data ? JSON.parse(data) : [];
       if (Array.isArray(list) && list.length > 0) {
         const students = list.map((s, idx) => this.normalizeStudent(s, idx)).filter(Boolean);
@@ -635,7 +664,8 @@ const StudentAPI = {
   },
 
   saveLocalStudents(students) {
-    localStorage.setItem(APP_CONFIG.STORAGE_KEY_STUDENTS, JSON.stringify(students));
+    const key = this.getStorageKey(APP_CONFIG.STORAGE_KEY_STUDENTS);
+    localStorage.setItem(key, JSON.stringify(students));
   },
 
   // ==========================================
@@ -644,7 +674,8 @@ const StudentAPI = {
   async fetchAttendanceCloud() {
     if (this.isCloudConnected()) {
       try {
-        const snapshot = await firebase.database().ref("attendance").once("value");
+        const cloudPath = this.getCloudPath("attendance");
+        const snapshot = await firebase.database().ref(cloudPath).once("value");
         const val = snapshot.val();
         if (val && typeof val === "object") {
           const local = this.getAllAttendance();
@@ -661,7 +692,8 @@ const StudentAPI = {
 
   getAllAttendance() {
     try {
-      const data = localStorage.getItem(APP_CONFIG.STORAGE_KEY_ATTENDANCE);
+      const key = this.getStorageKey(APP_CONFIG.STORAGE_KEY_ATTENDANCE);
+      const data = localStorage.getItem(key);
       if (data) return JSON.parse(data);
     } catch (e) {}
 
@@ -669,7 +701,8 @@ const StudentAPI = {
   },
 
   saveAllAttendance(attendanceMap) {
-    localStorage.setItem(APP_CONFIG.STORAGE_KEY_ATTENDANCE, JSON.stringify(attendanceMap));
+    const key = this.getStorageKey(APP_CONFIG.STORAGE_KEY_ATTENDANCE);
+    localStorage.setItem(key, JSON.stringify(attendanceMap));
   },
 
   getAttendanceForDate(dateStr) {
@@ -697,7 +730,8 @@ const StudentAPI = {
     // Sync to Firebase if connected
     if (this.isCloudConnected()) {
       try {
-        await firebase.database().ref(`attendance/${dateStr}`).set(records);
+        const cloudPath = this.getCloudPath("attendance");
+        await firebase.database().ref(`${cloudPath}/${dateStr}`).set(records);
       } catch (e) {
         console.warn("Firebase attendance sync notice:", e);
       }
@@ -722,9 +756,10 @@ const StudentAPI = {
     // Sync to Firebase if connected
     if (this.isCloudConnected()) {
       try {
+        const cloudPath = this.getCloudPath("attendance");
         const updates = {};
         Object.keys(daysRecordsMap).forEach(d => {
-          updates[`attendance/${d}`] = daysRecordsMap[d];
+          updates[`${cloudPath}/${d}`] = daysRecordsMap[d];
         });
         await firebase.database().ref().update(updates);
       } catch (e) {
@@ -852,7 +887,8 @@ const StudentAPI = {
   // ==========================================
   getAllExams() {
     try {
-      const data = localStorage.getItem(APP_CONFIG.STORAGE_KEY_EXAMS || "master_school_exams_db");
+      const key = this.getStorageKey(APP_CONFIG.STORAGE_KEY_EXAMS || "master_school_exams_db");
+      const data = localStorage.getItem(key);
       if (data) return JSON.parse(data);
     } catch (e) {}
 
@@ -860,7 +896,8 @@ const StudentAPI = {
   },
 
   saveAllExams(examsMap) {
-    localStorage.setItem(APP_CONFIG.STORAGE_KEY_EXAMS || "master_school_exams_db", JSON.stringify(examsMap));
+    const key = this.getStorageKey(APP_CONFIG.STORAGE_KEY_EXAMS || "master_school_exams_db");
+    localStorage.setItem(key, JSON.stringify(examsMap));
   },
 
   getStudentExams(studentId) {
@@ -881,7 +918,8 @@ const StudentAPI = {
     // Sync to Firebase if connected
     if (this.isCloudConnected()) {
       try {
-        await firebase.database().ref(`exams/${studentId}/${courseId}`).set(all[studentId][courseId]);
+        const cloudPath = this.getCloudPath("exams");
+        await firebase.database().ref(`${cloudPath}/${studentId}/${courseId}`).set(all[studentId][courseId]);
       } catch (e) {
         console.warn("Firebase exam sync notice:", e);
       }
@@ -904,6 +942,7 @@ const StudentAPI = {
     const all = this.getAllExams();
     const updates = {};
     const nowIso = new Date().toISOString();
+    const cloudPath = this.getCloudPath("exams");
 
     Object.keys(batchScores).forEach(studentId => {
       const entry = batchScores[studentId];
@@ -924,7 +963,7 @@ const StudentAPI = {
       };
 
       all[studentId][courseId] = scoreObj;
-      updates[`exams/${studentId}/${courseId}`] = scoreObj;
+      updates[`${cloudPath}/${studentId}/${courseId}`] = scoreObj;
     });
 
     this.saveAllExams(all);
@@ -975,10 +1014,12 @@ const StudentAPI = {
 
   async clearAllExams() {
     this.saveAllExams({});
-    localStorage.removeItem(APP_CONFIG.STORAGE_KEY_EXAMS || "master_school_exams_db");
+    const key = this.getStorageKey(APP_CONFIG.STORAGE_KEY_EXAMS || "master_school_exams_db");
+    localStorage.removeItem(key);
     if (this.isCloudConnected()) {
       try {
-        await firebase.database().ref("exams").remove();
+        const cloudPath = this.getCloudPath("exams");
+        await firebase.database().ref(cloudPath).remove();
       } catch (e) {
         console.warn("Clear exams from Firebase error:", e);
       }
@@ -989,7 +1030,8 @@ const StudentAPI = {
   async fetchExamsCloud() {
     if (this.isCloudConnected()) {
       try {
-        const snapshot = await firebase.database().ref("exams").once("value");
+        const cloudPath = this.getCloudPath("exams");
+        const snapshot = await firebase.database().ref(cloudPath).once("value");
         const val = snapshot.val();
         if (val && typeof val === "object") {
           this.saveAllExams(val);
@@ -1015,7 +1057,8 @@ const StudentAPI = {
   getAllFees() {
     let fees = {};
     try {
-      const data = localStorage.getItem(APP_CONFIG.STORAGE_KEY_FEES || "master_school_fees_db");
+      const key = this.getStorageKey(APP_CONFIG.STORAGE_KEY_FEES || "master_school_fees_db");
+      const data = localStorage.getItem(key);
       if (data) fees = JSON.parse(data) || {};
     } catch (e) {}
 
@@ -1066,13 +1109,15 @@ const StudentAPI = {
   },
 
   saveAllFees(feesMap) {
-    localStorage.setItem(APP_CONFIG.STORAGE_KEY_FEES || "master_school_fees_db", JSON.stringify(feesMap));
+    const key = this.getStorageKey(APP_CONFIG.STORAGE_KEY_FEES || "master_school_fees_db");
+    localStorage.setItem(key, JSON.stringify(feesMap));
   },
 
   async fetchFeesCloud() {
     if (this.isCloudConnected()) {
       try {
-        const snapshot = await firebase.database().ref("fees").once("value");
+        const cloudPath = this.getCloudPath("fees");
+        const snapshot = await firebase.database().ref(cloudPath).once("value");
         const val = snapshot.val();
         const local = this.getAllFees();
 
@@ -1190,7 +1235,8 @@ const StudentAPI = {
     // Sync to Firebase if connected
     if (this.isCloudConnected()) {
       try {
-        await firebase.database().ref(`fees/${studentId}`).set(all[studentId]);
+        const cloudPath = this.getCloudPath("fees");
+        await firebase.database().ref(`${cloudPath}/${studentId}`).set(all[studentId]);
       } catch (e) {
         console.warn("Firebase fee sync notice:", e);
       }
@@ -1204,20 +1250,23 @@ const StudentAPI = {
   // ==========================================
   getAllCertificates() {
     try {
-      const data = localStorage.getItem(APP_CONFIG.STORAGE_KEY_CERTIFICATES || "master_school_certificates_db");
+      const key = this.getStorageKey(APP_CONFIG.STORAGE_KEY_CERTIFICATES || "master_school_certificates_db");
+      const data = localStorage.getItem(key);
       if (data) return JSON.parse(data);
     } catch (e) {}
     return {};
   },
 
   saveAllCertificates(certsMap) {
-    localStorage.setItem(APP_CONFIG.STORAGE_KEY_CERTIFICATES || "master_school_certificates_db", JSON.stringify(certsMap));
+    const key = this.getStorageKey(APP_CONFIG.STORAGE_KEY_CERTIFICATES || "master_school_certificates_db");
+    localStorage.setItem(key, JSON.stringify(certsMap));
   },
 
   async fetchCertificatesCloud() {
     if (this.isCloudConnected()) {
       try {
-        const snapshot = await firebase.database().ref("certificates").once("value");
+        const cloudPath = this.getCloudPath("certificates");
+        const snapshot = await firebase.database().ref(cloudPath).once("value");
         const val = snapshot.val();
         if (val && typeof val === "object") {
           const local = this.getAllCertificates();
@@ -1285,7 +1334,8 @@ const StudentAPI = {
 
     if (this.isCloudConnected()) {
       try {
-        await firebase.database().ref(`certificates/${studentId}`).set(all[studentId]);
+        const cloudPath = this.getCloudPath("certificates");
+        await firebase.database().ref(`${cloudPath}/${studentId}`).set(all[studentId]);
       } catch (e) {
         console.warn("Firebase certificate sync notice:", e);
       }

@@ -2,9 +2,26 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
-const { handleLabRoutes, getPrimaryLanIp, getAllLanIps } = require('./server/lab_router');
-const labWsHub = require('./server/lab_ws');
-const { startUdpDiscovery } = require('./server/udp_discovery');
+function getAllLanIps() {
+  const ifaces = os.networkInterfaces();
+  const list = [];
+  for (const name in ifaces) {
+    for (const iface of ifaces[name]) {
+      if (iface.family === 'IPv4' && !iface.internal) {
+        list.push({ name, address: iface.address });
+      }
+    }
+  }
+  return list;
+}
+
+function getPrimaryLanIp() {
+  const list = getAllLanIps();
+  if (list.length === 0) return 'localhost';
+  const isVirtual = (name) => /virtual|vbox|vmware|vethernet|hyper-v|wsl|loopback|pseudo/i.test(name);
+  const physical = list.find(item => !isVirtual(item.name) && !item.address.startsWith('169.254.'));
+  return physical ? physical.address : list[0].address;
+}
 
 const PORT = process.env.PORT || 8080;
 const BASE_DIR = process.env.VERCEL ? process.cwd() : __dirname;
@@ -23,7 +40,11 @@ const MIME_TYPES = {
   '.ico': 'image/x-icon',
   '.woff2': 'font/woff2',
   '.woff': 'font/woff',
-  '.ttf': 'font/ttf'
+  '.ttf': 'font/ttf',
+  '.wasm': 'application/wasm',
+  '.tflite': 'application/octet-stream',
+  '.binarypb': 'application/octet-stream',
+  '.data': 'application/octet-stream'
 };
 
 const server = http.createServer((req, res) => {
@@ -40,19 +61,7 @@ const server = http.createServer((req, res) => {
 
   const urlPath = (req.url || '').split('?')[0];
 
-  // Computer Lab Management Endpoints & Enrollment Router (Phase 2)
-  if (urlPath.startsWith('/enroll') || urlPath.startsWith('/api/lab')) {
-    handleLabRoutes(req, res, urlPath, PORT, labWsHub).then(handled => {
-      if (!handled) {
-        res.writeHead(404, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ error: 'Endpoint not found' }));
-      }
-    }).catch(err => {
-      res.writeHead(500, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ error: err.message }));
-    });
-    return;
-  }
+
 
   // API Endpoint: /api/info for Server & LAN network telemetry
   if (req.method === 'GET' && (urlPath === '/api/info' || urlPath.startsWith('/api/info'))) {
@@ -373,7 +382,7 @@ const server = http.createServer((req, res) => {
       'Content-Type': contentType,
       'Content-Length': fileBuffer.length
     };
-    if (safePath === 'sw.js' || safePath === 'manifest.json') {
+    if (safePath === 'sw.js' || safePath === 'manifest.json' || fileExt === '.js' || fileExt === '.css' || fileExt === '.html') {
       headers['Cache-Control'] = 'no-cache, no-store, must-revalidate';
     } else {
       headers['Cache-Control'] = 'public, max-age=86400';
@@ -387,59 +396,10 @@ const server = http.createServer((req, res) => {
 });
 
 if (!process.env.VERCEL) {
-  labWsHub.attach(server);
-
-  // 1. Start UDP Discovery Beacon so Student Agents auto-discover Teacher PC on LAN/Wi-Fi
-  startUdpDiscovery(() => PORT, getPrimaryLanIp);
-
-  // 2. Active Wi-Fi / LAN Network Change Monitor & Realtime IP Watcher
-  let lastKnownPrimaryIp = getPrimaryLanIp();
-
-  function checkNetworkInterfaceChange() {
-    try {
-      const currentIp = getPrimaryLanIp();
-      if (currentIp && currentIp !== 'localhost' && lastKnownPrimaryIp && currentIp !== lastKnownPrimaryIp) {
-        const oldIp = lastKnownPrimaryIp;
-        lastKnownPrimaryIp = currentIp;
-        const allIps = getAllLanIps();
-
-        console.log(`\n==========================================================`);
-        console.log(`📡 [Wi-Fi Network Changed] Auto-detected new IP: ${currentIp}`);
-        console.log(`🔄 Previous IP: ${oldIp} ➡️ New Active LAN IP: http://${currentIp}:${PORT}/`);
-        console.log(`⚡ Auto-broadcasting new IP to all connected Teacher and Student devices...`);
-        console.log(`==========================================================\n`);
-
-        // Broadcast to WebSocket clients (Teacher dashboards & Student agents)
-        if (labWsHub && typeof labWsHub.broadcastAll === 'function') {
-          labWsHub.broadcastAll({
-            type: 'NETWORK_IP_CHANGED',
-            oldIp,
-            newIp: currentIp,
-            port: PORT,
-            allLanIps: allIps,
-            timestamp: Date.now(),
-            messageKh: `ប្រព័ន្ធបានរកឃើញការប្តូរ Wi-Fi! IP ថ្មី៖ ${currentIp}`
-          });
-        }
-
-        // Trigger UDP beacon immediately
-        if (global.sendUdpBeacon) {
-          global.sendUdpBeacon();
-        }
-      } else if (!lastKnownPrimaryIp && currentIp) {
-        lastKnownPrimaryIp = currentIp;
-      }
-    } catch (err) {
-      console.warn('[Network Watcher Error]', err.message);
-    }
-  }
-
-  setInterval(checkNetworkInterfaceChange, 2000);
-
   server.on('error', (err) => {
     if (err.code === 'EADDRINUSE') {
       console.log(`\n⚠️ Port ${PORT} is already in use by another running instance.`);
-      console.log(`✅ TIS Lab Computer Server is already running at http://localhost:${PORT}/\n`);
+      console.log(`✅ TIS Server is already running at http://localhost:${PORT}/\n`);
       process.exit(0);
     } else {
       console.error('[Server Error]', err.message);
@@ -451,16 +411,14 @@ if (!process.env.VERCEL) {
     const allIps = getAllLanIps();
 
     console.log(`\n==========================================================`);
-    console.log(`🚀 TIS Lab Computer - Modern School Server (HostImg Pro)`);
-    console.log(`🌐 Localhost (Teacher PC):  http://localhost:${PORT}/`);
-    console.log(`📱 Primary Wi-Fi / LAN IP:  http://${primaryIp}:${PORT}/`);
+    console.log(`🚀 Tian Xin International School Server (TIS)`);
+    console.log(`🌐 Localhost:  http://localhost:${PORT}/`);
+    console.log(`📱 LAN IP:     http://${primaryIp}:${PORT}/`);
     allIps.forEach(net => {
       if (net.address !== primaryIp) {
         console.log(`   Adapter (${net.name}): http://${net.address}:${PORT}/`);
       }
     });
-    console.log(`⚡ WebSocket:  ws://localhost:${PORT}/ws/classroom`);
-    console.log(`📡 UDP Beacon: Port 8088 (Auto-Discovery Active)`);
     console.log(`⚡ API Upload: http://localhost:${PORT}/api/upload`);
     console.log(`⏰ Telegram:   7:00 PM Daily Attendance Summary Scheduler Active`);
     console.log(`==========================================================\n`);

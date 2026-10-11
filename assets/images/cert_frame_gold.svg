@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 990" width="700" height="990">
+  <defs>
+    <linearGradient id="goldBorder" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#b45309" />
+      <stop offset="25%" stop-color="#f59e0b" />
+      <stop offset="50%" stop-color="#d97706" />
+      <stop offset="75%" stop-color="#fbbf24" />
+      <stop offset="100%" stop-color="#b45309" />
+    </linearGradient>
+  </defs>
+  <!-- Outer Border -->
+  <rect x="18" y="18" width="664" height="954" fill="none" stroke="url(#goldBorder)" stroke-width="3" rx="8" />
+  <!-- Inner Border -->
+  <rect x="25" y="25" width="650" height="940" fill="none" stroke="#e2e8f0" stroke-width="1" rx="6" />
+  <!-- Corner Ornaments -->
+  <path d="M 18,38 L 38,18 M 18,48 L 48,18 M 682,38 L 662,18 M 682,48 L 652,18 M 18,952 L 38,972 M 18,942 L 48,972 M 682,952 L 662,972 M 682,942 L 652,972" stroke="url(#goldBorder)" stroke-width="1.5" />
+</svg>

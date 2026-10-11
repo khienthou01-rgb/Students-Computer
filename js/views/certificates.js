@@ -321,7 +321,7 @@ const CertificatesView = {
       else if (avgScore >= 50) grade = "D";
 
       const defaultAvatar = s.Gender === "ស្រី" ? "assets/images/default-female.svg" : "assets/images/default-male.svg";
-      const avatarSrc = s.Avatar || defaultAvatar;
+      const avatarSrc = s.certificate_photo || s.current_photo || s.Avatar || defaultAvatar;
 
       return `
         <tr>
@@ -464,7 +464,7 @@ const CertificatesView = {
     }
 
     const defaultAvatar = student.Gender === "ស្រី" ? "assets/images/default-female.svg" : "assets/images/default-male.svg";
-    const avatarSrc = student.Avatar || defaultAvatar;
+    const avatarSrc = student.certificate_photo || student.current_photo || student.Avatar || defaultAvatar;
 
     const distinctionMap = {
       "A": "និទ្ទេស ល្អប្រសើរ (Distinction / Grade A)",

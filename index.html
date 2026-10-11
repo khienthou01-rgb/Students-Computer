@@ -3,13 +3,13 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>សាលា អន្តរជាតិ ធានស៊ីន - Tian Xin International School (TIS)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+  <title>សាលា អន្តរជាតិ ធានស៊ីន - TIS LAB COMPUTER (Tian Xin International School)</title>
   <meta name="description"
-    content="សាលា អន្តរជាតិ ធានស៊ីន (Tian Xin International School - TIS) - ប្រព័ន្ធគ្រប់គ្រងទិន្នន័យសិស្ស វត្តមាន កាលវិភាគ បន្ទប់កុំព្យូទ័រ និងការប្រឡង">
+    content="សាលា អន្តរជាតិ ធានស៊ីន - ប្រព័ន្ធគ្រប់គ្រងសិស្ស និងបន្ទប់កុំព្យូទ័រ TIS Lab Computer (Tian Xin International School)">
   <meta name="keywords"
-    content="tian xin international school, tis, សាលា អន្តរជាតិ ធានស៊ីន, student management system, khmer web app, school management">
-  <meta name="author" content="Tian Xin International School (TIS)">
+    content="tian xin international school, tis lab computer, student management system, khmer school, cambodia computer lab">
+  <meta name="author" content="សាលា អន្តរជាតិ ធានស៊ីន">
 
   <!-- Favicon & PWA Manifest -->
   <link rel="icon" type="image/png" href="assets/images/logo.png">
@@ -33,13 +33,13 @@
 
   <!-- App Modular Stylesheet (Performance & Smooth Motion Upgraded) -->
   <link rel="stylesheet" href="css/variables.css?v=20261007_175000">
-  <link rel="stylesheet" href="css/layout.css?v=20261007_194500">
+  <link rel="stylesheet" href="css/layout.css?v=20261011_160500">
   <link rel="stylesheet" href="css/components.css?v=20261007_194500">
   <link rel="stylesheet" href="css/motion.css?v=20261007_175000">
   <link rel="stylesheet" href="css/idcard.css?v=20261007_175000">
   <link rel="stylesheet" href="css/student-modal.css?v=20261007_190500">
   <link rel="stylesheet" href="css/teacher-tools.css?v=20261007_175000">
-  <link rel="stylesheet" href="css/computer_lab.css?v=20261007_175000">
+  <link rel="stylesheet" href="css/multi-school-portal.css?v=20261011_160500">
 
   <!-- External Visual Libraries (Chart.js, Confetti, QR Code & Scanner, SheetJS Excel) -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -77,28 +77,28 @@
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 
   <!-- 1. Core Config & Seed Data -->
-  <script src="js/config.js?v=20261007_175000"></script>
+  <script src="js/config.js?v=20261011_152000"></script>
   <script src="js/data.js?v=20261007_175000"></script>
   <script src="js/exam_papers.js?v=20261007_175000"></script>
 
   <!-- 2. Services & Visualization Engines -->
-  <script src="js/auth.js?v=20261007_175000"></script>
-  <script src="js/api.js?v=20261007_175000"></script>
+  <script src="js/auth.js?v=20261011_152000"></script>
+  <script src="js/api.js?v=20261011_152000"></script>
   <script src="js/charts.js?v=20261007_175000"></script>
   <script src="js/services/motion.js?v=20261007_175000"></script>
   <script src="js/services/telegram.js?v=20261007_175000"></script>
   <script src="js/services/teacher_tools.js?v=20261007_175000"></script>
   <script src="js/services/khmer_calendar.js?v=20261007_175000"></script>
   <script src="js/services/image_host.js?v=20261007_175000"></script>
-  <script src="js/services/lab_manager.js?v=20261007_200500"></script>
+  <script src="js/services/gemini_ai.js?v=20261009_180000"></script>
 
   <!-- 3. UI Components -->
-  <script src="js/components/sidebar.js?v=20261007_175000"></script>
-  <script src="js/components/header.js?v=20261007_194500"></script>
+  <script src="js/components/sidebar.js?v=20261011_152000"></script>
+  <script src="js/components/header.js?v=20261011_162000"></script>
   <script src="js/components/modals.js?v=20261007_190500"></script>
 
   <!-- 4. Dynamic Views -->
-  <script src="js/views/login.js?v=20261007_175000"></script>
+  <script src="js/views/login.js?v=20261011_162000"></script>
   <script src="js/views/student_portal.js?v=20261007_175000"></script>
   <script src="js/views/dashboard.js?v=20261007_175000"></script>
   <script src="js/views/register.js?v=20261007_175000"></script>
@@ -113,17 +113,16 @@
   <script src="js/views/certificates.js?v=20261007_175000"></script>
   <script src="js/views/resources.js?v=20261007_175000"></script>
   <script src="js/views/teachers.js?v=20261007_175000"></script>
-  <script src="js/views/classes.js?v=20261007_175000"></script>
+  <script src="js/views/classes.js?v=20261011_150500"></script>
   <script src="js/views/subjects.js?v=20261007_175000"></script>
   <script src="js/views/rankings.js?v=20261007_175000"></script>
   <script src="js/views/idcards.js?v=20261007_175000"></script>
   <script src="js/views/documents.js?v=20261007_175000"></script>
   <script src="js/views/reports.js?v=20261007_175000"></script>
-  <script src="js/views/settings.js?v=20261007_175000"></script>
-  <script src="js/views/computer_lab.js?v=20261007_200500"></script>
+  <script src="js/views/settings.js?v=20261009_182500"></script>
 
   <!-- 5. Main Application Orchestrator -->
-  <script src="js/app.js?v=20261007_193000"></script>
+  <script src="js/app.js?v=20261011_150500"></script>
 
   <!-- Live Auto-Update Notification Banner -->
   <div id="msUpdateBanner" class="ms-update-banner">
@@ -137,6 +136,56 @@
     <button id="btnReloadUpdate" class="ms-update-btn">
       <i class="fa-solid fa-rotate-right"></i> Update ឥឡូវនេះ
     </button>
+  </div>
+
+  <!-- PWA 1-Click Install Banner (Android, Chrome, Edge) -->
+  <div id="msPwaInstallBanner" class="ms-pwa-install-banner" style="display: none;">
+    <div class="ms-pwa-install-content">
+      <img src="assets/images/logo.png" alt="Logo" class="ms-pwa-app-icon">
+      <div class="ms-pwa-text">
+        <span class="ms-pwa-title">ដំឡើង App សាលា ធានស៊ីន</span>
+        <span class="ms-pwa-subtitle">ប្រើលើទូរស័ព្ទពេញអេក្រង់ រហ័ស និងងាយស្រួល</span>
+      </div>
+    </div>
+    <div class="ms-pwa-actions">
+      <button id="btnPwaInstallAction" class="ms-pwa-btn-install" type="button">
+        <i class="fa-solid fa-download"></i> ដំឡើង App
+      </button>
+      <button id="btnPwaInstallDismiss" class="ms-pwa-btn-close" type="button" aria-label="Close">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- iOS Step-by-Step Guidance Sheet (iPhone / iPad Safari) -->
+  <div id="iosInstallModal" class="ms-ios-modal-backdrop" style="display: none;" onclick="if(event.target === this) this.style.display='none';">
+    <div class="ms-ios-modal-sheet">
+      <div class="ms-ios-header">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <img src="assets/images/logo.png" alt="Logo" style="width: 44px; height: 44px; border-radius: 12px; background: #fff; padding: 2px;">
+          <div>
+            <h4 style="margin: 0; color: #fff; font-size: 1rem; font-weight: 800;">ដំឡើង App លើ iPhone / iPad</h4>
+            <p style="margin: 2px 0 0; color: #94a3b8; font-size: 0.78rem;">សាលា អន្តរជាតិ ធានស៊ីន (TIS LAB)</p>
+          </div>
+        </div>
+        <button onclick="document.getElementById('iosInstallModal').style.display='none'" class="ms-ios-close-btn" type="button">&times;</button>
+      </div>
+      <div class="ms-ios-steps">
+        <div class="ms-ios-step">
+          <span class="ms-ios-step-num">១</span>
+          <span>ចុចលើប៊ូតុង <strong>Share 📤</strong> (សញ្ញាព្រួញចង្អុលឡើងលើ) នៅរបារខាងក្រោមនៃ Safari</span>
+        </div>
+        <div class="ms-ios-step">
+          <span class="ms-ios-step-num">២</span>
+          <span>អូសចុះក្រោម រួចចុចលើ <strong>«Add to Home Screen» ➕ (បន្ថែមទៅអេក្រង់ដើម)</strong></span>
+        </div>
+        <div class="ms-ios-step">
+          <span class="ms-ios-step-num">៣</span>
+          <span>ចុច <strong>«Add»</strong> នៅជ្រុងលើខាងស្តាំ ដើម្បីបញ្ចប់</span>
+        </div>
+      </div>
+      <button onclick="document.getElementById('iosInstallModal').style.display='none'" class="ms-ios-gotit-btn" type="button">យល់ព្រម</button>
+    </div>
   </div>
 
   <style>
@@ -215,6 +264,180 @@
       transform: translateY(-1px) scale(1.03);
       box-shadow: 0 6px 16px rgba(79, 70, 229, 0.5);
     }
+
+    /* PWA Install Banner Styles */
+    .ms-pwa-install-banner {
+      position: fixed;
+      bottom: 24px;
+      left: 24px;
+      z-index: 999998;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(6, 182, 212, 0.45);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.55), 0 0 24px rgba(6, 182, 212, 0.25);
+      padding: 12px 18px;
+      border-radius: 50px;
+      color: #fff;
+      font-family: 'Kantumruy Pro', sans-serif;
+      animation: msSlideInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    .ms-pwa-install-content {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .ms-pwa-app-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      object-fit: contain;
+      background: #ffffff;
+      padding: 2px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+    .ms-pwa-text {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.25;
+    }
+    .ms-pwa-title {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: #f8fafc;
+    }
+    .ms-pwa-subtitle {
+      font-size: 0.74rem;
+      color: #94a3b8;
+    }
+    .ms-pwa-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .ms-pwa-btn-install {
+      background: linear-gradient(135deg, #06b6d4, #3b82f6);
+      color: #ffffff;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 30px;
+      font-size: 0.84rem;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 12px rgba(6, 182, 212, 0.4);
+      white-space: nowrap;
+    }
+    .ms-pwa-btn-install:hover {
+      transform: translateY(-1px) scale(1.03);
+      box-shadow: 0 6px 16px rgba(6, 182, 212, 0.6);
+    }
+    .ms-pwa-btn-close {
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      color: #94a3b8;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: all 0.2s ease;
+    }
+    .ms-pwa-btn-close:hover {
+      background: rgba(255, 255, 255, 0.2);
+      color: #fff;
+    }
+
+    /* iOS Sheet Modal */
+    .ms-ios-modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 9999999;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+    }
+    .ms-ios-modal-sheet {
+      width: 100%;
+      max-width: 480px;
+      background: #0f172a;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 24px 24px 0 0;
+      padding: 24px 20px 32px;
+      box-shadow: 0 -12px 36px rgba(0, 0, 0, 0.6);
+      font-family: 'Kantumruy Pro', sans-serif;
+      animation: msSlideInUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .ms-ios-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .ms-ios-close-btn {
+      background: transparent;
+      border: none;
+      color: #94a3b8;
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 4px;
+      line-height: 1;
+    }
+    .ms-ios-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+    .ms-ios-step {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.88rem;
+      color: #cbd5e1;
+      line-height: 1.45;
+    }
+    .ms-ios-step-num {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #06b6d4, #3b82f6);
+      color: #fff;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.82rem;
+      flex-shrink: 0;
+    }
+    .ms-ios-gotit-btn {
+      width: 100%;
+      background: linear-gradient(135deg, #4f46e5, #06b6d4);
+      color: #ffffff;
+      border: none;
+      padding: 12px;
+      border-radius: 14px;
+      font-size: 0.92rem;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+    }
+
     @keyframes msSlideInUp {
       from { transform: translateY(50px); opacity: 0; }
       to { transform: translateY(0); opacity: 1; }
@@ -232,13 +455,21 @@
         justify-content: space-between;
         padding: 12px 14px;
       }
+      .ms-pwa-install-banner {
+        left: 14px;
+        right: 14px;
+        bottom: 14px;
+        border-radius: 16px;
+        padding: 12px 14px;
+        justify-content: space-between;
+      }
     }
   </style>
 
   <!-- PWA Service Worker Registration & Live Auto-Update Orchestrator -->
   <script>
     (function() {
-      const APP_BUILD_VER = "20261007_190500";
+      const APP_BUILD_VER = "20261011_162000";
       try {
         const storedVer = localStorage.getItem("tis_client_build_ver");
         if (storedVer && storedVer !== APP_BUILD_VER) {
@@ -319,6 +550,80 @@
             .catch((err) => console.log("⚠️ PWA Service Worker Registration Failed:", err));
         });
       }
+    })();
+  </script>
+
+  <!-- PWA Install Prompt Orchestrator -->
+  <script>
+    (function() {
+      let deferredInstallPrompt = null;
+      const isIos = /iphone|ipad|ipod/.test(window.navigator.userAgent.toLowerCase());
+      const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+
+      // Global function to trigger PWA install prompt from anywhere (buttons, header pills, etc.)
+      window.triggerPwaInstall = async function() {
+        if (deferredInstallPrompt) {
+          try {
+            deferredInstallPrompt.prompt();
+            const choice = await deferredInstallPrompt.userChoice;
+            if (choice && choice.outcome === 'accepted') {
+              const banner = document.getElementById('msPwaInstallBanner');
+              if (banner) banner.style.display = 'none';
+            }
+          } catch (e) {}
+          deferredInstallPrompt = null;
+        } else if (isIos && !isStandalone) {
+          const modal = document.getElementById('iosInstallModal');
+          if (modal) modal.style.display = 'flex';
+        } else if (isStandalone) {
+          if (typeof Motion !== "undefined" && Motion.toast) {
+            Motion.toast("🎉 លោកគ្រូបានដំឡើង App លើទូរស័ព្ទរួចរាល់ហើយ!", "success", 3000);
+          } else {
+            alert("លោកគ្រូបានដំឡើង App លើទូរស័ព្ទរួចរាល់ហើយ!");
+          }
+        } else {
+          const modal = document.getElementById('iosInstallModal');
+          if (modal) modal.style.display = 'flex';
+        }
+      };
+
+      // Listen for Android/Chrome/Edge install prompt
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredInstallPrompt = e;
+        const banner = document.getElementById('msPwaInstallBanner');
+        const dismissed = sessionStorage.getItem('pwa_dismissed');
+        if (banner && !isStandalone && !dismissed) {
+          banner.style.display = 'flex';
+        }
+      });
+
+      window.addEventListener('appinstalled', () => {
+        deferredInstallPrompt = null;
+        const banner = document.getElementById('msPwaInstallBanner');
+        if (banner) banner.style.display = 'none';
+        console.log('🎉 TIS Lab Computer PWA was installed successfully!');
+      });
+
+      document.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('btnPwaInstallAction')?.addEventListener('click', () => {
+          window.triggerPwaInstall();
+        });
+
+        document.getElementById('btnPwaInstallDismiss')?.addEventListener('click', () => {
+          const banner = document.getElementById('msPwaInstallBanner');
+          if (banner) banner.style.display = 'none';
+          sessionStorage.setItem('pwa_dismissed', 'true');
+        });
+
+        // If on iOS and not in standalone mode, show banner after 2.5 seconds
+        if (isIos && !isStandalone && !sessionStorage.getItem('pwa_dismissed')) {
+          setTimeout(() => {
+            const banner = document.getElementById('msPwaInstallBanner');
+            if (banner) banner.style.display = 'flex';
+          }, 2500);
+        }
+      });
     })();
   </script>
 

@@ -790,6 +790,66 @@ const SettingsView = {
           </div>
         </div>
 
+        <!-- Google Gemini AI Vision Studio Configuration -->
+        <div class="card" style="margin-top: 24px; border: 1px solid rgba(99, 102, 241, 0.35); border-radius: var(--border-radius); padding: 22px; background: linear-gradient(135deg, rgba(30, 58, 138, 0.08) 0%, rgba(99, 102, 241, 0.05) 100%);">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 14px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <div style="width: 44px; height: 44px; border-radius: 12px; background: linear-gradient(135deg, #4f46e5, #06b6d4); display: flex; align-items: center; justify-content: center; color: white; font-size: 1.3rem; box-shadow: 0 4px 14px rgba(79, 70, 229, 0.35);">
+                <i class="fa-solid fa-sparkles"></i>
+              </div>
+              <div>
+                <h3 style="margin: 0; font-size: 1.1rem; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 8px;">
+                  <span>Google Gemini AI Configuration</span>
+                  <span class="badge" style="background: rgba(16, 185, 129, 0.15); color: #059669; font-size: 0.75rem;"><i class="fa-solid fa-bolt"></i> Gemini 3.8 Flash Active</span>
+                </h3>
+                <p style="margin: 3px 0 0; font-size: 0.8rem; color: var(--text-muted);">
+                  ប្រព័ន្ធឆ្លាតវៃ Google Gemini AI សម្រាប់ជួយសម្រួលដល់ការគ្រប់គ្រងទិន្នន័យសាលារៀន
+                </p>
+              </div>
+            </div>
+            <div>
+              <span id="geminiConnectionStatusBadge" class="badge" style="background: rgba(16, 185, 129, 0.18); color: #10b981; font-weight: 700; padding: 6px 12px; font-size: 0.8rem;">
+                <i class="fa-solid fa-circle-check"></i> Connected
+              </span>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-bottom: 16px;">
+            <div class="form-group" style="margin-bottom: 0;">
+              <label for="inputSettingsGeminiKey" style="font-weight: 700; font-size: 0.86rem;">
+                <i class="fa-solid fa-key" style="color: #6366f1;"></i> Google Gemini API Key:
+              </label>
+              <input type="text" id="inputSettingsGeminiKey" class="form-control font-mono" value="${App.escapeHtml(typeof GeminiAIService !== 'undefined' ? GeminiAIService.getApiKey() : (APP_CONFIG.geminiApiKey || ''))}" style="font-size: 0.84rem;">
+              <small style="color: var(--text-muted); font-size: 0.74rem;">គាំទ្រ Google AI Studio Gemini API Key (Gemini 3.8 Flash Vision Model)</small>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 0;">
+              <label style="font-weight: 700; font-size: 0.86rem;">
+                <i class="fa-solid fa-microchip" style="color: #06b6d4;"></i> AI Model Engine:
+              </label>
+              <select id="selectSettingsGeminiModel" class="form-control font-mono" style="font-size: 0.84rem;">
+                <option value="gemini-3.8-flash" selected>gemini-3.8-flash (លឿន & ឆ្លាតវៃបំផុត)</option>
+                <option value="gemini-3.5-flash">gemini-3.5-flash (ស្ថិរភាពខ្ពស់)</option>
+                <option value="gemini-3.5-flash-lite">gemini-3.5-flash-lite (ទំហំស្រាល)</option>
+              </select>
+              <small style="color: var(--text-muted); font-size: 0.74rem;">ដំណើរការស្វ័យប្រវត្តិជាមួយ Multi-Model Fallback</small>
+            </div>
+          </div>
+
+          <div id="settingsGeminiTestFeedback" style="display: none; padding: 10px 14px; border-radius: 8px; font-size: 0.82rem; margin-bottom: 14px;"></div>
+
+          <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+            <button type="button" id="btnSaveGeminiSettings" class="btn-primary" style="background: linear-gradient(135deg, #4f46e5, #06b6d4); border: none; box-shadow: 0 4px 14px rgba(79, 70, 229, 0.35);">
+              <i class="fa-solid fa-floppy-disk"></i>
+              <span>រក្សាទុកការកំណត់ Gemini AI</span>
+            </button>
+            <button type="button" id="btnTestGeminiSettings" class="btn-secondary" style="color: #6366f1; border-color: #6366f1;">
+              <i class="fa-solid fa-plug"></i>
+              <span>សាកល្បង Connection (Test API)</span>
+            </button>
+          </div>
+        </div>
+
       </div>
     `;
   },
@@ -1801,6 +1861,79 @@ const SettingsView = {
         if (input && input.value && !input.value.startsWith("កំពុង") && !input.value.startsWith("បរាជ័យ")) {
           navigator.clipboard.writeText(input.value);
           App.showToast("បានចម្លង Direct URL ទៅ Clipboard!", "info");
+        }
+      });
+    }
+
+    // Google Gemini AI Settings Listeners
+    const btnSaveGemini = document.getElementById("btnSaveGeminiSettings");
+    if (btnSaveGemini) {
+      btnSaveGemini.addEventListener("click", () => {
+        const key = document.getElementById("inputSettingsGeminiKey")?.value?.trim() || "";
+        const model = document.getElementById("selectSettingsGeminiModel")?.value || "gemini-3.8-flash";
+
+        if (typeof GeminiAIService !== "undefined") {
+          GeminiAIService.saveConfig({ apiKey: key, model: model });
+        }
+        if (typeof APP_CONFIG !== "undefined") {
+          APP_CONFIG.geminiApiKey = key;
+        }
+
+        App.showToast("🎉 បានរក្សាទុកការកំណត់ Google Gemini AI ជោគជ័យ!", "success");
+        App.triggerConfetti();
+      });
+    }
+
+    const btnTestGemini = document.getElementById("btnTestGeminiSettings");
+    if (btnTestGemini) {
+      btnTestGemini.addEventListener("click", async () => {
+        const key = document.getElementById("inputSettingsGeminiKey")?.value?.trim() || "";
+        const feedback = document.getElementById("settingsGeminiTestFeedback");
+        const statusBadge = document.getElementById("geminiConnectionStatusBadge");
+
+        if (feedback) {
+          feedback.style.display = "block";
+          feedback.style.background = "rgba(99, 102, 241, 0.15)";
+          feedback.style.color = "#818cf8";
+          feedback.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> កំពុងសាកល្បងភ្ជាប់ទៅ Google Gemini API...';
+        }
+
+        btnTestGemini.disabled = true;
+        try {
+          const res = (typeof GeminiAIService !== "undefined")
+            ? await GeminiAIService.testConnection(key)
+            : { success: false, error: "GeminiAIService not loaded" };
+
+          if (feedback) {
+            if (res.success) {
+              feedback.style.background = "rgba(16, 185, 129, 0.15)";
+              feedback.style.color = "#10b981";
+              feedback.innerHTML = `<i class="fa-solid fa-circle-check"></i> ភ្ជាប់ជោគជ័យ! Model: <strong>${res.model}</strong> • Latency: <strong>${res.latencyMs}ms</strong>`;
+              if (statusBadge) {
+                statusBadge.style.background = "rgba(16, 185, 129, 0.18)";
+                statusBadge.style.color = "#10b981";
+                statusBadge.innerHTML = '<i class="fa-solid fa-circle-check"></i> Connected';
+              }
+              App.showToast("Gemini 3.8 Flash API Key ត្រឹមត្រូវ និងដំណើរការជោគជ័យ!", "success");
+            } else {
+              feedback.style.background = "rgba(239, 68, 68, 0.15)";
+              feedback.style.color = "#ef4444";
+              feedback.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> បរាជ័យក្នុងការតភ្ជាប់៖ ${res.error || "Key មិនត្រឹមត្រូវ"}`;
+              if (statusBadge) {
+                statusBadge.style.background = "rgba(239, 68, 68, 0.18)";
+                statusBadge.style.color = "#ef4444";
+                statusBadge.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Error';
+              }
+            }
+          }
+        } catch (e) {
+          if (feedback) {
+            feedback.style.background = "rgba(239, 68, 68, 0.15)";
+            feedback.style.color = "#ef4444";
+            feedback.innerHTML = `កំហុស៖ ${e.message}`;
+          }
+        } finally {
+          btnTestGemini.disabled = false;
         }
       });
     }

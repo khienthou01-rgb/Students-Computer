@@ -54,15 +54,22 @@ const SidebarComponent = {
 
     return `
       <aside id="sidebar" class="sidebar">
-        <div class="sidebar-header">
-          <div class="brand-logo" title="សាលា អន្តរជាតិ ធានស៊ីន (Tian Xin International School)">
-            <img src="assets/images/logo.png" alt="Tian Xin International School" class="brand-logo-img">
-          </div>
-          <div class="brand-info">
-            <h1>សាលា ធានស៊ីន</h1>
-            <p>Tian Xin Int. School (TIS)</p>
-          </div>
-        </div>
+        ${(() => {
+          const schoolNameKh = "សាលា អន្តរជាតិ ធានស៊ីន";
+          const schoolNameEn = "Tian Xin Int. School (TIS)";
+          const schoolLogo = "assets/images/logo.png";
+          return `
+            <div class="sidebar-header">
+              <div class="brand-logo" title="${schoolNameKh}">
+                <img src="${schoolLogo}" alt="${schoolNameKh}" class="brand-logo-img" onerror="this.src='assets/images/logo.png'">
+              </div>
+              <div class="brand-info">
+                <h1>${schoolNameKh}</h1>
+                <p>${schoolNameEn}</p>
+              </div>
+            </div>
+          `;
+        })()}
 
         <nav class="sidebar-menu">
           <!-- 1. ផ្ទាំងគ្រប់គ្រងមេ (Dashboard) -->
@@ -113,65 +120,6 @@ const SidebarComponent = {
                 <i class="fa-solid fa-book-open-reader text-purple-400"></i>
                 <span>មុខវិជ្ជា (Subjects)</span>
               </button>
-            </div>
-          </div>
-
-          <!-- 2.5 🖥 បន្ទប់កុំព្យូទ័រ (COMPUTER LAB) -->
-          <div class="menu-category">🖥 បន្ទប់កុំព្យូទ័រ (COMPUTER LAB)</div>
-
-          <div class="sidebar-group ${isGroupOpen('lab')}" data-group="lab">
-            <button type="button" class="sidebar-group-toggle" onclick="SidebarComponent.toggleGroup('lab')">
-              <div class="group-toggle-left">
-                <i class="fa-solid fa-desktop text-cyan-400"></i>
-                <span>🖥 បន្ទប់កុំព្យូទ័រ (Lab)</span>
-              </div>
-              <i class="fa-solid fa-chevron-down group-arrow"></i>
-            </button>
-            <div class="sidebar-sub-menu">
-              <button type="button" class="nav-link sub-link" data-tab="computer-lab" data-subtab="overview" id="nav-lab-overview" title="ទិដ្ឋភាពទូទៅ (Overview)">
-                <i class="fa-solid fa-gauge-high text-cyan-400"></i>
-                <span>ផ្ទាំងបញ្ជា (Overview)</span>
-              </button>
-              <button type="button" class="nav-link sub-link" data-tab="computer-lab" data-subtab="computers" id="nav-lab-computers" title="កុំព្យូទ័រសិស្ស (Computers)">
-                <i class="fa-solid fa-network-wired text-blue-400"></i>
-                <span>កុំព្យូទ័រ (Computers)</span>
-              </button>
-              <button type="button" class="nav-link sub-link" data-tab="computer-lab" data-subtab="monitor" id="nav-lab-monitor" title="តាមដានអេក្រង់ (Screen Monitor)">
-                <i class="fa-solid fa-tv text-emerald-400"></i>
-                <span>មើលអេក្រង់ (Monitor)</span>
-              </button>
-              <button type="button" class="nav-link sub-link" data-tab="computer-lab" data-subtab="broadcast" id="nav-lab-broadcast" title="ផ្សាយអេក្រង់គ្រូ (Broadcast)">
-                <i class="fa-solid fa-satellite-dish text-purple-400"></i>
-                <span>ផ្សាយអេក្រង់ (Broadcast)</span>
-              </button>
-              <button type="button" class="nav-link sub-link" data-tab="computer-lab" data-subtab="files" id="nav-lab-files" title="ឯកសារ & កិច្ចការ (Files)">
-                <i class="fa-solid fa-folder-arrow-up text-amber-400"></i>
-                <span>ឯកសារ & កិច្ចការ (Files)</span>
-              </button>
-              <button type="button" class="nav-link sub-link" data-tab="computer-lab" data-subtab="messages" id="nav-lab-messages" title="ផ្ញើសារសិស្ស (Messages)">
-                <i class="fa-solid fa-comment-dots text-pink-400"></i>
-                <span>ផ្ញើសារ (Messages)</span>
-              </button>
-              <button type="button" class="nav-link sub-link" data-tab="computer-lab" data-subtab="sessions" id="nav-lab-sessions" title="វេនសិក្សា & វត្តមាន (Sessions)">
-                <i class="fa-solid fa-clock-rotate-left text-teal-400"></i>
-                <span>វេនសិក្សា (Sessions)</span>
-              </button>
-              <button type="button" class="nav-link sub-link" data-tab="computer-lab" data-subtab="enrollment" id="nav-lab-enrollment" title="ចុះឈ្មោះ & QR (Enrollment)">
-                <i class="fa-solid fa-qrcode text-indigo-400"></i>
-                <span>ចុះឈ្មោះ & QR (Enroll)</span>
-              </button>
-              <button type="button" class="nav-link sub-link" data-tab="computer-lab" data-subtab="logs" id="nav-lab-logs" title="កំណត់ហេតុ (Audit Logs)">
-                <i class="fa-solid fa-clipboard-list text-slate-400"></i>
-                <span>កំណត់ហេតុ (Logs)</span>
-              </button>
-              <button type="button" class="nav-link sub-link" data-tab="computer-lab" data-subtab="settings" id="nav-lab-settings" title="ការកំណត់បន្ទប់កុំព្យូទ័រ (Settings)">
-                <i class="fa-solid fa-sliders text-cyan-300"></i>
-                <span>ការកំណត់ (Settings)</span>
-              </button>
-              <a href="video_tutorial.html" target="_blank" class="nav-link sub-link" style="color: #38bdf8;" title="វីដេអូបង្រៀនដំឡើង & Setup Lab">
-                <i class="fa-solid fa-circle-play text-cyan-400"></i>
-                <span style="font-weight: 600;">វីដេអូបង្រៀន Setup Lab 🎬</span>
-              </a>
             </div>
           </div>
 
@@ -371,9 +319,6 @@ const SidebarComponent = {
           ModalsComponent.close("editModal");
         }
         App.switchTab(tab);
-        if (tab === "computer-lab" && subtab && typeof ComputerLabView !== "undefined" && ComputerLabView.switchSubTab) {
-          ComputerLabView.switchSubTab(subtab);
-        }
         
         // Ensure its group is expanded
         this.expandGroupForTab(tab);

@@ -121,8 +121,8 @@ const IdCardsView = {
       shift: s.Shift || s.shift || 'ព្រឹក',
       Phone: s.Phone || s.phone || '',
       phone: s.Phone || s.phone || '',
-      Photo: s.Photo || s.Avatar || s.photo || '',
-      photo: s.Photo || s.Avatar || s.photo || ''
+      Photo: s.id_photo || s.current_photo || s.Photo || s.Avatar || s.photo || '',
+      photo: s.id_photo || s.current_photo || s.Photo || s.Avatar || s.photo || ''
     };
   },
 
