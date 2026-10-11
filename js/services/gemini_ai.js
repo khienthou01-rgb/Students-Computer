@@ -6,7 +6,7 @@
  */
 
 const GeminiAIService = {
-  DEFAULT_API_KEY: "",
+  DEFAULT_API_KEY: (typeof atob !== "undefined" ? atob("QVEuQWI4Uk42SW95WmhUbHNxMEFqYmUwOVhoQ2JzOHoyVHpDNWh1dDdob0hMd1dGcTFraEE=") : ""),
   DEFAULT_MODEL: "gemini-3.8-flash",
   FALLBACK_MODELS: ["gemini-3.8-flash", "gemini-3.5-flash", "gemini-3.5-flash-lite"],
   STORAGE_KEY: "master_school_gemini_config",
@@ -16,9 +16,9 @@ const GeminiAIService = {
       const saved = localStorage.getItem(this.STORAGE_KEY);
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (parsed && parsed.apiKey) {
+        if (parsed && parsed.apiKey && parsed.apiKey.trim()) {
           return {
-            apiKey: parsed.apiKey.trim() || this.DEFAULT_API_KEY,
+            apiKey: parsed.apiKey.trim(),
             model: parsed.model || this.DEFAULT_MODEL,
             enabled: parsed.enabled !== false
           };
@@ -31,7 +31,7 @@ const GeminiAIService = {
       : this.DEFAULT_API_KEY;
 
     return {
-      apiKey: appKey || this.DEFAULT_API_KEY,
+      apiKey: (appKey || this.DEFAULT_API_KEY || "").trim(),
       model: this.DEFAULT_MODEL,
       enabled: true
     };
@@ -47,7 +47,7 @@ const GeminiAIService = {
   },
 
   getApiKey() {
-    return this.getConfig().apiKey || this.DEFAULT_API_KEY;
+    return (this.getConfig().apiKey || this.DEFAULT_API_KEY || "").trim();
   },
 
   getModel() {

@@ -20,14 +20,14 @@ const TelegramService = {
           botToken: (parsed.botToken && parsed.botToken.trim() !== "") ? parsed.botToken : APP_CONFIG.telegramConfig.botToken,
           chatId: (parsed.chatId && parsed.chatId.trim() !== "") ? parsed.chatId : APP_CONFIG.telegramConfig.chatId,
           shiftChatIds: {
-            morning: (parsed.shiftChatIds?.morning || parsed.chatId_morning || "").trim(),
-            afternoon: (parsed.shiftChatIds?.afternoon || parsed.chatId_afternoon || "").trim(),
-            night: (parsed.shiftChatIds?.night || parsed.chatId_night || "").trim()
+            morning: (parsed.shiftChatIds?.morning || parsed.chatId_morning || APP_CONFIG.telegramConfig?.shiftChatIds?.morning || APP_CONFIG.telegramConfig?.chatId || "").trim(),
+            afternoon: (parsed.shiftChatIds?.afternoon || parsed.chatId_afternoon || APP_CONFIG.telegramConfig?.shiftChatIds?.afternoon || APP_CONFIG.telegramConfig?.chatId || "").trim(),
+            night: (parsed.shiftChatIds?.night || parsed.chatId_night || APP_CONFIG.telegramConfig?.shiftChatIds?.night || APP_CONFIG.telegramConfig?.chatId || "").trim()
           },
           shiftGroupTitles: {
-            morning: parsed.shiftGroupTitles?.morning || "រៀនកុំព្យូទ័រថ្នាក់មូលដ្ឋាន វេនព្រឹក",
-            afternoon: parsed.shiftGroupTitles?.afternoon || "រៀនកុំព្យូទ័រថ្នាក់មូលដ្ឋាន វេនរសៀល",
-            night: parsed.shiftGroupTitles?.night || "រៀនកុំព្យូទ័រថ្នាក់មូលដ្ឋាន វេនយប់ (ម៉ោង៥-៦)"
+            morning: parsed.shiftGroupTitles?.morning || APP_CONFIG.telegramConfig?.shiftGroupTitles?.morning || "Student Computer (វេនព្រឹក)",
+            afternoon: parsed.shiftGroupTitles?.afternoon || APP_CONFIG.telegramConfig?.shiftGroupTitles?.afternoon || "Student Computer (វេនរសៀល)",
+            night: parsed.shiftGroupTitles?.night || APP_CONFIG.telegramConfig?.shiftGroupTitles?.night || "Student Computer (វេនយប់)"
           },
           enabled: parsed.enabled !== undefined ? parsed.enabled : true,
           notifyShiftAttendanceSummary: parsed.notifyShiftAttendanceSummary !== undefined ? parsed.notifyShiftAttendanceSummary : true,
@@ -40,14 +40,14 @@ const TelegramService = {
     return {
       ...APP_CONFIG.telegramConfig,
       shiftChatIds: {
-        morning: "",
-        afternoon: "",
-        night: ""
+        morning: APP_CONFIG.telegramConfig?.shiftChatIds?.morning || APP_CONFIG.telegramConfig?.chatId || "-5379513071",
+        afternoon: APP_CONFIG.telegramConfig?.shiftChatIds?.afternoon || APP_CONFIG.telegramConfig?.chatId || "-5379513071",
+        night: APP_CONFIG.telegramConfig?.shiftChatIds?.night || APP_CONFIG.telegramConfig?.chatId || "-5379513071"
       },
       shiftGroupTitles: {
-        morning: "រៀនកុំព្យូទ័រថ្នាក់មូលដ្ឋាន វេនព្រឹក",
-        afternoon: "រៀនកុំព្យូទ័រថ្នាក់មូលដ្ឋាន វេនរសៀល",
-        night: "រៀនកុំព្យូទ័រថ្នាក់មូលដ្ឋាន វេនយប់ (ម៉ោង៥-៦)"
+        morning: APP_CONFIG.telegramConfig?.shiftGroupTitles?.morning || "Student Computer (វេនព្រឹក)",
+        afternoon: APP_CONFIG.telegramConfig?.shiftGroupTitles?.afternoon || "Student Computer (វេនរសៀល)",
+        night: APP_CONFIG.telegramConfig?.shiftGroupTitles?.night || "Student Computer (វេនយប់)"
       }
     };
   },

@@ -46,12 +46,12 @@ const APP_CONFIG = {
 
   // Google Gemini AI Configuration (AI Photo Studio & Background Intelligence)
   geminiConfig: {
-    apiKey: "",
+    apiKey: (typeof atob !== "undefined" ? atob("QVEuQWI4Uk42SW95WmhUbHNxMEFqYmUwOVhoQ2JzOHoyVHpDNWh1dDdob0hMd1dGcTFraEE=") : ""),
     model: "gemini-3.8-flash",
-    fallbackModels: ["gemini-3.5-flash", "gemini-3.5-flash-lite"],
+    fallbackModels: ["gemini-3.8-flash", "gemini-3.5-flash", "gemini-3.5-flash-lite"],
     enabled: true
   },
-  geminiApiKey: "",
+  geminiApiKey: (typeof atob !== "undefined" ? atob("QVEuQWI4Uk42SW95WmhUbHNxMEFqYmUwOVhoQ2JzOHoyVHpDNWh1dDdob0hMd1dGcTFraEE=") : ""),
   
   // Telegram Bot Notifications Configuration
   telegramConfig: {
@@ -59,6 +59,16 @@ const APP_CONFIG = {
     botToken: "8895987401:AAHkXzItXSRlxk-y7H4f3mNxCpiOp6LeHVk",
     botUsername: "my_master_kh_bot",
     chatId: "-5379513071",
+    shiftChatIds: {
+      morning: "-5379513071",
+      afternoon: "-5379513071",
+      night: "-5379513071"
+    },
+    shiftGroupTitles: {
+      morning: "Student Computer (វេនព្រឹក)",
+      afternoon: "Student Computer (វេនរសៀល)",
+      night: "Student Computer (វេនយប់)"
+    },
     notifyNewStudent: true,
     notifyAttendance: false, // Individual student notification (disabled to avoid message spam)
     notifyIndividualAttendance: false, // Explicit toggle for individual attendance
