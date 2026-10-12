@@ -136,6 +136,11 @@ const App = {
       KhmerCalendarService.checkAndPromptAdvanceHolidays();
     }
 
+    // Initialize Anime AI Companion Studio & Floating Widget
+    if (typeof AnimeAIAssistant !== "undefined" && AnimeAIAssistant.init) {
+      AnimeAIAssistant.init();
+    }
+
     // If redirected from GitHub Pages SPA or direct path, switch to that tab
     if (ghRedirectTab) {
       setTimeout(() => {

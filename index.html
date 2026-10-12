@@ -20,11 +20,11 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="TIS International">
 
-  <!-- Google Fonts: Modern Khmer & Digital Latin Typography -->
+  <!-- Google Fonts: Supreme Modern Khmer (Kantumruy Pro, Moul, Koulen, Battambang, Siemreap) & Latin Typography -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
-    href="https://fonts.googleapis.com/css2?family=Battambang:wght@400;700&family=JetBrains+Mono:wght@400;500;600;700&family=Kantumruy+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Koulen&family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Battambang:wght@400;700&family=JetBrains+Mono:wght@400;500;600;700&family=Kantumruy+Pro:ital,wght@0,100..700;1,100..700&family=Koulen&family=Moul&family=Siemreap&family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:ital,wght@0,400..800;1,400..800&display=swap"
     rel="stylesheet">
 
   <!-- Font Awesome 6 Icons -->
@@ -32,14 +32,15 @@
     crossorigin="anonymous" referrerpolicy="no-referrer" />
 
   <!-- App Modular Stylesheet (Performance & Smooth Motion Upgraded) -->
-  <link rel="stylesheet" href="css/variables.css?v=20261007_175000">
-  <link rel="stylesheet" href="css/layout.css?v=20261011_160500">
-  <link rel="stylesheet" href="css/components.css?v=20261007_194500">
-  <link rel="stylesheet" href="css/motion.css?v=20261007_175000">
-  <link rel="stylesheet" href="css/idcard.css?v=20261007_175000">
-  <link rel="stylesheet" href="css/student-modal.css?v=20261007_190500">
-  <link rel="stylesheet" href="css/teacher-tools.css?v=20261007_175000">
-  <link rel="stylesheet" href="css/multi-school-portal.css?v=20261011_160500">
+  <link rel="stylesheet" href="css/variables.css?v=20261011_220000">
+  <link rel="stylesheet" href="css/layout.css?v=20261011_220000">
+  <link rel="stylesheet" href="css/components.css?v=20261011_220000">
+  <link rel="stylesheet" href="css/motion.css?v=20261011_220000">
+  <link rel="stylesheet" href="css/idcard.css?v=20261011_220000">
+  <link rel="stylesheet" href="css/student-modal.css?v=20261011_220000">
+  <link rel="stylesheet" href="css/teacher-tools.css?v=20261011_220000">
+  <link rel="stylesheet" href="css/multi-school-portal.css?v=20261011_220000">
+  <link rel="stylesheet" href="css/anime_ai_assistant.css?v=20261011_230000">
 
   <!-- External Visual Libraries (Chart.js, Confetti, QR Code & Scanner, SheetJS Excel) -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -91,8 +92,20 @@
   <script src="js/services/khmer_calendar.js?v=20261007_175000"></script>
   <script src="js/services/image_host.js?v=20261007_175000"></script>
   <script src="js/services/gemini_ai.js?v=20261011_174500"></script>
-  <script src="js/services/question_bank.js?v=20261011_180000"></script>
-  <script src="js/services/book_study_engine.js?v=20261011_183000"></script>
+  <script src="js/services/question_bank.js?v=20261011_195000"></script>
+  <script src="js/services/book_study_engine.js?v=20261011_212000"></script>
+  <script src="js/services/mock_exam_engine.js?v=20261011_212000"></script>
+  <script src="js/services/public_enrollment.js?v=20261011_212000"></script>
+  <script src="js/services/ai_assignment_checker.js?v=20261011_212000"></script>
+  <script src="js/services/ai_tutor.js?v=20261011_212000"></script>
+  <script src="js/services/office_templates.js?v=20261011_212000"></script>
+  <script src="js/services/scheduled_announcements.js?v=20261011_212000"></script>
+  <script src="js/services/live_quiz_arena.js?v=20261011_212000"></script>
+  <script src="js/services/ai_lesson_slides.js?v=20261011_212000"></script>
+  <script src="js/services/shortcut_trainer.js?v=20261011_212000"></script>
+  <script src="js/services/excel_sandbox.js?v=20261011_212000"></script>
+  <script src="js/services/azure_tts.js?v=20261012_000000"></script>
+  <script src="js/services/anime_ai_assistant.js?v=20261012_000000"></script>
 
   <!-- 3. UI Components -->
   <script src="js/components/sidebar.js?v=20261011_170000"></script>
@@ -471,7 +484,7 @@
   <!-- PWA Service Worker Registration & Live Auto-Update Orchestrator -->
   <script>
     (function() {
-      const APP_BUILD_VER = "20261011_183000";
+      const APP_BUILD_VER = "20261012_002500";
       try {
         const storedVer = localStorage.getItem("tis_client_build_ver");
         if (storedVer && storedVer !== APP_BUILD_VER) {

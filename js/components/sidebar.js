@@ -98,6 +98,11 @@ const SidebarComponent = {
                 <i class="fa-solid fa-user-plus text-emerald-400"></i>
                 <span>ចុះឈ្មោះសិស្ស (Enroll)</span>
               </button>
+              <button type="button" class="sub-link action-btn" onclick="PublicEnrollment.openPendingReviewModal()" title="ពិនិត្យពាក្យចុះឈ្មោះ Online ពីសិស្ស (#enroll)">
+                <i class="fa-solid fa-user-clock text-amber-400"></i>
+                <span style="font-weight: 700; color: #fcd34d;">🌐 សិស្សចុះឈ្មោះ Online</span>
+                <span id="sidebarPendingEnrollCount" class="badge" style="background: rgba(245, 158, 11, 0.2); color: #f59e0b; font-size: 0.72rem; padding: 2px 7px; border-radius: 10px; margin-left: auto;">${(typeof PublicEnrollment !== 'undefined' && PublicEnrollment.getPendingCount ? PublicEnrollment.getPendingCount() : 0)}</span>
+              </button>
               <button type="button" class="nav-link sub-link" data-tab="graduated" id="nav-graduated" title="សិស្សបញ្ចប់ការសិក្សា">
                 <i class="fa-solid fa-graduation-cap text-green-400"></i>
                 <span>បញ្ចប់ការសិក្សា (Graduated)</span>
@@ -135,6 +140,18 @@ const SidebarComponent = {
               <i class="fa-solid fa-chevron-down group-arrow"></i>
             </button>
             <div class="sidebar-sub-menu">
+              <button type="button" class="sub-link action-btn" onclick="AITutor.openModal()" title="AI ជំនួយការមេរៀនកុំព្យូទ័រ ២៤ ម៉ោង">
+                <i class="fa-solid fa-comments text-sky-400"></i>
+                <span style="font-weight: 700; color: #7dd3fc;">💬 AI ជំនួយការមេរៀន ២៤/៧</span>
+              </button>
+              <button type="button" class="sub-link action-btn" onclick="AIAssignmentChecker.openModal()" title="AI ពិនិត្យ និងដាក់ពិន្ទុកិច្ចការអនុវត្តសិស្ស">
+                <i class="fa-solid fa-file-circle-check text-emerald-400"></i>
+                <span style="font-weight: 700; color: #6ee7b7;">📋 AI ពិនិត្យកិច្ចការអនុវត្ត</span>
+              </button>
+              <button type="button" class="sub-link action-btn" onclick="AILessonSlides.openModal()" title="AI បង្កើត Slide បង្រៀន & កិច្ចតែងការ A4">
+                <i class="fa-solid fa-person-chalkboard text-purple-300"></i>
+                <span style="font-weight: 700; color: #e9d5ff;">📽️ AI Slide & កិច្ចតែងការ</span>
+              </button>
               <button type="button" class="sub-link action-btn" onclick="ModalsComponent.openAiQuizGeneratorModal()" title="AI បង្កើតកម្រងសំណួរពហុជ្រើសរើស និងលំហាត់កុំព្យូទ័រស្វ័យប្រវត្តិ">
                 <i class="fa-solid fa-brain text-purple-400"></i>
                 <span style="font-weight: 700; color: #d8b4fe;">✨ AI បង្កើតកម្រងសំណួរ & លំហាត់</span>
@@ -158,6 +175,26 @@ const SidebarComponent = {
               <i class="fa-solid fa-chevron-down group-arrow"></i>
             </button>
             <div class="sidebar-sub-menu">
+              <button type="button" class="sub-link action-btn" onclick="LiveQuizArena.openModal()" title="ការប្រកួតឆ្លើយសំណួរ Live ក្នុងបន្ទប់ Lab (Kahoot-Style)">
+                <i class="fa-solid fa-trophy text-yellow-400"></i>
+                <span style="font-weight: 700; color: #facc15;">🏆 Live Quiz Battle (Kahoot)</span>
+              </button>
+              <button type="button" class="sub-link action-btn" onclick="ShortcutTrainer.openModal()" title="ហ្វឹកហាត់ Shortcut Keys លើ Virtual Keyboard">
+                <i class="fa-solid fa-keyboard text-cyan-400"></i>
+                <span style="font-weight: 700; color: #22d3ee;">⌨️ Shortcut Key Trainer</span>
+              </button>
+              <button type="button" class="sub-link action-btn" onclick="ExcelSandbox.openModal()" title="បន្ទប់អនុវត្តរូបមន្ត Excel ជាក់ស្តែងលើ Web">
+                <i class="fa-solid fa-table text-emerald-400"></i>
+                <span style="font-weight: 700; color: #34d399;">📊 Excel Formula Sandbox</span>
+              </button>
+              <button type="button" class="sub-link action-btn" onclick="MockExamEngine.openExamPicker()" title="ម៉ាស៊ីនប្រឡងសាកល្បង Mock Exam កំណត់ម៉ោង">
+                <i class="fa-solid fa-stopwatch text-amber-400"></i>
+                <span style="font-weight: 700; color: #fbbf24;">⏱️ ប្រឡងសាកល្បង Mock Exam</span>
+              </button>
+              <button type="button" class="sub-link action-btn" onclick="OfficeTemplates.openModal()" title="បណ្ណាល័យគំរូ Office (Word, Excel, PPT)">
+                <i class="fa-solid fa-file-word text-blue-400"></i>
+                <span style="font-weight: 700; color: #93c5fd;">📑 បណ្ណាល័យគំរូ Office</span>
+              </button>
               <button type="button" class="sub-link action-btn" onclick="QuestionBankView.openModal()" title="ធនាគារសំណួរទុកប្រឡង & បង្កើតវិញ្ញាសា">
                 <i class="fa-solid fa-boxes-stacked text-purple-400"></i>
                 <span style="font-weight: 700; color: #c084fc;">📚 ធនាគារសំណួរ & បង្កើតវិញ្ញាសា</span>
@@ -207,6 +244,10 @@ const SidebarComponent = {
               <i class="fa-solid fa-chevron-down group-arrow"></i>
             </button>
             <div class="sidebar-sub-menu">
+              <button type="button" class="sub-link action-btn" onclick="ScheduledAnnouncements.openManageModal()" title="កំណត់កាលវិភាគ Auto ជូនដំណឹងដល់ថ្ងៃ">
+                <i class="fa-solid fa-bullhorn text-rose-400"></i>
+                <span style="font-weight: 700; color: #fda4af;">⏰ Auto ជូនដំណឹងដល់ថ្ងៃកំណត់</span>
+              </button>
               <button type="button" class="sub-link action-btn" onclick="ModalsComponent.openQuickContactModal()" title="មជ្ឈមណ្ឌលទំនាក់ទំនង និងផ្ញើសាររហ័ស Telegram/SMS">
                 <i class="fa-solid fa-address-book text-sky-400"></i>
                 <span style="font-weight: 700; color: #38bdf8;">📞 មជ្ឈមណ្ឌលទំនាក់ទំនង</span>

@@ -850,6 +850,11 @@ const SettingsView = {
           </div>
         </div>
 
+        <!-- ========================================================= -->
+        <!-- AZURE NEURAL TTS & SREYMOM VOICE (សម្លេងស្រីមុំ ១០០% ខ្មែរ)   -->
+        <!-- ========================================================= -->
+        ${(typeof AzureTTSService !== 'undefined' && AzureTTSService.renderSettingsPanel) ? AzureTTSService.renderSettingsPanel() : ''}
+
       </div>
     `;
   },

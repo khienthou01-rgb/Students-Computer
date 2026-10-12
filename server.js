@@ -42,6 +42,7 @@ const MIME_TYPES = {
   '.woff': 'font/woff',
   '.ttf': 'font/ttf',
   '.wasm': 'application/wasm',
+  '.pdf': 'application/pdf',
   '.tflite': 'application/octet-stream',
   '.binarypb': 'application/octet-stream',
   '.data': 'application/octet-stream'

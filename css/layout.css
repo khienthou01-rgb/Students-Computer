@@ -89,12 +89,12 @@
 }
 
 .brand-info h1 {
-  font-family: var(--font-heading);
-  font-size: 1.02rem;
-  font-weight: 800;
+  font-family: var(--font-brand);
+  font-size: 0.96rem;
+  font-weight: normal;
   color: #ffffff;
-  letter-spacing: -0.2px;
-  line-height: 1.25;
+  letter-spacing: 0.3px;
+  line-height: 1.45;
   white-space: nowrap;
   background: linear-gradient(135deg, #ffffff 40%, #f472b6 80%, #fbbf24 100%);
   -webkit-background-clip: text;

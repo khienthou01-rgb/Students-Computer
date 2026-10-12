@@ -9,12 +9,22 @@ const RegisterView = {
       <section id="view-register" class="page-view">
         <div class="card" style="max-width: 920px; margin: 0 auto; padding: 28px;">
           <!-- Wizard Header -->
-          <div class="card-header-clean" style="margin-bottom: 20px;">
-            <div class="card-title">
-              <i class="fa-solid fa-user-plus text-indigo-500"></i>
-              <span>ទម្រង់បែបបទចុះឈ្មោះសិស្សថ្មី (Multi-Step Student Enrollment)</span>
+          <div class="card-header-clean" style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+            <div>
+              <div class="card-title">
+                <i class="fa-solid fa-user-plus text-indigo-500"></i>
+                <span>ទម្រង់បែបបទចុះឈ្មោះសិស្សថ្មី (Multi-Step Student Enrollment)</span>
+              </div>
+              <span class="text-sm text-muted">បំពេញព័ត៌មានតាម ៤ ដំណាក់កាល</span>
             </div>
-            <span class="text-sm text-muted">បំពេញព័ត៌មានតាម ៤ ដំណាក់កាល</span>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <button type="button" class="btn btn-secondary btn-sm" onclick="PublicEnrollment.openPendingReviewModal()" style="border: 1px solid rgba(245, 158, 11, 0.4); color: #fbbf24; background: rgba(245, 158, 11, 0.1); border-radius: 10px; font-weight: 700;">
+                <i class="fa-solid fa-user-clock"></i> <span>ពិនិត្យពាក្យ Online (${(typeof PublicEnrollment !== 'undefined' ? PublicEnrollment.getPendingCount() : 0)})</span>
+              </button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="PublicEnrollment.copyEnrollmentLink()" style="border: 1px solid rgba(6, 182, 212, 0.4); color: #38bdf8; background: rgba(6, 182, 212, 0.1); border-radius: 10px; font-weight: 700;">
+                <i class="fa-solid fa-share-nodes"></i> <span>ចម្លង Link (#enroll)</span>
+              </button>
+            </div>
           </div>
 
           <!-- 4-Step Progress Stepper -->

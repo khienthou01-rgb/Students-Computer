@@ -235,15 +235,23 @@
 /* --------------------------------------------------------------------------
    4. High-End Button Micro-Interactions
    -------------------------------------------------------------------------- */
+button,
+input[type="button"],
+input[type="submit"],
+.btn,
 .btn-primary,
 .btn-secondary,
 .theme-btn,
 .btn-global-search-trigger,
-.ms-btn-pill {
+.ms-btn-pill,
+.action-btn,
+.nav-link,
+.sub-link {
   transition: transform var(--dur-btn) var(--ease-spring),
               box-shadow var(--dur-btn) var(--ease-spring),
               background var(--dur-btn) var(--ease-spring),
-              border-color var(--dur-btn) var(--ease-spring) !important;
+              border-color var(--dur-btn) var(--ease-spring),
+              color var(--dur-btn) ease !important;
   will-change: transform;
 }
 

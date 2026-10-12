@@ -1507,13 +1507,17 @@ const QuestionBankView = {
 
         <!-- Action Buttons -->
         <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-          <button type="button" onclick="QuestionBankView.openAddQuestionDialog()" class="btn-primary" style="height: 38px; padding: 0 16px; font-size: 0.84rem; background: linear-gradient(135deg, #10b981, #059669); border: none; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); font-weight: 700;">
+          <button type="button" onclick="QuestionBankView.openAddQuestionDialog()" class="btn-primary" style="height: 38px; padding: 0 14px; font-size: 0.84rem; background: linear-gradient(135deg, #10b981, #059669); border: none; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); font-weight: 700;">
             <i class="fa-solid fa-plus"></i>
-            <span>បន្ថែមសំណួរដោយដៃ</span>
+            <span>បន្ថែមដោយដៃ</span>
           </button>
-          <button type="button" onclick="QuestionBankView.openAiGenerateDialog()" class="btn-primary" style="height: 38px; padding: 0 16px; font-size: 0.84rem; background: linear-gradient(135deg, #8b5cf6, #d946ef); border: none; box-shadow: 0 4px 12px rgba(217, 70, 239, 0.3); font-weight: 700;">
+          <button type="button" onclick="BookStudyEngine.openBookAiGeneratorModal()" class="btn-primary" style="height: 38px; padding: 0 16px; font-size: 0.84rem; background: linear-gradient(135deg, #0284c7, #8b5cf6); border: none; box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3); font-weight: 700;" title="ទាញយកមេរៀនពីសៀវភៅមូលដ្ឋាន ១២០ ទំព័រមកបង្កើតសំណួរ">
+            <i class="fa-solid fa-book-sparkles"></i>
+            <span>📖 AI បង្កើតពីសៀវភៅពុម្ព</span>
+          </button>
+          <button type="button" onclick="QuestionBankView.openAiGenerateDialog()" class="btn-primary" style="height: 38px; padding: 0 14px; font-size: 0.84rem; background: linear-gradient(135deg, #8b5cf6, #d946ef); border: none; box-shadow: 0 4px 12px rgba(217, 70, 239, 0.3); font-weight: 700;">
             <i class="fa-solid fa-sparkles"></i>
-            <span>AI បង្កើតសំណួរទុក</span>
+            <span>AI សំណួរទូទៅ</span>
           </button>
         </div>
       </div>
@@ -2018,6 +2022,13 @@ const QuestionBankView = {
   },
 
   async openAiGenerateDialog() {
+    if (typeof BookStudyEngine !== "undefined" && typeof BookStudyEngine.openBookAiGeneratorModal === "function") {
+      const course = this.selectedCourseFilter !== "all" ? this.selectedCourseFilter : "Word";
+      const chapterMap = { Typing: "ch1", Word: "ch4", PowerPoint: "ch5", Excel: "ch6" };
+      BookStudyEngine.openBookAiGeneratorModal(chapterMap[course] || "ch4");
+      return;
+    }
+
     const course = this.selectedCourseFilter !== "all" ? this.selectedCourseFilter : "Word";
     const topic = prompt(`[Gemini AI] បញ្ចូលប្រធានបទមេរៀនដែលចង់បង្កើតសំណួរសម្រាប់វគ្គ ${course}៖`, "ការកំណត់រចនាសម្ព័ន្ធឯកសារ និងរូបមន្ត");
     if (!topic) return;

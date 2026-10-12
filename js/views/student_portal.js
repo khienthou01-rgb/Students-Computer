@@ -291,10 +291,103 @@ const StudentPortalView = {
               <i class="fa-solid fa-graduation-cap"></i>
               <span>🎯 សំណួររំលឹកមុនប្រឡង</span>
             </button>
+            <button type="button" class="btn-primary" onclick="MockExamEngine.openLauncherModal('${activeCourseKey}')" style="height: 40px; padding: 0 18px; font-size: 0.88rem; background: linear-gradient(135deg, #10b981, #059669); border: none; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4); font-weight: 700; border-radius: 10px; display: inline-flex; align-items: center; gap: 8px;">
+              <i class="fa-solid fa-stopwatch-20"></i>
+              <span>⏱️ ប្រឡងសាកល្បង Mock Exam</span>
+            </button>
             <a href="assets/books/computer_basics_book.pdf" download="សៀវភៅមូលដ្ឋានកុំព្យូទ័រ_TIS_LAB.pdf" class="btn-secondary" style="height: 40px; padding: 0 16px; font-size: 0.86rem; border-radius: 10px; display: inline-flex; align-items: center; gap: 8px; text-decoration: none;">
               <i class="fa-solid fa-download"></i>
               <span>ទាញយក PDF</span>
             </a>
+          </div>
+        </div>
+
+        <!-- 3.6 SMART EDTECH SUITE: AI TUTOR, ASSIGNMENT CHECKER, TEMPLATES & INTERACTIVE LABS -->
+        <div style="margin-top: 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px;">
+          <!-- Card 1: AI Tutor 24/7 -->
+          <div onclick="AITutor.openChatModal()" style="background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 14px; padding: 16px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 14px;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
+            <div style="width: 46px; height: 46px; border-radius: 12px; background: rgba(56, 189, 248, 0.2); border: 1px solid #38bdf8; display: flex; align-items: center; justify-content: center; color: #38bdf8; font-size: 1.3rem;">
+              <i class="fa-solid fa-robot"></i>
+            </div>
+            <div>
+              <div style="font-weight: 800; font-size: 0.92rem; color: #fff;">AI គ្រូកុំព្យូទ័រ ២៤ ម៉ោង</div>
+              <div style="font-size: 0.76rem; color: #94a3b8; margin-top: 2px;">ឆ្លើយចម្ងល់តាមសៀវភៅមូលដ្ឋាន</div>
+            </div>
+          </div>
+
+          <!-- Card 2: AI Assignment Checker -->
+          <div onclick="AIAssignmentChecker.openModal('${activeCourseKey}')" style="background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(168, 85, 247, 0.3); border-radius: 14px; padding: 16px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 14px;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
+            <div style="width: 46px; height: 46px; border-radius: 12px; background: rgba(168, 85, 247, 0.2); border: 1px solid #a855f7; display: flex; align-items: center; justify-content: center; color: #d8b4fe; font-size: 1.3rem;">
+              <i class="fa-solid fa-file-circle-check"></i>
+            </div>
+            <div>
+              <div style="font-weight: 800; font-size: 0.92rem; color: #fff;">AI ពិនិត្យកិច្ចការជាក់ស្តែង</div>
+              <div style="font-size: 0.76rem; color: #94a3b8; margin-top: 2px;">ពិនិត្យ Margins & រូបមន្ត Excel</div>
+            </div>
+          </div>
+
+          <!-- Card 3: Office Templates Library -->
+          <div onclick="OfficeTemplates.openModal('${activeCourseKey}')" style="background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 14px; padding: 16px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 14px;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
+            <div style="width: 46px; height: 46px; border-radius: 12px; background: rgba(16, 185, 129, 0.2); border: 1px solid #10b981; display: flex; align-items: center; justify-content: center; color: #34d399; font-size: 1.3rem;">
+              <i class="fa-solid fa-folder-open"></i>
+            </div>
+            <div>
+              <div style="font-weight: 800; font-size: 0.92rem; color: #fff;">បណ្ណាល័យគំរូ Office</div>
+              <div style="font-size: 0.76rem; color: #94a3b8; margin-top: 2px;">លិខិតរដ្ឋបាល & តារាង Excel ស្រាប់ៗ</div>
+            </div>
+          </div>
+
+          <!-- Card 4: Live Quiz Battle -->
+          <div onclick="LiveQuizArena.openModal()" style="background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(250, 204, 21, 0.3); border-radius: 14px; padding: 16px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 14px;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
+            <div style="width: 46px; height: 46px; border-radius: 12px; background: rgba(250, 204, 21, 0.2); border: 1px solid #facc15; display: flex; align-items: center; justify-content: center; color: #facc15; font-size: 1.3rem;">
+              <i class="fa-solid fa-trophy"></i>
+            </div>
+            <div>
+              <div style="font-weight: 800; font-size: 0.92rem; color: #fff;">Live Quiz Battle 🏆</div>
+              <div style="font-size: 0.76rem; color: #94a3b8; margin-top: 2px;">ប្រកួតសំណួរ Live បែប Kahoot</div>
+            </div>
+          </div>
+
+          <!-- Card 5: AI Lesson Slides -->
+          <div onclick="AILessonSlides.openModal()" style="background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(236, 72, 153, 0.3); border-radius: 14px; padding: 16px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 14px;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
+            <div style="width: 46px; height: 46px; border-radius: 12px; background: rgba(236, 72, 153, 0.2); border: 1px solid #ec4899; display: flex; align-items: center; justify-content: center; color: #f472b6; font-size: 1.3rem;">
+              <i class="fa-solid fa-chalkboard-user"></i>
+            </div>
+            <div>
+              <div style="font-weight: 800; font-size: 0.92rem; color: #fff;">AI Slide បង្រៀន 📽️</div>
+              <div style="font-size: 0.76rem; color: #94a3b8; margin-top: 2px;">បង្កើត Slide តាមសៀវភៅ ១២០ ទំព័រ</div>
+            </div>
+          </div>
+
+          <!-- Card 6: Shortcut Key Trainer -->
+          <div onclick="ShortcutTrainer.openModal()" style="background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(6, 182, 212, 0.3); border-radius: 14px; padding: 16px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 14px;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
+            <div style="width: 46px; height: 46px; border-radius: 12px; background: rgba(6, 182, 212, 0.2); border: 1px solid #06b6d4; display: flex; align-items: center; justify-content: center; color: #22d3ee; font-size: 1.3rem;">
+              <i class="fa-solid fa-keyboard"></i>
+            </div>
+            <div>
+              <div style="font-weight: 800; font-size: 0.92rem; color: #fff;">Shortcut Trainer ⌨️</div>
+              <div style="font-size: 0.76rem; color: #94a3b8; margin-top: 2px;">ហ្វឹកហាត់លើក្តារចុចនិម្មិត</div>
+            </div>
+          </div>
+
+          <!-- Card 7: Excel Formula Sandbox -->
+          <div onclick="ExcelSandbox.openModal()" style="background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 14px; padding: 16px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 14px;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
+            <div style="width: 46px; height: 46px; border-radius: 12px; background: rgba(16, 185, 129, 0.2); border: 1px solid #10b981; display: flex; align-items: center; justify-content: center; color: #34d399; font-size: 1.3rem;">
+              <i class="fa-solid fa-table"></i>
+            </div>
+            <div>
+              <div style="font-weight: 800; font-size: 0.92rem; color: #fff;">Excel Sandbox 📊</div>
+              <div style="font-size: 0.76rem; color: #94a3b8; margin-top: 2px;">រៀនវាយរូបមន្តផ្ទាល់លើ Web</div>
+            </div>
+          </div>
+
+          <!-- Card 8: Anime AI Companion (ម៉ីលីង AI) -->
+          <div onclick="if(typeof AnimeAIAssistant !== 'undefined') AnimeAIAssistant.openStudioModal();" style="background: linear-gradient(135deg, rgba(168, 85, 247, 0.2), rgba(6, 182, 212, 0.2)); border: 1px solid rgba(168, 85, 247, 0.45); border-radius: 14px; padding: 16px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 14px;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
+            <img src="assets/images/anime_ai_assistant.jpg" style="width: 46px; height: 46px; border-radius: 12px; object-fit: cover; object-position: 50% 12%; border: 2px solid #a855f7; box-shadow: 0 0 10px rgba(168, 85, 247, 0.5);">
+            <div>
+              <div style="font-weight: 800; font-size: 0.92rem; color: #f3e8ff;">ម៉ីលីង AI (Anime Companion) ✨</div>
+              <div style="font-size: 0.76rem; color: #cbd5e1; margin-top: 2px;">ជំនួយការឆ្លាតវៃ & អានសំឡេង</div>
+            </div>
           </div>
         </div>
 

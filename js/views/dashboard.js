@@ -90,6 +90,121 @@ const DashboardView = {
           </div>
         </div>
 
+        <!-- 1.5 Smart EdTech 6-Core Suite Quick Launch Grid -->
+        <div class="card motion-fade-up" style="margin-bottom: 22px; padding: 20px 24px; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(56, 189, 248, 0.2); border-radius: 20px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <span style="display: inline-flex; width: 32px; height: 32px; border-radius: 10px; background: linear-gradient(135deg, #06b6d4, #7c3aed); align-items: center; justify-content: center; color: #fff; font-size: 0.95rem; box-shadow: 0 4px 12px rgba(6, 182, 212, 0.35);">
+                <i class="fa-solid fa-layer-group"></i>
+              </span>
+              <div>
+                <h3 style="margin: 0; font-size: 1.05rem; font-weight: 800; color: #ffffff;">⚡ មជ្ឈមណ្ឌលមុខងារឆ្លាតវៃ (Smart EdTech Suite 6.0)</h3>
+                <p style="margin: 0; font-size: 0.76rem; color: #94a3b8;">ប្រព័ន្ធប្រឡងសាកល្បង • ចុះឈ្មោះ Online • AI ពិនិត្យកិច្ចការ • AI Tutor • គំរូ Office • Auto ជូនដំណឹង</p>
+              </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <button type="button" class="btn btn-secondary btn-sm" onclick="PublicEnrollment.copyEnrollmentLink()" style="border: 1px solid rgba(6, 182, 212, 0.4); color: #38bdf8; background: rgba(6, 182, 212, 0.1); font-size: 0.78rem; font-weight: 700; border-radius: 10px;">
+                <i class="fa-solid fa-share-nodes"></i> Link ចុះឈ្មោះ (#enroll)
+              </button>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px;">
+            <!-- 1. Mock Exam -->
+            <button type="button" onclick="MockExamEngine.openExamPicker()" style="display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 14px; color: #fff; text-align: left; cursor: pointer; transition: all 0.2s ease;">
+              <span style="font-size: 1.5rem;">⏱️</span>
+              <div>
+                <div style="font-weight: 800; font-size: 0.84rem; color: #fbbf24;">Mock Exam ៤៥ នាទី</div>
+                <div style="font-size: 0.7rem; color: #cbd5e1;">ប្រឡងសាកល្បងកំណត់ម៉ោង</div>
+              </div>
+            </button>
+
+            <!-- 2. Public Enrollment -->
+            <button type="button" onclick="PublicEnrollment.openPendingReviewModal()" style="display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: rgba(6, 182, 212, 0.08); border: 1px solid rgba(6, 182, 212, 0.3); border-radius: 14px; color: #fff; text-align: left; cursor: pointer; transition: all 0.2s ease;">
+              <span style="font-size: 1.5rem;">🌐</span>
+              <div style="flex: 1;">
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                  <span style="font-weight: 800; font-size: 0.84rem; color: #38bdf8;">ចុះឈ្មោះ Online</span>
+                  <span style="background: #0891b2; color: #fff; font-size: 0.65rem; padding: 1px 6px; border-radius: 8px; font-weight: 800;">${(typeof PublicEnrollment !== 'undefined' ? PublicEnrollment.getPendingCount() : 0)}</span>
+                </div>
+                <div style="font-size: 0.7rem; color: #cbd5e1;">ផ្ទៀងផ្ទាត់ពាក្យសិស្សថ្មី</div>
+              </div>
+            </button>
+
+            <!-- 3. AI Assignment Checker -->
+            <button type="button" onclick="AIAssignmentChecker.openModal()" style="display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 14px; color: #fff; text-align: left; cursor: pointer; transition: all 0.2s ease;">
+              <span style="font-size: 1.5rem;">📋</span>
+              <div>
+                <div style="font-weight: 800; font-size: 0.84rem; color: #34d399;">AI ពិនិត្យកិច្ចការ</div>
+                <div style="font-size: 0.7rem; color: #cbd5e1;">ដាក់ពិន្ទុ Word/Excel/PPT</div>
+              </div>
+            </button>
+
+            <!-- 4. AI Tutor 24/7 -->
+            <button type="button" onclick="AITutor.openModal()" style="display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: rgba(168, 85, 247, 0.08); border: 1px solid rgba(168, 85, 247, 0.3); border-radius: 14px; color: #fff; text-align: left; cursor: pointer; transition: all 0.2s ease;">
+              <span style="font-size: 1.5rem;">💬</span>
+              <div>
+                <div style="font-weight: 800; font-size: 0.84rem; color: #c084fc;">AI Tutor ២៤/៧</div>
+                <div style="font-size: 0.7rem; color: #cbd5e1;">ឆ្លើយស្របតាមសៀវភៅពុម្ព</div>
+              </div>
+            </button>
+
+            <!-- 5. Office Templates -->
+            <button type="button" onclick="OfficeTemplates.openModal()" style="display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: rgba(59, 130, 246, 0.08); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 14px; color: #fff; text-align: left; cursor: pointer; transition: all 0.2s ease;">
+              <span style="font-size: 1.5rem;">📑</span>
+              <div>
+                <div style="font-weight: 800; font-size: 0.84rem; color: #60a5fa;">បណ្ណាល័យគំរូ Office</div>
+                <div style="font-size: 0.7rem; color: #cbd5e1;">ទាញយក Word, Excel, PPT</div>
+              </div>
+            </button>
+
+            <!-- 6. Scheduled Announcements -->
+            <button type="button" onclick="ScheduledAnnouncements.openManageModal()" style="display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: rgba(244, 63, 94, 0.08); border: 1px solid rgba(244, 63, 94, 0.3); border-radius: 14px; color: #fff; text-align: left; cursor: pointer; transition: all 0.2s ease;">
+              <span style="font-size: 1.5rem;">⏰</span>
+              <div>
+                <div style="font-weight: 800; font-size: 0.84rem; color: #fb7185;">Auto ជូនដំណឹងដល់ថ្ងៃ</div>
+                <div style="font-size: 0.7rem; color: #cbd5e1;">Telegram & លើអេក្រង់សិស្ស</div>
+              </div>
+            </button>
+
+            <!-- 7. Live Quiz Battle (Kahoot Style) -->
+            <button type="button" onclick="LiveQuizArena.openModal()" style="display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: rgba(250, 204, 21, 0.08); border: 1px solid rgba(250, 204, 21, 0.35); border-radius: 14px; color: #fff; text-align: left; cursor: pointer; transition: all 0.2s ease;">
+              <span style="font-size: 1.5rem;">🏆</span>
+              <div>
+                <div style="font-weight: 800; font-size: 0.84rem; color: #facc15;">Live Quiz Show (Kahoot)</div>
+                <div style="font-size: 0.7rem; color: #cbd5e1;">ប្រកួតសំណួរលើអេក្រង់ធំ</div>
+              </div>
+            </button>
+
+            <!-- 8. AI Lesson Slides & Plan -->
+            <button type="button" onclick="AILessonSlides.openModal()" style="display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: rgba(168, 85, 247, 0.08); border: 1px solid rgba(168, 85, 247, 0.35); border-radius: 14px; color: #fff; text-align: left; cursor: pointer; transition: all 0.2s ease;">
+              <span style="font-size: 1.5rem;">📽️</span>
+              <div>
+                <div style="font-weight: 800; font-size: 0.84rem; color: #d8b4fe;">AI Slide & កិច្ចតែងការ</div>
+                <div style="font-size: 0.7rem; color: #cbd5e1;">ស្រង់ពីសៀវភៅ ១២០ ទំព័រ</div>
+              </div>
+            </button>
+
+            <!-- 9. Shortcut Key Trainer -->
+            <button type="button" onclick="ShortcutTrainer.openModal()" style="display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: rgba(6, 182, 212, 0.08); border: 1px solid rgba(6, 182, 212, 0.35); border-radius: 14px; color: #fff; text-align: left; cursor: pointer; transition: all 0.2s ease;">
+              <span style="font-size: 1.5rem;">⌨️</span>
+              <div>
+                <div style="font-weight: 800; font-size: 0.84rem; color: #22d3ee;">Shortcut Key Trainer</div>
+                <div style="font-size: 0.7rem; color: #cbd5e1;">ហ្វឹកហាត់លើក្តារចុចផ្ទាល់</div>
+              </div>
+            </button>
+
+            <!-- 10. Excel Formula Sandbox -->
+            <button type="button" onclick="ExcelSandbox.openModal()" style="display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.35); border-radius: 14px; color: #fff; text-align: left; cursor: pointer; transition: all 0.2s ease;">
+              <span style="font-size: 1.5rem;">📊</span>
+              <div>
+                <div style="font-weight: 800; font-size: 0.84rem; color: #34d399;">Excel Formula Sandbox</div>
+                <div style="font-size: 0.7rem; color: #cbd5e1;">រៀនវាយរូបមន្តផ្ទាល់លើ Web</div>
+              </div>
+            </button>
+          </div>
+        </div>
+
         <!-- 2. Statistics Cards (5 Animated Futuristic Cards with Sparklines & % Trends) -->
         <div class="kpi-grid" style="grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 16px; margin-bottom: 22px;">
           <!-- Total Students Card -->
@@ -178,37 +293,12 @@ const DashboardView = {
           </div>
         </div>
 
-        <!-- 3. Futuristic Gemini AI Assistant Studio Banner -->
-        <div class="card motion-fade-up" style="margin-bottom: 22px; padding: 22px 26px; background: linear-gradient(135deg, rgba(30, 27, 75, 0.85) 0%, rgba(15, 23, 42, 0.95) 100%); border: 1px solid rgba(168, 85, 247, 0.35); border-radius: 20px; box-shadow: 0 14px 36px rgba(0,0,0,0.4), 0 0 24px rgba(168, 85, 247, 0.15); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 18px;">
-          <div style="display: flex; align-items: center; gap: 16px; flex: 1; min-width: 290px;">
-            <div style="width: 52px; height: 52px; border-radius: 16px; background: linear-gradient(135deg, #a855f7, #06b6d4); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: #fff; box-shadow: 0 8px 20px rgba(168, 85, 247, 0.4); flex-shrink: 0;">
-              <i class="fa-solid fa-wand-magic-sparkles"></i>
-            </div>
-            <div>
-              <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 4px;">
-                <h3 style="margin: 0; font-size: 1.15rem; font-weight: 800; color: #f8fafc; display: flex; align-items: center; gap: 8px;">
-                  Gemini AI Assistant • សាលា អន្តរជាតិ ធានស៊ីន
-                </h3>
-                <span class="badge" style="background: rgba(168, 85, 247, 0.2); color: #c084fc; font-size: 0.72rem; padding: 3px 8px; border-radius: 20px; border: 1px solid rgba(168, 85, 247, 0.3);">
-                  <i class="fa-solid fa-bolt"></i> Gemini 3.8 Flash
-                </span>
-              </div>
-              <p style="margin: 0; font-size: 0.84rem; color: #94a3b8; line-height: 1.5;">
-                បង្កើតកម្រងសំណួរពហុជ្រើសរើស និងលំហាត់កុំព្យូទ័រដោយស្វ័យប្រវត្តិតាមមេរៀន • វិភាគអវត្តមាន & ពិន្ទុធ្លាក់ចុះដើម្បីទប់ស្កាត់ការបោះបង់ទាន់ពេល
-              </p>
-            </div>
+        <!-- 3. All-in-One Anime AI Assistant Hero Studio (ម៉ីលីង AI) -->
+        ${typeof AnimeAIAssistant !== 'undefined' ? AnimeAIAssistant.renderHeroBanner() : `
+          <div class="card motion-fade-up" style="margin-bottom: 22px; padding: 22px 26px; background: linear-gradient(135deg, rgba(30, 27, 75, 0.85) 0%, rgba(15, 23, 42, 0.95) 100%); border: 1px solid rgba(168, 85, 247, 0.35); border-radius: 20px; box-shadow: 0 14px 36px rgba(0,0,0,0.4);">
+            <h3 style="color: #fff;">Gemini AI Studio</h3>
           </div>
-          <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-            <button type="button" class="btn-primary" onclick="ModalsComponent.openAiQuizGeneratorModal()" style="height: 40px; padding: 0 18px; font-size: 0.86rem; font-weight: 800; border-radius: 12px; background: linear-gradient(135deg, #a855f7, #6366f1); border: none; box-shadow: 0 4px 16px rgba(168, 85, 247, 0.4);">
-              <i class="fa-solid fa-brain"></i>
-              <span>✨ បង្កើតកម្រងសំណួរ & លំហាត់</span>
-            </button>
-            <button type="button" class="btn-secondary" onclick="ModalsComponent.openAiStudentInsightModal()" style="height: 40px; padding: 0 18px; font-size: 0.86rem; font-weight: 800; border-radius: 12px; background: rgba(6, 182, 212, 0.15); border: 1px solid rgba(6, 182, 212, 0.4); color: #22d3ee;">
-              <i class="fa-solid fa-chart-line-up"></i>
-              <span>📊 វិភាគការសិក្សាសិស្ស</span>
-            </button>
-          </div>
-        </div>
+        `}
 
         <!-- At-Risk Attendance Alert Banner Container -->
         <div id="dashAtRiskContainer"></div>

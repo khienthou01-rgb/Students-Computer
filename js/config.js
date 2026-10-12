@@ -54,6 +54,16 @@ const APP_CONFIG = {
     enabled: true
   },
   geminiApiKey: (typeof atob !== "undefined" ? atob("QVEuQWI4Uk42SW95WmhUbHNxMEFqYmUwOVhoQ2JzOHoyVHpDNWh1dDdob0hMd1dGcTFraEE=") : ""),
+
+  // Azure Neural TTS Configuration (សម្លេងស្រីមុំ ១០០% ភាសាខ្មែរ)
+  azureTtsConfig: {
+    subscriptionKey: "",  // Azure Speech Service Key (Free F0: 500,000 chars/month)
+    region: "southeastasia",
+    voice: "km-KH-SreymomNeural",  // ស្រីមុំ (Sreymom) — Female Khmer Neural Voice
+    rate: "0%",
+    pitch: "+0Hz",
+    enabled: true
+  },
   
   // Telegram Bot Notifications Configuration
   telegramConfig: {
