@@ -49,7 +49,11 @@ const App = {
           ghRedirectTab = tabMatch;
         }
       } else if (window.location.pathname) {
-        const directTab = window.location.pathname.replace(/^\/+/, "").split(/[/?#]/)[0];
+        let clean = window.location.pathname;
+        if (clean.toLowerCase().includes("students-computer")) {
+          clean = clean.replace(/students-computer/i, "");
+        }
+        const directTab = clean.replace(/^\/+/, "").split(/[/?#]/)[0];
         if (directTab && directTab !== "index" && directTab !== "index.html" && !directTab.includes(".") && !directTab.startsWith("api") && !directTab.startsWith("enroll")) {
           ghRedirectTab = directTab;
         }
@@ -791,6 +795,11 @@ const App = {
     });
 
     let targetView = document.getElementById(`view-${tabId}`);
+    if (!targetView) {
+      tabId = "dashboard";
+      this.state.currentTab = "dashboard";
+      targetView = document.getElementById("view-dashboard");
+    }
     if (targetView) {
       void targetView.offsetWidth; // Trigger DOM reflow for fresh animation
       targetView.classList.add("active", "motion-fade-up");
