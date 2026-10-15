@@ -1199,6 +1199,33 @@
   }
 }
 
+/* Top Nanobar / Neon Progress Line */
+.top-progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 0%;
+  height: 3px;
+  background: linear-gradient(90deg, #06b6d4, #7c3aed, #ec4899);
+  box-shadow: 0 0 10px rgba(6, 182, 212, 0.8), 0 0 20px rgba(124, 58, 237, 0.6);
+  z-index: 100015;
+  transition: width 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
+  pointer-events: none;
+}
+.top-progress-bar.active {
+  width: 78%;
+  opacity: 1;
+  animation: topBarPulse 1.8s ease-in-out infinite alternate;
+}
+.top-progress-bar.complete {
+  width: 100%;
+  opacity: 0;
+}
+@keyframes topBarPulse {
+  0% { filter: brightness(1); }
+  100% { filter: brightness(1.35); }
+}
+
 /* Global Fullscreen Loader */
 .global-loader {
   position: fixed;
@@ -1206,19 +1233,26 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(15, 23, 42, 0.45);
-  backdrop-filter: blur(5px);
+  background: rgba(7, 5, 16, 0.72);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   z-index: 100010;
-  display: none;
+  display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   color: #ffffff;
   gap: 16px;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.3s ease;
 }
 
 .global-loader.active {
-  display: flex;
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
 }
 
 .global-loader-logo-wrap {

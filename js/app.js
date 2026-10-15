@@ -33,7 +33,7 @@ const App = {
   async init() {
     this.initTheme();
 
-    // Check if coming from a GitHub Pages SPA redirect
+    // Check if coming from a GitHub Pages SPA redirect or direct Vercel pathname
     let ghRedirectTab = null;
     try {
       const ghRedirect = sessionStorage.getItem("gh_spa_redirect");
@@ -47,6 +47,11 @@ const App = {
         const tabMatch = pathPart.replace(/^\/+/, "").split(/[/?#]/)[0];
         if (tabMatch && tabMatch !== "index" && tabMatch !== "index.html") {
           ghRedirectTab = tabMatch;
+        }
+      } else if (window.location.pathname) {
+        const directTab = window.location.pathname.replace(/^\/+/, "").split(/[/?#]/)[0];
+        if (directTab && directTab !== "index" && directTab !== "index.html" && !directTab.includes(".") && !directTab.startsWith("api") && !directTab.startsWith("enroll")) {
+          ghRedirectTab = directTab;
         }
       }
     } catch (e) {}
@@ -3724,16 +3729,28 @@ const App = {
 
   showLoader(show) {
     const loader = document.getElementById("globalLoader");
-    if (!loader) return;
+    const topBar = document.getElementById("topProgressBar");
     if (show) {
-      loader.classList.add("active");
+      if (topBar) {
+        topBar.classList.remove("complete");
+        topBar.classList.add("active");
+      }
+      if (loader) loader.classList.add("active");
       clearTimeout(this._loaderSafetyTimeout);
       this._loaderSafetyTimeout = setTimeout(() => {
-        loader.classList.remove("active");
+        if (loader) loader.classList.remove("active");
+        if (topBar) {
+          topBar.classList.remove("active");
+          topBar.classList.add("complete");
+        }
       }, 6000);
     } else {
       clearTimeout(this._loaderSafetyTimeout);
-      loader.classList.remove("active");
+      if (loader) loader.classList.remove("active");
+      if (topBar) {
+        topBar.classList.remove("active");
+        topBar.classList.add("complete");
+      }
     }
   },
 
