@@ -54,12 +54,20 @@ echo.
 echo [4/4] ដំណើរការ Deploy ទៅកាន់ Vercel...
 echo.
 echo ជ្រើសរើសជម្រើសខាងក្រោម៖
-echo [1] ទុកឱ្យ Vercel Deploy ដោយស្វ័យប្រវត្តិតាមរយៈ GitHub (លំនាំដើម)
+echo [1] ទុកឱ្យ Vercel Deploy ដោយស្វ័យប្រវត្តិតាមរយៈ GitHub (លំនាំដើម - ណែនាំ)
 echo [2] Deploy ផ្ទាល់ភ្លាមៗតាម Vercel CLI (npx vercel --prod)
+echo [3] Login ចូលគណនី Vercel ជាមុនសិន (npx vercel login)
 echo.
-set /p DEPLOY_CHOICE="សូមវាយលេខជម្រើស [1 ឬ 2] (ចុច Enter យកលេខ 1): "
+set /p DEPLOY_CHOICE="សូមវាយលេខជម្រើស [1, 2 ឬ 3] (ចុច Enter យកលេខ 1): "
 
-if "%DEPLOY_CHOICE%"=="2" (
+if "%DEPLOY_CHOICE%"=="3" (
+    echo.
+    echo 🔑 កំពុងបើកផ្ទាំង Login Vercel...
+    call npx vercel login
+    echo.
+    echo 🚀 កំពុងបញ្ជូនកូដឡើង Vercel Production...
+    call npx vercel --prod --yes
+) else if "%DEPLOY_CHOICE%"=="2" (
     echo.
     echo 🚀 កំពុងបញ្ជូនកូដឡើង Vercel Production តាម CLI...
     call npx vercel --prod --yes
@@ -67,10 +75,13 @@ if "%DEPLOY_CHOICE%"=="2" (
 
 echo.
 echo ========================================================
-echo 🎉 ជោគជ័យ! ប្រព័ន្ធ Tian Xin International School ត្រូវបានបញ្ជូនឡើង Vercel រួចរាល់!
+echo 🎉 ជោគជ័យ! ប្រព័ន្ធ Tian Xin International School ត្រូវបានបញ្ជូនរួចរាល់!
 echo.
 echo 🌐 គេហទំព័រផ្សាយផ្ទាល់លើ Vercel:
 echo    👉 https://students-computer.vercel.app/
+echo.
+echo 🌐 គេហទំព័រផ្សាយផ្ទាល់លើ GitHub Pages:
+echo    👉 https://khienthou01-rgb.github.io/Students-Computer/
 echo.
 echo 📊 ពិនិត្យស្ថានភាព Deploy លើ Vercel Dashboard:
 echo    👉 https://vercel.com/dashboard
