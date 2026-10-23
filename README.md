@@ -32,15 +32,16 @@
 
 ប្រព័ន្ធត្រូវបានរៀបចំឡើងយ៉ាងល្អឥតខ្ចោះ គាំទ្រការ Hosting ទាំង **Online លើពពក (Cloud)** និង **Local ក្នុងបណ្តាញសាលា (Wi-Fi/LAN)**៖
 
-### ១. Online Cloud Hosting (ដំណើរការលើអ៊ីនធឺណិត ២៤/៧ តាម GitHub Pages)
-ប្រព័ន្ធត្រូវបានដាក់ឱ្យដំណើរការផ្ទាល់នៅលើ **GitHub Pages Global CDN** ជាមួយ SSL Certificate សុវត្ថិភាពខ្ពស់ និងល្បឿនលឿនបំផុត៖
-- 🔗 **តំណភ្ជាប់ផ្លូវការ (Live URL):** [https://khienthou01-rgb.github.io/Students-Computer/](https://khienthou01-rgb.github.io/Students-Computer/)
+### ១. Online Cloud Hosting (ដំណើរការលើអ៊ីនធឺណិត ២៤/៧ តាម Vercel & GitHub Pages)
+ប្រព័ន្ធត្រូវបានដាក់ឱ្យដំណើរការផ្ទាល់នៅលើ **Vercel Global Edge Network** និង **GitHub Pages Global CDN** ជាមួយ SSL Certificate សុវត្ថិភាពខ្ពស់ និងល្បឿនលឿនបំផុត៖
+- 🔗 **តំណភ្ជាប់ផ្លូវការលើ Vercel (Official Live URL):** [https://students-computer.vercel.app/](https://students-computer.vercel.app/)
+- 🔗 **តំណភ្ជាប់បម្រុងលើ GitHub Pages (Backup Live URL):** [https://khienthou01-rgb.github.io/Students-Computer/](https://khienthou01-rgb.github.io/Students-Computer/)
 - 📦 **GitHub Repository:** [https://github.com/khienthou01-rgb/Students-Computer](https://github.com/khienthou01-rgb/Students-Computer)
-- ⚡ **របៀប Deploy កូដថ្មីដោយចុចតែម្តង (1-Click GitHub Deploy):**
-  - គ្រាន់តែ **Double-click លើ `Deploy-GitHub.bat`**
-  - ប្រព័ន្ធនឹងស្វ័យប្រវត្តិ Commit និង Push ឡើង GitHub Pages ភ្លាមៗក្នុងរយៈពេលត្រឹមតែ ២ វិនាទី!
-- 🌐 **គាំទ្រ Multi-Cloud Hosting (Vercel & Netlify):**
-  - មានភ្ជាប់ស្រេចនូវ `vercel.json` និង `_redirects` អាចយកទៅភ្ជាប់ជាមួយ Vercel ឬ Netlify បានដោយចុចតែ ១ Click ប៉ុណ្ណោះ។
+- ⚡ **របៀប Deploy ឡើង Vercel ដោយចុចតែម្តង (1-Click Vercel Deploy):**
+  - គ្រាន់តែ **Double-click លើ `Deploy-Vercel.bat`** (ឬ `Deploy-GitHub.bat`)
+  - ប្រព័ន្ធនឹងស្វ័យប្រវត្តិ Commit និង Push ឡើង GitHub ដែលភ្ជាប់ស្វ័យប្រវត្តិនឹង Vercel Production ភ្លាមៗក្នុងរយៈពេលត្រឹមតែ ២ វិនាទី!
+- 🌐 **ការកំណត់រចនាសម្ព័ន្ធ Vercel គ្មានកំហុស (Zero-Error Vercel Architecture):**
+  - `vercel.json` ត្រូវបានកំណត់យ៉ាងល្អឥតខ្ចោះជាមួយ Serverless Functions, SPA Rewrites, Full Security Headers (CORS, Camera, Mic) និង Cache-Control សុវត្ថិភាពបំផុត។
 
 ---
 
