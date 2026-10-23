@@ -252,7 +252,6 @@ input[type="submit"],
               background var(--dur-btn) var(--ease-spring),
               border-color var(--dur-btn) var(--ease-spring),
               color var(--dur-btn) ease !important;
-  will-change: transform;
 }
 
 .btn-primary {
@@ -262,33 +261,32 @@ input[type="submit"],
 }
 
 .btn-primary:hover {
-  transform: translateY(-2px) scale(1.02);
-  box-shadow: 0 8px 24px rgba(124, 58, 237, 0.45), 0 0 15px rgba(6, 182, 212, 0.25) !important;
-  background-position: 100% 100%;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25) !important;
 }
 
 .btn-primary:active {
-  transform: translateY(0) scale(0.97) !important;
-  box-shadow: 0 3px 10px rgba(124, 58, 237, 0.3) !important;
+  transform: translateY(0) !important;
+  box-shadow: 0 2px 6px rgba(99, 102, 241, 0.15) !important;
 }
 
 .btn-secondary:hover {
-  transform: translateY(-2px) scale(1.015);
-  border-color: rgba(139, 92, 246, 0.4) !important;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3), 0 0 12px rgba(124, 58, 237, 0.15) !important;
+  transform: translateY(-1px);
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
 }
 
 .btn-secondary:active {
-  transform: translateY(0) scale(0.97) !important;
+  transform: translateY(0) !important;
 }
 
 .theme-btn:hover {
-  transform: translateY(-1.5px) scale(1.04);
-  box-shadow: 0 4px 16px rgba(124, 58, 237, 0.25) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
 }
 
 .theme-btn:active {
-  transform: scale(0.94) !important;
+  transform: scale(0.96) !important;
 }
 
 /* --------------------------------------------------------------------------
@@ -301,27 +299,25 @@ input[type="submit"],
   transition: transform var(--dur-card) var(--ease-spring),
               box-shadow var(--dur-card) var(--ease-spring),
               border-color var(--dur-card) var(--ease-spring) !important;
-  will-change: transform, box-shadow;
 }
 
 .kpi-card:hover {
-  transform: translateY(-4px) scale(1.015) !important;
-  border-color: rgba(139, 92, 246, 0.35) !important;
-  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.45), 0 0 25px rgba(124, 58, 237, 0.22) !important;
+  transform: translateY(-2px) !important;
+  border-color: rgba(255, 255, 255, 0.16) !important;
+  box-shadow: var(--shadow-md) !important;
 }
 
 .kpi-card:hover .kpi-icon-box {
-  transform: scale(1.1) rotate(5deg);
-  box-shadow: 0 6px 20px rgba(124, 58, 237, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .kpi-icon-box {
-  transition: transform 0.35s var(--ease-bounce), box-shadow 0.35s ease;
-  will-change: transform;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
 .card:hover {
-  border-color: rgba(139, 92, 246, 0.22);
+  border-color: rgba(255, 255, 255, 0.12);
 }
 
 /* --------------------------------------------------------------------------
@@ -337,32 +333,31 @@ input[type="submit"],
 
 .nav-link {
   position: relative;
-  transition: all 0.22s var(--ease-spring) !important;
+  transition: all 0.2s ease !important;
   z-index: 2;
 }
 
 .nav-link i {
-  transition: transform 0.25s var(--ease-spring), color 0.2s ease;
+  transition: color 0.2s ease;
 }
 
 .nav-link span {
-  transition: transform 0.22s var(--ease-spring);
+  transition: color 0.2s ease;
 }
 
 .nav-link:hover {
-  transform: translateX(4px);
-  background: rgba(139, 92, 246, 0.08) !important;
+  background: rgba(255, 255, 255, 0.05) !important;
   color: #ffffff !important;
 }
 
 .nav-link:hover i {
-  transform: scale(1.15) rotate(3deg);
+  transform: none;
 }
 
 .nav-link.active {
-  background: linear-gradient(135deg, rgba(124, 58, 237, 0.35) 0%, rgba(6, 182, 212, 0.18) 100%) !important;
-  border: 1px solid rgba(139, 92, 246, 0.35) !important;
-  box-shadow: 0 4px 18px rgba(124, 58, 237, 0.25), inset 0 0 12px rgba(124, 58, 237, 0.15) !important;
+  background: rgba(99, 102, 241, 0.14) !important;
+  border: 1px solid rgba(99, 102, 241, 0.25) !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15) !important;
   color: #ffffff !important;
 }
 
@@ -372,11 +367,10 @@ input[type="submit"],
   left: 0;
   top: 15%;
   height: 70%;
-  width: 4px;
-  border-radius: 0 4px 4px 0;
-  background: linear-gradient(180deg, #7c3aed, #06b6d4);
-  box-shadow: 0 0 12px #7c3aed, 0 0 6px #06b6d4;
-  animation: motionScaleIn 0.3s var(--ease-spring);
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  background: var(--primary);
+  box-shadow: none;
 }
 
 /* Smooth Accordion Submenu Transition */
@@ -415,15 +409,15 @@ input[type="submit"],
 }
 
 .btn-global-search-trigger {
-  background: rgba(18, 12, 32, 0.75) !important;
-  border: 1px solid rgba(139, 92, 246, 0.22) !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid var(--border-color) !important;
   backdrop-filter: blur(12px);
-  transition: all 0.25s var(--ease-spring) !important;
+  transition: all 0.2s ease !important;
 }
 
 .btn-global-search-trigger:hover {
-  border-color: rgba(6, 182, 212, 0.45) !important;
-  box-shadow: 0 0 18px rgba(6, 182, 212, 0.25) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
   transform: translateY(-1px);
 }
 
@@ -442,50 +436,49 @@ input[type="submit"],
   height: 7px;
   border-radius: 50%;
   background: #10b981;
-  box-shadow: 0 0 8px #10b981;
   display: inline-block;
-  animation: motionPulseSubtle 2s infinite ease-in-out;
 }
 
 #notifCountBadge {
-  animation: motionBeaconPulse 2s infinite ease-in-out;
+  font-size: 0.72rem;
+  font-weight: 700;
 }
 
 /* Dropdown Animation */
 #notifDropdownMenu,
 #teacherToolsDropdownMenu,
 .dropdown-menu-spring {
-  animation: motionScaleIn 0.28s var(--ease-spring) forwards;
+  animation: motionScaleIn 0.2s var(--ease-spring) forwards;
   transform-origin: top right;
-  backdrop-filter: blur(24px) !important;
-  -webkit-backdrop-filter: blur(24px) !important;
-  background: rgba(18, 12, 32, 0.95) !important;
-  border: 1px solid rgba(139, 92, 246, 0.28) !important;
-  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.6), 0 0 20px rgba(124, 58, 237, 0.25) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  background: var(--bg-surface-glass) !important;
+  border: 1px solid var(--border-color) !important;
+  box-shadow: var(--shadow-lg) !important;
 }
 
 /* --------------------------------------------------------------------------
    8. Table & List Stagger Motion
    -------------------------------------------------------------------------- */
 .data-table tbody tr {
-  transition: transform 0.2s var(--ease-spring), background-color 0.2s ease, box-shadow 0.2s ease;
+  transition: background-color 0.15s ease;
 }
 
 .data-table tbody tr:hover {
-  transform: translateX(4px);
-  background: rgba(124, 58, 237, 0.06) !important;
-  box-shadow: inset 3px 0 0 #7c3aed;
+  transform: none;
+  background: rgba(255, 255, 255, 0.03) !important;
+  box-shadow: none;
 }
 
 .data-table tbody tr:hover .avatar-circle,
 .data-table tbody tr:hover .student-table-avatar {
-  transform: scale(1.1);
-  box-shadow: 0 0 12px rgba(124, 58, 237, 0.4);
+  transform: none;
+  box-shadow: none;
 }
 
 .avatar-circle,
 .student-table-avatar {
-  transition: transform 0.25s var(--ease-bounce), box-shadow 0.25s ease;
+  transition: opacity 0.2s ease;
 }
 
 /* --------------------------------------------------------------------------
@@ -511,12 +504,12 @@ input[type="submit"],
 .ms-search-modal-box {
   width: 90%;
   max-width: 640px;
-  background: rgba(18, 12, 32, 0.95);
-  border: 1px solid rgba(139, 92, 246, 0.35);
-  border-radius: 20px;
-  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.7), 0 0 32px rgba(124, 58, 237, 0.28);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.4);
   overflow: hidden;
-  animation: motionScaleIn 0.3s var(--ease-spring) forwards;
+  animation: motionScaleIn 0.25s var(--ease-spring) forwards;
 }
 
 .ms-search-header {
@@ -565,9 +558,9 @@ input[type="submit"],
 
 .ms-search-item:hover,
 .ms-search-item.selected {
-  background: rgba(124, 58, 237, 0.16);
-  border-color: rgba(139, 92, 246, 0.3);
-  transform: translateX(4px);
+  background: rgba(99, 102, 241, 0.12);
+  border-color: rgba(99, 102, 241, 0.25);
+  transform: translateX(2px);
 }
 
 .ms-search-footer {
@@ -600,20 +593,20 @@ input[type="submit"],
   min-width: 320px;
   max-width: 440px;
   padding: 14px 18px;
-  border-radius: 16px;
-  background: rgba(18, 12, 32, 0.94);
+  border-radius: 12px;
+  background: var(--bg-surface);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(139, 92, 246, 0.35);
-  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.5), 0 0 20px rgba(124, 58, 237, 0.2);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-lg);
   display: flex;
   align-items: center;
   gap: 12px;
-  color: #ffffff;
+  color: var(--text-main);
   font-family: var(--font-khmer);
   position: relative;
   overflow: hidden;
-  animation: motionSlideRight 0.35s var(--ease-spring) forwards;
+  animation: motionSlideRight 0.3s var(--ease-spring) forwards;
   transition: transform 0.25s ease, opacity 0.25s ease;
 }
 
@@ -683,33 +676,11 @@ input[type="submit"],
   z-index: 99;
 }
 
-/* Dynamic Cursor Interactive Glow on Cards & Metrics */
+/* Clean Card Styles */
 .card,
 .kpi-card,
 .student-card {
   position: relative;
-}
-
-.card::before,
-.kpi-card::before {
-  content: "";
-  position: absolute;
-  inset: -1px;
-  border-radius: inherit;
-  padding: 1.5px;
-  background: radial-gradient(350px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(6, 182, 212, 0.4), rgba(124, 58, 237, 0.25) 45%, transparent 75%);
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.35s ease;
-  z-index: 1;
-}
-
-.card:hover::before,
-.kpi-card:hover::before {
-  opacity: 1;
 }
 
 /* Input Pulse Glow when Autofilled */

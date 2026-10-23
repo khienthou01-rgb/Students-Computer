@@ -4,7 +4,7 @@
  */
 
 // NOTE: CACHE_NAME is auto-updated on deployment
-const CACHE_NAME = "tis-portal-v3.0.20261012_002500";
+const CACHE_NAME = "tis-portal-v3.0.20261023_124150";
 
 const ASSETS_TO_CACHE = [
   "./",
@@ -19,7 +19,6 @@ const ASSETS_TO_CACHE = [
   "./css/student-modal.css",
   "./css/teacher-tools.css",
   "./css/multi-school-portal.css",
-  "./css/anime_ai_assistant.css",
   "./js/config.js",
   "./js/data.js",
   "./js/exam_papers.js",
@@ -32,20 +31,10 @@ const ASSETS_TO_CACHE = [
   "./js/services/khmer_calendar.js",
   "./js/services/image_host.js",
   "./js/services/gemini_ai.js",
-  "./js/services/question_bank.js",
   "./js/services/book_study_engine.js",
-  "./js/services/mock_exam_engine.js",
   "./js/services/public_enrollment.js",
-  "./js/services/ai_assignment_checker.js",
-  "./js/services/ai_tutor.js",
-  "./js/services/office_templates.js",
   "./js/services/scheduled_announcements.js",
-  "./js/services/live_quiz_arena.js",
-  "./js/services/ai_lesson_slides.js",
-  "./js/services/shortcut_trainer.js",
-  "./js/services/excel_sandbox.js",
   "./js/services/azure_tts.js",
-  "./js/services/anime_ai_assistant.js",
   "./js/components/sidebar.js",
   "./js/components/header.js",
   "./js/components/modals.js",

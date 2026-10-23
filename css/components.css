@@ -18,19 +18,12 @@
 }
 
 .card::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.3), rgba(6, 182, 212, 0.3), transparent);
-  pointer-events: none;
+  display: none;
 }
 
 .card:hover {
-  box-shadow: var(--shadow-cyber);
-  border-color: rgba(99, 102, 241, 0.3);
+  box-shadow: var(--shadow-md);
+  border-color: rgba(255, 255, 255, 0.12);
 }
 
 .card-header-clean {
@@ -52,7 +45,6 @@
 
 .card-title i {
   color: var(--primary);
-  filter: drop-shadow(0 0 6px var(--primary-glow));
 }
 
 /* KPI Dashboard Cards (Digital Metric Hub) */
@@ -79,9 +71,9 @@
 }
 
 .kpi-card:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-cyber);
-  border-color: rgba(99, 102, 241, 0.4);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  border-color: rgba(255, 255, 255, 0.14);
 }
 
 .kpi-card::before {
@@ -89,22 +81,13 @@
   position: absolute;
   top: 0;
   left: 0;
-  width: 4px;
+  width: 3px;
   height: 100%;
   background: var(--card-accent, var(--primary));
-  box-shadow: 0 0 12px var(--card-accent, var(--primary));
 }
 
 .kpi-card::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 90px;
-  height: 90px;
-  background: radial-gradient(circle, var(--card-accent, rgba(99, 102, 241, 0.08)) 0%, transparent 70%);
-  pointer-events: none;
-  border-radius: 50%;
+  display: none;
 }
 
 .kpi-info h3 {
@@ -152,8 +135,8 @@
 }
 
 .kpi-card:hover .kpi-icon-box {
-  transform: scale(1.1) rotate(4deg);
-  box-shadow: 0 0 18px var(--icon-color, var(--primary));
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 /* Charts Grid */
@@ -201,9 +184,7 @@
   height: 38px;
   border-radius: 12px;
   border: 1px solid var(--border-color);
-  background: var(--bg-surface-glass);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: var(--bg-surface);
   color: var(--text-main);
   display: flex;
   align-items: center;
@@ -3238,6 +3219,167 @@
   transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* 1.8 Portal Executive KPI Summary Cards */
+.portal-kpi-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+  margin-top: 20px;
+  margin-bottom: 22px;
+}
+
+.portal-kpi-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  box-shadow: var(--shadow-xs);
+  cursor: pointer;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.portal-kpi-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: var(--kpi-accent, #6366f1);
+  opacity: 0.9;
+}
+
+.portal-kpi-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--kpi-accent, #6366f1);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+.portal-kpi-icon-box {
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  flex-shrink: 0;
+  background: var(--kpi-bg, rgba(99, 102, 241, 0.12));
+  color: var(--kpi-color, #6366f1);
+}
+
+.portal-kpi-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.portal-kpi-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.portal-kpi-value {
+  font-size: 1.12rem;
+  font-weight: 800;
+  color: var(--text-main);
+  margin: 2px 0 1px;
+  white-space: nowrap;
+}
+
+.portal-kpi-subtext {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 1.9 Modern Segmented Navigation Tabs Bar */
+.portal-nav-tabs-bar {
+  display: flex;
+  gap: 8px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  padding: 6px;
+  border-radius: 16px;
+  margin-bottom: 22px;
+  box-shadow: var(--shadow-xs);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.portal-tab-btn {
+  flex: 1;
+  min-width: 170px;
+  height: 44px;
+  background: transparent;
+  border: none;
+  border-radius: 12px;
+  color: var(--text-muted);
+  font-family: var(--font-khmer, 'Kantumruy Pro', sans-serif);
+  font-size: 0.86rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
+}
+
+.portal-tab-btn:hover {
+  color: var(--text-main);
+  background: var(--border-light);
+}
+
+.portal-tab-btn.active {
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
+}
+
+.portal-tab-btn .portal-tab-badge {
+  font-size: 0.68rem;
+  padding: 1px 7px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.22);
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.portal-tab-pane {
+  display: none;
+}
+
+.portal-tab-pane.active {
+  display: block;
+  animation: portalTabSlide 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes portalTabSlide {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* 2. Section Headers */
 .portal-section-header {
   display: flex;
@@ -3589,13 +3731,36 @@
 /* 5. Bottom Profile & Attendance Grid */
 .portal-bottom-grid {
   display: grid;
-  grid-template-columns: 340px 1fr;
-  gap: 20px;
+  grid-template-columns: minmax(460px, 490px) 1fr;
+  gap: 22px;
+  align-items: start;
 }
 
-@media (max-width: 992px) {
+@media (max-width: 1100px) {
   .portal-bottom-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+.portal-card-box.id-preview-box {
+  display: flex;
+  flex-direction: column;
+}
+
+.portal-card-box.id-preview-box .id-card-preview-wrapper {
+  margin: 6px auto 14px;
+  width: 100%;
+}
+
+@media (max-width: 520px) {
+  .portal-card-box.id-preview-box {
+    padding: 16px 10px;
+    overflow-x: hidden;
+  }
+  .portal-card-box.id-preview-box .id-card-preview-wrapper {
+    overflow-x: auto;
+    width: 100%;
+    justify-content: flex-start;
   }
 }
 

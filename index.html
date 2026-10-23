@@ -60,7 +60,6 @@
   <link rel="stylesheet" href="css/student-modal.css?v=20261011_220000">
   <link rel="stylesheet" href="css/teacher-tools.css?v=20261011_220000">
   <link rel="stylesheet" href="css/multi-school-portal.css?v=20261011_220000">
-  <link rel="stylesheet" href="css/anime_ai_assistant.css?v=20261011_230000">
 
   <!-- External Visual Libraries (Chart.js, Confetti, QR Code & Scanner, SheetJS Excel) -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -107,7 +106,7 @@
 
   <!-- 2. Services & Visualization Engines -->
   <script src="js/auth.js?v=20261011_152000"></script>
-  <script src="js/api.js?v=20261011_152000"></script>
+  <script src="js/api.js?v=20261016_164500"></script>
   <script src="js/charts.js?v=20261007_175000"></script>
   <script src="js/services/motion.js?v=20261007_175000"></script>
   <script src="js/services/telegram.js?v=20261011_174500"></script>
@@ -115,30 +114,20 @@
   <script src="js/services/khmer_calendar.js?v=20261007_175000"></script>
   <script src="js/services/image_host.js?v=20261007_175000"></script>
   <script src="js/services/gemini_ai.js?v=20261011_174500"></script>
-  <script src="js/services/question_bank.js?v=20261011_195000"></script>
   <script src="js/services/book_study_engine.js?v=20261011_212000"></script>
-  <script src="js/services/mock_exam_engine.js?v=20261011_212000"></script>
   <script src="js/services/public_enrollment.js?v=20261011_212000"></script>
-  <script src="js/services/ai_assignment_checker.js?v=20261011_212000"></script>
-  <script src="js/services/ai_tutor.js?v=20261011_212000"></script>
-  <script src="js/services/office_templates.js?v=20261011_212000"></script>
   <script src="js/services/scheduled_announcements.js?v=20261011_212000"></script>
-  <script src="js/services/live_quiz_arena.js?v=20261011_212000"></script>
-  <script src="js/services/ai_lesson_slides.js?v=20261011_212000"></script>
-  <script src="js/services/shortcut_trainer.js?v=20261011_212000"></script>
-  <script src="js/services/excel_sandbox.js?v=20261011_212000"></script>
   <script src="js/services/azure_tts.js?v=20261012_000000"></script>
-  <script src="js/services/anime_ai_assistant.js?v=20261012_000000"></script>
 
   <!-- 3. UI Components -->
-  <script src="js/components/sidebar.js?v=20261011_170000"></script>
+  <script src="js/components/sidebar.js?v=20261023_110500"></script>
   <script src="js/components/header.js?v=20261011_162000"></script>
   <script src="js/components/modals.js?v=20261011_170000"></script>
 
   <!-- 4. Dynamic Views -->
   <script src="js/views/login.js?v=20261011_162000"></script>
   <script src="js/views/student_portal.js?v=20261007_175000"></script>
-  <script src="js/views/dashboard.js?v=20261011_170000"></script>
+  <script src="js/views/dashboard.js?v=20261023_110500"></script>
   <script src="js/views/register.js?v=20261007_175000"></script>
   <script src="js/views/directory.js?v=20261007_193000"></script>
   <script src="js/views/dropped.js?v=20261007_175000"></script>
@@ -157,7 +146,7 @@
   <script src="js/views/idcards.js?v=20261007_175000"></script>
   <script src="js/views/documents.js?v=20261007_175000"></script>
   <script src="js/views/reports.js?v=20261007_175000"></script>
-  <script src="js/views/settings.js?v=20261009_182500"></script>
+  <script src="js/views/settings.js?v=20261016_164500"></script>
 
   <!-- 5. Main Application Orchestrator -->
   <script src="js/app.js?v=20261011_150500"></script>
@@ -509,7 +498,7 @@
   <!-- PWA Service Worker Registration & Live Auto-Update Orchestrator -->
   <script>
     (function() {
-      const APP_BUILD_VER = "20261012_002500";
+      const APP_BUILD_VER = "20261023_110500";
       try {
         const storedVer = localStorage.getItem("tis_client_build_ver");
         if (storedVer && storedVer !== APP_BUILD_VER) {

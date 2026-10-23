@@ -11,7 +11,7 @@ const SidebarComponent = {
       if (saved) return JSON.parse(saved);
     } catch (e) {}
     // Default open groups
-    return ["students", "lab", "exams", "ai_assistant", "comm", "finance"];
+    return ["students", "academic", "attendance", "exams", "finance", "comm"];
   },
 
   saveOpenGroups(groups) {
@@ -72,7 +72,7 @@ const SidebarComponent = {
         })()}
 
         <nav class="sidebar-menu">
-          <!-- 1. ផ្ទាំងគ្រប់គ្រងមេ (Dashboard) -->
+          <!-- 1. ទិដ្ឋភាពទូទៅ (Overview) -->
           <div class="menu-category">ទិដ្ឋភាពទូទៅ (Overview)</div>
           
           <button type="button" class="nav-link active" data-tab="dashboard" id="nav-dashboard" title="ផ្ទាំងគ្រប់គ្រងទូទៅ">
@@ -80,7 +80,7 @@ const SidebarComponent = {
             <span>ផ្ទាំងគ្រប់គ្រង (Dashboard)</span>
           </button>
 
-          <!-- 2. គ្រប់គ្រងសិស្ស & គ្រូ (Students & Staff) -->
+          <!-- 2. គ្រប់គ្រងសិស្ស (Students Management) -->
           <div class="sidebar-group ${isGroupOpen('students')}" data-group="students">
             <button type="button" class="sidebar-group-toggle" onclick="SidebarComponent.toggleGroup('students')">
               <div class="group-toggle-left">
@@ -100,21 +100,42 @@ const SidebarComponent = {
               </button>
               <button type="button" class="sub-link action-btn" onclick="PublicEnrollment.openPendingReviewModal()" title="ពិនិត្យពាក្យចុះឈ្មោះ Online ពីសិស្ស (#enroll)">
                 <i class="fa-solid fa-user-clock text-amber-400"></i>
-                <span style="font-weight: 700; color: #fcd34d;">🌐 សិស្សចុះឈ្មោះ Online</span>
-                <span id="sidebarPendingEnrollCount" class="badge" style="background: rgba(245, 158, 11, 0.2); color: #f59e0b; font-size: 0.72rem; padding: 2px 7px; border-radius: 10px; margin-left: auto;">${(typeof PublicEnrollment !== 'undefined' && PublicEnrollment.getPendingCount ? PublicEnrollment.getPendingCount() : 0)}</span>
+                <span>សិស្សចុះឈ្មោះ Online</span>
+                <span id="sidebarPendingEnrollCount" class="badge" style="background: rgba(245, 158, 11, 0.15); color: #f59e0b; font-size: 0.72rem; padding: 2px 7px; border-radius: 10px; margin-left: auto;">${(typeof PublicEnrollment !== 'undefined' && PublicEnrollment.getPendingCount ? PublicEnrollment.getPendingCount() : 0)}</span>
+              </button>
+              <button type="button" class="nav-link sub-link" data-tab="idcards" id="nav-idcards" title="ស្ទូឌីយោបោះពុម្ពកាតសិស្ស">
+                <i class="fa-solid fa-id-card text-cyan-400"></i>
+                <span>បោះពុម្ពកាតសិស្ស (Cards)</span>
               </button>
               <button type="button" class="nav-link sub-link" data-tab="graduated" id="nav-graduated" title="សិស្សបញ្ចប់ការសិក្សា">
                 <i class="fa-solid fa-graduation-cap text-green-400"></i>
                 <span>បញ្ចប់ការសិក្សា (Graduated)</span>
-                <span id="sidebarGraduatedCount" class="badge" style="background: rgba(16, 185, 129, 0.2); color: #10b981; font-size: 0.72rem; padding: 2px 7px; border-radius: 10px; margin-left: auto;">0</span>
+                <span id="sidebarGraduatedCount" class="badge" style="background: rgba(16, 185, 129, 0.15); color: #10b981; font-size: 0.72rem; padding: 2px 7px; border-radius: 10px; margin-left: auto;">0</span>
               </button>
               <button type="button" class="nav-link sub-link" data-tab="dropped" id="nav-dropped" title="សិស្សបោះបង់ការសិក្សា">
                 <i class="fa-solid fa-user-xmark text-rose-400"></i>
                 <span>បោះបង់ (Dropped)</span>
-                <span id="sidebarDroppedCount" class="badge" style="background: rgba(239, 68, 68, 0.2); color: #ef4444; font-size: 0.72rem; padding: 2px 7px; border-radius: 10px; margin-left: auto;">0</span>
+                <span id="sidebarDroppedCount" class="badge" style="background: rgba(239, 68, 68, 0.15); color: #ef4444; font-size: 0.72rem; padding: 2px 7px; border-radius: 10px; margin-left: auto;">0</span>
               </button>
-              <button type="button" class="nav-link sub-link" data-tab="teachers" id="nav-teachers" title="គ្រប់គ្រងគ្រូបង្រៀន">
+              <button type="button" class="sub-link action-btn" onclick="ModalsComponent.openDropoutRadarModal()" title="រ៉ាដាសង្គ្រោះសិស្សប្រឈមនឹងការបោះបង់">
+                <i class="fa-solid fa-shield-halved text-rose-400"></i>
+                <span>រ៉ាដាសិស្សប្រឈមបោះបង់</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- 3. ការបង្រៀន & កាលវិភាគ (Teaching & Academics) -->
+          <div class="sidebar-group ${isGroupOpen('academic')}" data-group="academic">
+            <button type="button" class="sidebar-group-toggle" onclick="SidebarComponent.toggleGroup('academic')">
+              <div class="group-toggle-left">
                 <i class="fa-solid fa-chalkboard-user text-sky-400"></i>
+                <span>ការបង្រៀន & កាលវិភាគ</span>
+              </div>
+              <i class="fa-solid fa-chevron-down group-arrow"></i>
+            </button>
+            <div class="sidebar-sub-menu">
+              <button type="button" class="nav-link sub-link" data-tab="teachers" id="nav-teachers" title="គ្រប់គ្រងគ្រូបង្រៀន">
+                <i class="fa-solid fa-user-tie text-sky-400"></i>
                 <span>គ្រូបង្រៀន (Teachers)</span>
               </button>
               <button type="button" class="nav-link sub-link" data-tab="classes" id="nav-classes" title="ថ្នាក់កុំព្យូទ័ររដ្ឋបាល">
@@ -125,92 +146,60 @@ const SidebarComponent = {
                 <i class="fa-solid fa-book-open-reader text-purple-400"></i>
                 <span>មុខវិជ្ជា (Subjects)</span>
               </button>
+              <button type="button" class="nav-link sub-link" data-tab="timetable" id="nav-timetable" title="កាលវិភាគ & ប្លង់បន្ទប់កុំព្យូទ័រ">
+                <i class="fa-solid fa-network-wired text-cyan-400"></i>
+                <span>កាលវិភាគ & ប្លង់ Lab</span>
+              </button>
+              <button type="button" class="nav-link sub-link" data-tab="duration" id="nav-duration" title="រយៈពេលសិក្សា និងវេន">
+                <i class="fa-solid fa-clock-rotate-left text-amber-400"></i>
+                <span>រយៈពេលសិក្សា & វេន</span>
+              </button>
+              <button type="button" class="nav-link sub-link" data-tab="documents" id="nav-documents" title="ឃ្លាំងឯកសារ កិច្ចតែងការ & មេរៀន">
+                <i class="fa-solid fa-folder-open text-pink-400"></i>
+                <span>ឯកសារ & មេរៀន (Docs)</span>
+              </button>
+              <button type="button" class="nav-link sub-link" data-tab="resources" id="nav-resources" title="ធនធានបង្រៀន & ឯកសារជំនួយ">
+                <i class="fa-solid fa-boxes-stacked text-teal-400"></i>
+                <span>ធនធានបង្រៀន (Resources)</span>
+              </button>
             </div>
           </div>
 
-          <!-- 3. AI Assistant Group (Gemini AI Assistant) -->
-          <div class="menu-category">បញ្ញាសិប្បនិម្មិត AI (GEMINI AI STUDIO)</div>
-
-          <div class="sidebar-group ${isGroupOpen('ai_assistant')}" data-group="ai_assistant">
-            <button type="button" class="sidebar-group-toggle" onclick="SidebarComponent.toggleGroup('ai_assistant')">
+          <!-- 4. វត្តមានសិស្ស (Attendance) -->
+          <div class="sidebar-group ${isGroupOpen('attendance')}" data-group="attendance">
+            <button type="button" class="sidebar-group-toggle" onclick="SidebarComponent.toggleGroup('attendance')">
               <div class="group-toggle-left">
-                <i class="fa-solid fa-wand-magic-sparkles text-amber-400"></i>
-                <span style="font-weight: 800; background: linear-gradient(135deg, #c084fc, #38bdf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Gemini AI Assistant</span>
+                <i class="fa-solid fa-calendar-check text-emerald-400"></i>
+                <span>វត្តមានសិស្ស (Attendance)</span>
               </div>
               <i class="fa-solid fa-chevron-down group-arrow"></i>
             </button>
             <div class="sidebar-sub-menu">
-              <button type="button" class="sub-link action-btn" onclick="AITutor.openModal()" title="AI ជំនួយការមេរៀនកុំព្យូទ័រ ២៤ ម៉ោង">
-                <i class="fa-solid fa-comments text-sky-400"></i>
-                <span style="font-weight: 700; color: #7dd3fc;">💬 AI ជំនួយការមេរៀន ២៤/៧</span>
+              <button type="button" class="nav-link sub-link" data-tab="attendance" id="nav-attendance" title="កត់ត្រាវត្តមានសិស្សប្រចាំថ្ងៃ">
+                <i class="fa-solid fa-clipboard-user text-emerald-400"></i>
+                <span>កត់ត្រាវត្តមាន (Attendance)</span>
               </button>
-              <button type="button" class="sub-link action-btn" onclick="AIAssignmentChecker.openModal()" title="AI ពិនិត្យ និងដាក់ពិន្ទុកិច្ចការអនុវត្តសិស្ស">
-                <i class="fa-solid fa-file-circle-check text-emerald-400"></i>
-                <span style="font-weight: 700; color: #6ee7b7;">📋 AI ពិនិត្យកិច្ចការអនុវត្ត</span>
+              <button type="button" class="sub-link action-btn" onclick="ModalsComponent.openClassAttendanceQrSheetModal()" title="តារាង Scan វត្តមានលឿនលើក្រដាស A4">
+                <i class="fa-solid fa-qrcode text-emerald-400"></i>
+                <span>តារាង QR វត្តមាន A4</span>
               </button>
-              <button type="button" class="sub-link action-btn" onclick="AILessonSlides.openModal()" title="AI បង្កើត Slide បង្រៀន & កិច្ចតែងការ A4">
-                <i class="fa-solid fa-person-chalkboard text-purple-300"></i>
-                <span style="font-weight: 700; color: #e9d5ff;">📽️ AI Slide & កិច្ចតែងការ</span>
-              </button>
-              <button type="button" class="sub-link action-btn" onclick="ModalsComponent.openAiQuizGeneratorModal()" title="AI បង្កើតកម្រងសំណួរពហុជ្រើសរើស និងលំហាត់កុំព្យូទ័រស្វ័យប្រវត្តិ">
-                <i class="fa-solid fa-brain text-purple-400"></i>
-                <span style="font-weight: 700; color: #d8b4fe;">✨ AI បង្កើតកម្រងសំណួរ & លំហាត់</span>
-              </button>
-              <button type="button" class="sub-link action-btn" onclick="ModalsComponent.openAiStudentInsightModal()" title="AI វិភាគការសិក្សារបស់សិស្ស ដំណឹងអវត្តមាន & ពិន្ទុធ្លាក់ចុះ">
-                <i class="fa-solid fa-chart-line-up text-cyan-400"></i>
-                <span style="font-weight: 700; color: #67e8f9;">📊 AI វិភាគការសិក្សាសិស្ស & ដំណឹង</span>
+              <button type="button" class="sub-link action-btn" onclick="TeacherToolsService.printMonthlyAttendanceSheet()" title="បោះពុម្ពវត្តមាន A4 ប្រចាំខែ">
+                <i class="fa-solid fa-print text-teal-400"></i>
+                <span>បោះពុម្ពវត្តមាន A4 ប្រចាំខែ</span>
               </button>
             </div>
           </div>
 
-          <!-- 4. វិញ្ញាសា & ការប្រឡង (Exams & Exercises) -->
-          <div class="menu-category">ឧបករណ៍ជំនួយគ្រូ & ប្រឡង (TEACHER TOOLS)</div>
-
+          <!-- 5. ការប្រឡង & ចំណាត់ថ្នាក់ (Exams & Rankings) -->
           <div class="sidebar-group ${isGroupOpen('exams')}" data-group="exams">
             <button type="button" class="sidebar-group-toggle" onclick="SidebarComponent.toggleGroup('exams')">
               <div class="group-toggle-left">
                 <i class="fa-solid fa-award text-amber-400"></i>
-                <span>វិញ្ញាសា & ប្រឡង (Exams)</span>
+                <span>ប្រឡង & ចំណាត់ថ្នាក់</span>
               </div>
               <i class="fa-solid fa-chevron-down group-arrow"></i>
             </button>
             <div class="sidebar-sub-menu">
-              <button type="button" class="sub-link action-btn" onclick="LiveQuizArena.openModal()" title="ការប្រកួតឆ្លើយសំណួរ Live ក្នុងបន្ទប់ Lab (Kahoot-Style)">
-                <i class="fa-solid fa-trophy text-yellow-400"></i>
-                <span style="font-weight: 700; color: #facc15;">🏆 Live Quiz Battle (Kahoot)</span>
-              </button>
-              <button type="button" class="sub-link action-btn" onclick="ShortcutTrainer.openModal()" title="ហ្វឹកហាត់ Shortcut Keys លើ Virtual Keyboard">
-                <i class="fa-solid fa-keyboard text-cyan-400"></i>
-                <span style="font-weight: 700; color: #22d3ee;">⌨️ Shortcut Key Trainer</span>
-              </button>
-              <button type="button" class="sub-link action-btn" onclick="ExcelSandbox.openModal()" title="បន្ទប់អនុវត្តរូបមន្ត Excel ជាក់ស្តែងលើ Web">
-                <i class="fa-solid fa-table text-emerald-400"></i>
-                <span style="font-weight: 700; color: #34d399;">📊 Excel Formula Sandbox</span>
-              </button>
-              <button type="button" class="sub-link action-btn" onclick="MockExamEngine.openExamPicker()" title="ម៉ាស៊ីនប្រឡងសាកល្បង Mock Exam កំណត់ម៉ោង">
-                <i class="fa-solid fa-stopwatch text-amber-400"></i>
-                <span style="font-weight: 700; color: #fbbf24;">⏱️ ប្រឡងសាកល្បង Mock Exam</span>
-              </button>
-              <button type="button" class="sub-link action-btn" onclick="OfficeTemplates.openModal()" title="បណ្ណាល័យគំរូ Office (Word, Excel, PPT)">
-                <i class="fa-solid fa-file-word text-blue-400"></i>
-                <span style="font-weight: 700; color: #93c5fd;">📑 បណ្ណាល័យគំរូ Office</span>
-              </button>
-              <button type="button" class="sub-link action-btn" onclick="QuestionBankView.openModal()" title="ធនាគារសំណួរទុកប្រឡង & បង្កើតវិញ្ញាសា">
-                <i class="fa-solid fa-boxes-stacked text-purple-400"></i>
-                <span style="font-weight: 700; color: #c084fc;">📚 ធនាគារសំណួរ & បង្កើតវិញ្ញាសា</span>
-              </button>
-              <button type="button" class="sub-link action-btn" onclick="ModalsComponent.openQuickBatchGradingModal()" title="បញ្ចូលពិន្ទុរហ័សតាមវេន (Spreadsheet Entry)">
-                <i class="fa-solid fa-table-cells text-amber-400"></i>
-                <span style="font-weight: 700; color: #fbbf24;">⚡ បញ្ចូលពិន្ទុរហ័សតាមវេន</span>
-              </button>
-              <button type="button" class="sub-link action-btn" onclick="ModalsComponent.openExamPackageGeneratorModal()" title="បង្កើតវិញ្ញាសាសិស្ស + ចម្លើយគ្រូ + Rubric A4">
-                <i class="fa-solid fa-file-circle-check text-indigo-400"></i>
-                <span style="font-weight: 700; color: #a5b4fc;">បង្កើតវិញ្ញាសា + Rubric A4</span>
-              </button>
-              <button type="button" class="sub-link action-btn" onclick="ModalsComponent.openExerciseLibraryModal()" title="បណ្ណាល័យវិញ្ញាសាអនុវត្ត A4">
-                <i class="fa-solid fa-book-open text-sky-400"></i>
-                <span>បណ្ណាល័យវិញ្ញាសាអនុវត្ត A4</span>
-              </button>
               <button type="button" class="nav-link sub-link" data-tab="exams" id="nav-exams" title="ពិន្ទុ និងការប្រលងកុំព្យូទ័រ">
                 <i class="fa-solid fa-clipboard-check text-violet-400"></i>
                 <span>ពិន្ទុ & ប្រឡង (Scores)</span>
@@ -223,63 +212,14 @@ const SidebarComponent = {
                 <i class="fa-solid fa-medal text-yellow-400"></i>
                 <span>ផ្ទាំងកិត្តិយស TOP 3</span>
               </button>
-              <button type="button" class="nav-link sub-link" data-tab="idcards" id="nav-idcards" title="ស្ទូឌីយោបោះពុម្ពកាតសិស្ស">
-                <i class="fa-solid fa-id-card text-blue-400"></i>
-                <span>បោះពុម្ពកាតសិស្ស (Cards)</span>
-              </button>
-              <button type="button" class="nav-link sub-link" data-tab="documents" id="nav-documents" title="ឃ្លាំងឯកសារ កិច្ចតែងការ & វិញ្ញាសា">
-                <i class="fa-solid fa-folder-open text-pink-400"></i>
-                <span>ឯកសារ & មេរៀន (Docs)</span>
+              <button type="button" class="nav-link sub-link" data-tab="certificates" id="nav-certificates" title="វិញ្ញាបនបត្របញ្ជាក់ការសិក្សា">
+                <i class="fa-solid fa-certificate text-emerald-400"></i>
+                <span>វិញ្ញាបនបត្រ (Certificates)</span>
               </button>
             </div>
           </div>
 
-          <!-- 5. ទំនាក់ទំនង & Telegram Bot (Telegram & Radar) -->
-          <div class="sidebar-group ${isGroupOpen('comm')}" data-group="comm">
-            <button type="button" class="sidebar-group-toggle" onclick="SidebarComponent.toggleGroup('comm')">
-              <div class="group-toggle-left">
-                <i class="fa-brands fa-telegram text-sky-400"></i>
-                <span>ទំនាក់ទំនង & Bot (Telegram)</span>
-              </div>
-              <i class="fa-solid fa-chevron-down group-arrow"></i>
-            </button>
-            <div class="sidebar-sub-menu">
-              <button type="button" class="sub-link action-btn" onclick="ScheduledAnnouncements.openManageModal()" title="កំណត់កាលវិភាគ Auto ជូនដំណឹងដល់ថ្ងៃ">
-                <i class="fa-solid fa-bullhorn text-rose-400"></i>
-                <span style="font-weight: 700; color: #fda4af;">⏰ Auto ជូនដំណឹងដល់ថ្ងៃកំណត់</span>
-              </button>
-              <button type="button" class="sub-link action-btn" onclick="ModalsComponent.openQuickContactModal()" title="មជ្ឈមណ្ឌលទំនាក់ទំនង និងផ្ញើសាររហ័ស Telegram/SMS">
-                <i class="fa-solid fa-address-book text-sky-400"></i>
-                <span style="font-weight: 700; color: #38bdf8;">📞 មជ្ឈមណ្ឌលទំនាក់ទំនង</span>
-              </button>
-              <button type="button" class="sub-link action-btn" onclick="ModalsComponent.openKhmerCalendarModal()" title="ប្រតិទិនបុណ្យជាតិ និងផ្សាយដំណឹង Telegram ស្វ័យប្រវត្តិ">
-                <i class="fa-solid fa-calendar-days text-amber-400"></i>
-                <span style="font-weight: 700; color: #fbbf24;">ប្រតិទិនបុណ្យជាតិ & Telegram</span>
-              </button>
-              <button type="button" class="sub-link action-btn" onclick="ModalsComponent.openDropoutRadarModal()" title="រ៉ាដាសង្គ្រោះសិស្សប្រឈមនឹងការបោះបង់">
-                <i class="fa-solid fa-shield-halved text-rose-400"></i>
-                <span>រ៉ាដាសិស្សប្រឈមបោះបង់</span>
-              </button>
-              <button type="button" class="sub-link action-btn" onclick="ModalsComponent.openTelegramHubModal()" title="មជ្ឈមណ្ឌលបញ្ជាគ្រុប Telegram ទាំង ៣ (Telegram Shift Hub)">
-                <i class="fa-brands fa-telegram text-sky-400"></i>
-                <span style="font-weight: 700; color: #38bdf8;">បញ្ជាគ្រុប Telegram ទាំង ៣</span>
-              </button>
-              <button type="button" class="nav-link sub-link" data-tab="attendance" id="nav-attendance" title="កត់ត្រាវត្តមានសិស្ស">
-                <i class="fa-solid fa-calendar-check text-emerald-400"></i>
-                <span>កត់ត្រាវត្តមាន (Attendance)</span>
-              </button>
-              <button type="button" class="sub-link action-btn" onclick="ModalsComponent.openClassAttendanceQrSheetModal()" title="តារាង Scan វត្តមានលឿនលើក្រដាស A4 (Class Attendance QR Sheet)">
-                <i class="fa-solid fa-qrcode text-emerald-400"></i>
-                <span style="font-weight: 700; color: #34d399;">📄 តារាង QR វត្តមាន A4</span>
-              </button>
-              <button type="button" class="sub-link action-btn" onclick="TeacherToolsService.printMonthlyAttendanceSheet()" title="បោះពុម្ពវត្តមាន A4 ប្រចាំខែ">
-                <i class="fa-solid fa-print text-teal-400"></i>
-                <span>បោះពុម្ពវត្តមាន A4 ប្រចាំខែ</span>
-              </button>
-            </div>
-          </div>
-
-          <!-- 6. ហិរញ្ញវត្ថុ & របាយការណ៍ (Finance & Daily Wrap-Up) -->
+          <!-- 6. ហិរញ្ញវត្ថុ & របាយការណ៍ (Finance & Reports) -->
           <div class="sidebar-group ${isGroupOpen('finance')}" data-group="finance">
             <button type="button" class="sidebar-group-toggle" onclick="SidebarComponent.toggleGroup('finance')">
               <div class="group-toggle-left">
@@ -289,42 +229,67 @@ const SidebarComponent = {
               <i class="fa-solid fa-chevron-down group-arrow"></i>
             </button>
             <div class="sidebar-sub-menu">
-              <button type="button" class="sub-link action-btn" onclick="ModalsComponent.openStudentReceiptModal()" title="ចេញបង្កាន់ដៃបង់ប្រាក់ឌីជីថល & បោះពុម្ព (Receipt/Invoice)">
-                <i class="fa-solid fa-receipt text-amber-400"></i>
-                <span style="font-weight: 700; color: #fbbf24;">🧾 ចេញបង្កាន់ដៃ & Print</span>
-              </button>
               <button type="button" class="nav-link sub-link" data-tab="fees" id="nav-fees" title="គ្រប់គ្រងថ្លៃសិក្សា និងវិក្កយបត្រ">
                 <i class="fa-solid fa-file-invoice-dollar text-emerald-400"></i>
                 <span>ថ្លៃសិក្សា (Payments)</span>
               </button>
+              <button type="button" class="sub-link action-btn" onclick="ModalsComponent.openStudentReceiptModal()" title="ចេញបង្កាន់ដៃបង់ប្រាក់ឌីជីថល & បោះពុម្ព (Receipt/Invoice)">
+                <i class="fa-solid fa-receipt text-amber-400"></i>
+                <span>ចេញបង្កាន់ដៃ & Print</span>
+              </button>
               <button type="button" class="sub-link action-btn" onclick="ModalsComponent.openSchoolExpensesModal()" title="ចំណូល-ចំណាយ និងចំណេញសុទ្ធ">
-                <i class="fa-solid fa-receipt text-green-400"></i>
-                <span>ចំណូល-ចំណាយ & ចំណេញសុទ្ធ</span>
+                <i class="fa-solid fa-scale-balanced text-teal-400"></i>
+                <span>ចំណូល-ចំណាយ & ចំណេញ</span>
               </button>
               <button type="button" class="sub-link action-btn" onclick="ModalsComponent.openEndOfDayWrapUpModal()" title="បិទបញ្ជីចុងថ្ងៃ ៦:០០ ល្ងាច & ផ្ញើ Telegram">
-                <i class="fa-solid fa-moon text-emerald-300"></i>
-                <span style="font-weight: 700; color: #34d399;">បិទបញ្ជីចុងថ្ងៃ ៦:០០ ល្ងាច</span>
+                <i class="fa-solid fa-moon text-indigo-400"></i>
+                <span>បិទបញ្ជីចុងថ្ងៃ ៦:០០ ល្ងាច</span>
               </button>
-              <button type="button" class="nav-link sub-link" data-tab="certificates" id="nav-certificates" title="វិញ្ញាបនបត្របញ្ជាក់ការសិក្សា">
-                <i class="fa-solid fa-certificate text-amber-400"></i>
-                <span>វិញ្ញាបនបត្រ (Certificates)</span>
+              <button type="button" class="nav-link sub-link" data-tab="reports" id="nav-reports" title="មជ្ឈមណ្ឌលរបាយការណ៍ទូទៅ">
+                <i class="fa-solid fa-chart-line text-blue-400"></i>
+                <span>មជ្ឈមណ្ឌលរបាយការណ៍</span>
               </button>
               <button type="button" class="sub-link action-btn" onclick="TeacherToolsService.printExecutiveSummaryA4()" title="របាយការណ៍សង្ខេប A4 ថ្នាក់ដឹកនាំ">
                 <i class="fa-solid fa-chart-pie text-purple-400"></i>
                 <span>របាយការណ៍ A4 ថ្នាក់ដឹកនាំ</span>
               </button>
-              <button type="button" class="nav-link sub-link" data-tab="reports" id="nav-reports" title="មជ្ឈមណ្ឌលរបាយការណ៍">
-                <i class="fa-solid fa-chart-line text-blue-400"></i>
-                <span>មជ្ឈមណ្ឌលរបាយការណ៍</span>
-              </button>
               <button type="button" class="sub-link action-btn" onclick="TeacherToolsService.exportJsonBackup()" title="ទាញយក JSON Backup ប្រព័ន្ធ">
-                <i class="fa-solid fa-download text-teal-400"></i>
+                <i class="fa-solid fa-download text-slate-400"></i>
                 <span>ទាញយក JSON Backup</span>
               </button>
             </div>
           </div>
 
-          <!-- 7. ការកំណត់ (Settings) -->
+          <!-- 7. ទំនាក់ទំនង & Telegram Bot -->
+          <div class="sidebar-group ${isGroupOpen('comm')}" data-group="comm">
+            <button type="button" class="sidebar-group-toggle" onclick="SidebarComponent.toggleGroup('comm')">
+              <div class="group-toggle-left">
+                <i class="fa-brands fa-telegram text-sky-400"></i>
+                <span>ទំនាក់ទំនង & Telegram</span>
+              </div>
+              <i class="fa-solid fa-chevron-down group-arrow"></i>
+            </button>
+            <div class="sidebar-sub-menu">
+              <button type="button" class="sub-link action-btn" onclick="ModalsComponent.openTelegramHubModal()" title="មជ្ឈមណ្ឌលបញ្ជាគ្រុប Telegram ទាំង ៣ (Telegram Shift Hub)">
+                <i class="fa-brands fa-telegram text-sky-400"></i>
+                <span>បញ្ជាគ្រុប Telegram ទាំង ៣</span>
+              </button>
+              <button type="button" class="sub-link action-btn" onclick="ModalsComponent.openQuickContactModal()" title="មជ្ឈមណ្ឌលទំនាក់ទំនង និងផ្ញើសាររហ័ស Telegram/SMS">
+                <i class="fa-solid fa-address-book text-sky-400"></i>
+                <span>មជ្ឈមណ្ឌលទំនាក់ទំនង</span>
+              </button>
+              <button type="button" class="sub-link action-btn" onclick="ScheduledAnnouncements.openManageModal()" title="កំណត់កាលវិភាគ Auto ជូនដំណឹងដល់ថ្ងៃ">
+                <i class="fa-solid fa-bullhorn text-rose-400"></i>
+                <span>Auto ជូនដំណឹងដល់ថ្ងៃ</span>
+              </button>
+              <button type="button" class="sub-link action-btn" onclick="ModalsComponent.openKhmerCalendarModal()" title="ប្រតិទិនបុណ្យជាតិ និងផ្សាយដំណឹង Telegram ស្វ័យប្រវត្តិ">
+                <i class="fa-solid fa-calendar-days text-amber-400"></i>
+                <span>ប្រតិទិនបុណ្យជាតិ & Telegram</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- 8. ការកំណត់ (Settings) -->
           <div class="menu-category">ប្រព័ន្ធ & ការកំណត់ (SETTINGS)</div>
           
           <button type="button" class="nav-link" data-tab="settings" id="nav-settings" title="ការកំណត់ទូទៅ">

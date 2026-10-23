@@ -508,20 +508,7 @@ Return strictly a RAW JSON array of objects without markdown backticks:
         createdReviewQuestions.push(reviewItem);
       }
 
-      // 2. Add to Question Bank (for teacher exams to strictly draw from)
-      if ((targetMode === "bank" || targetMode === "both") && typeof QuestionBankService !== "undefined") {
-        const bankItem = QuestionBankService.addQuestion({
-          courseId: chapter.course,
-          scenario: `${chapter.title.split(':')[0]} • ${item.scenario || cleanTopic}`,
-          question: item.question,
-          options: item.options,
-          correct: item.correct !== undefined ? item.correct : 0,
-          points: item.points || 10,
-          difficulty: item.difficulty || difficulty,
-          explanation: (item.explanation || item.answer || "") + ` (យោងសៀវភៅមូលដ្ឋានទំព័រ ${chapter.startPage}-${chapter.endPage})`
-        });
-        createdBankQuestions.push(bankItem);
-      }
+
     });
 
     return {
@@ -1195,10 +1182,6 @@ Return strictly a RAW JSON array of objects without markdown backticks:
       // Re-render pre-exam review modal
       this.renderPreExamReview(res.chapter.course);
 
-      // If QuestionBankView is open, update it
-      if (typeof QuestionBankView !== "undefined" && document.getElementById("questionBankModal")?.style.display === "flex") {
-        QuestionBankView.render();
-      }
     } catch (err) {
       if (typeof App !== "undefined") {
         App.showToast("មានបញ្ហាក្នុងការបង្កើត: " + err.message, "error");

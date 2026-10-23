@@ -73,7 +73,11 @@ const SettingsView = {
             </button>
             <button type="button" id="syncNowBtn" class="btn-secondary">
               <i class="fa-solid fa-arrows-rotate"></i>
-              <span>Sync ទិន្នន័យពី Firebase ឥឡូវនេះ</span>
+              <span>Sync ទាញពី Firebase ឥឡូវនេះ</span>
+            </button>
+            <button type="button" id="pushToCloudBtn" class="btn-primary" style="background: linear-gradient(135deg, #6366f1, #8b5cf6); border: none; font-weight: 700; box-shadow: 0 4px 14px rgba(99,102,241,0.35);">
+              <i class="fa-solid fa-cloud-arrow-up"></i>
+              <span>បញ្ជូនទិន្នន័យពី Laptop ឡើង Cloud (Push to Cloud)</span>
             </button>
             <button type="button" id="btnSettingsAutoFixLatinNames" class="btn-secondary" style="color: #4f46e5; border-color: rgba(99, 102, 241, 0.4); background: rgba(99, 102, 241, 0.08); font-weight: 700;" title="ពិនិត្យ និងបង្កើតឈ្មោះជាអក្សរឡាតាំង Auto ជូនសិស្សទាំងអស់ដែលខ្វះ">
               <i class="fa-solid fa-wand-magic-sparkles text-indigo-500"></i>
@@ -983,8 +987,34 @@ const SettingsView = {
         }
         await this.refreshTeachersGrid();
         syncNowBtn.disabled = false;
-        syncNowBtn.innerHTML = `<i class="fa-solid fa-arrows-rotate"></i> Sync ទិន្នន័យពី Firebase ឥឡូវនេះ`;
+        syncNowBtn.innerHTML = `<i class="fa-solid fa-arrows-rotate"></i> Sync ទាញពី Firebase ឥឡូវនេះ`;
         App.showToast("បានធ្វើសមកាលកម្មទិន្នន័យសិស្ស និងគ្រូពី Firebase ជោគជ័យ!", "success");
+      });
+    }
+
+    const pushCloudBtn = document.getElementById("pushToCloudBtn");
+    if (pushCloudBtn) {
+      pushCloudBtn.addEventListener("click", async () => {
+        if (!confirm("តើលោកគ្រូចង់បញ្ជូនទិន្នន័យទាំងអស់ (សិស្ស, វត្តមាន, ពិន្ទុប្រឡង, ថ្លៃសិក្សា, គ្រូ) ពី Laptop នេះឡើងទៅកាន់ Firebase Cloud មែនទេ?\n\n(ការធ្វើបែបនេះនឹងធ្វើឱ្យ Laptop ផ្សេងទៀត និងទូរស័ព្ទដៃទទួលបានទិន្នន័យដូចគ្នានេះ ១០០%)")) {
+          return;
+        }
+        const origText = pushCloudBtn.innerHTML;
+        pushCloudBtn.disabled = true;
+        pushCloudBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> កំពុងបញ្ជូនទិន្នន័យឡើង Cloud...`;
+        try {
+          const res = await StudentAPI.pushAllLocalToCloud();
+          App.showToast(`🎉 បានបញ្ជូនសិស្ស ${res.studentsCount} នាក់ និងទិន្នន័យទាំងអស់ឡើង Firebase Cloud ជោគជ័យ!`, "success");
+          App.triggerConfetti();
+        } catch (err) {
+          let msg = err.message || "បញ្ជូនមិនជោគជ័យ!";
+          if (msg.toLowerCase().includes("permission_denied") || msg.toLowerCase().includes("permission denied")) {
+            msg = "⚠️ Firebase បិទសិទ្ធិ (Permission Denied)! សូមចូល Firebase Console -> Realtime Database -> Rules ហើយកំណត់ \".read\": true, \".write\": true ជាមុនសិន។";
+          }
+          App.showToast(msg, "error");
+        } finally {
+          pushCloudBtn.disabled = false;
+          pushCloudBtn.innerHTML = origText;
+        }
       });
     }
 

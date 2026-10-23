@@ -119,13 +119,24 @@ module.exports = (req, res) => {
   }
 
   // Delegate to server request handler
-  if (typeof server === 'function') {
-    return server(req, res);
-  }
-  if (server && typeof server.emit === 'function') {
-    return server.emit('request', req, res);
-  }
+  try {
+    if (typeof server === 'function') {
+      return server(req, res);
+    }
+    if (server && typeof server.emit === 'function') {
+      return server.emit('request', req, res);
+    }
 
-  res.writeHead(500, { 'Content-Type': 'application/json' });
-  res.end(JSON.stringify({ error: 'Server initialization failed' }));
+    res.writeHead(500, { 'Content-Type': 'application/json; charset=utf-8' });
+    res.end(JSON.stringify({ error: 'Server initialization failed' }));
+  } catch (err) {
+    console.error('[Vercel Serverless Delegation Error]', err);
+    if (!res.headersSent) {
+      res.writeHead(500, { 'Content-Type': 'application/json; charset=utf-8' });
+      res.end(JSON.stringify({
+        error: 'Serverless Handler Error',
+        message: err.message || 'Unknown error'
+      }));
+    }
+  }
 };

@@ -60,9 +60,16 @@ const App = {
       }
     } catch (e) {}
 
-    // Support #verify-cert, #self-register, #logout, and #student-login hash
+    // Support #verify-cert, #profile, #student-profile, #self-register, #logout, and #student-login hash
     if (window.location.hash.startsWith("#verify-cert")) {
       this.mountVerifyCertScreen();
+      return;
+    } else if (window.location.hash.startsWith("#profile") || window.location.hash.startsWith("#student-profile")) {
+      this.mountPublicStudentProfileScreen();
+      return;
+    } else if (window.location.hash.startsWith("#student-login") && window.location.hash.includes("id=")) {
+      // Direct jump to student profile when scanned via QR code
+      this.mountPublicStudentProfileScreen();
       return;
     } else if (window.location.hash === "#self-register") {
       this.mountSelfRegisterScreen();
@@ -84,6 +91,10 @@ const App = {
     window.addEventListener("hashchange", () => {
       if (window.location.hash.startsWith("#verify-cert")) {
         this.mountVerifyCertScreen();
+      } else if (window.location.hash.startsWith("#profile") || window.location.hash.startsWith("#student-profile")) {
+        this.mountPublicStudentProfileScreen();
+      } else if (window.location.hash.startsWith("#student-login") && window.location.hash.includes("id=")) {
+        this.mountPublicStudentProfileScreen();
       } else if (window.location.hash === "#self-register") {
         this.mountSelfRegisterScreen();
       } else if (window.location.hash === "#logout") {
@@ -145,10 +156,6 @@ const App = {
       KhmerCalendarService.checkAndPromptAdvanceHolidays();
     }
 
-    // Initialize Anime AI Companion Studio & Floating Widget
-    if (typeof AnimeAIAssistant !== "undefined" && AnimeAIAssistant.init) {
-      AnimeAIAssistant.init();
-    }
 
     // If redirected from GitHub Pages SPA or direct path, switch to that tab
     if (ghRedirectTab) {
@@ -722,38 +729,36 @@ const App = {
         const receiptInput = document.getElementById("enrollInputReceiptNo");
         if (receiptInput) receiptInput.value = `INV-2026-${String(idInputOnSync.value).replace(/\D/g, "").padStart(4, "0")}`;
       }
-      DashboardView.update(this.state.students);
-      DirectoryView.renderTable();
-      if (typeof AttendanceView !== "undefined" && AttendanceView.renderTable) {
-        // Only re-render if user is not actively on attendance view during silent background sync
-        if (!silent || this.state.currentTab !== "attendance") {
-          AttendanceView.renderTable();
-        }
-      }
-      if (typeof StudentAPI !== "undefined" && StudentAPI.fetchExamsCloud) {
-        await StudentAPI.fetchExamsCloud();
-      }
-      if (typeof ExamsView !== "undefined" && ExamsView.renderTable) {
+      // High-Performance Lazy Rendering: Render only the active tab on startup/sync
+      // Other tabs will render smoothly on-demand when clicked via switchTab(tabId)
+      const currentTab = this.state.currentTab || "dashboard";
+      if (currentTab === "dashboard") {
+        DashboardView.update(this.state.students);
+      } else if (currentTab === "directory") {
+        DirectoryView.renderTable();
+      } else if (currentTab === "attendance" && typeof AttendanceView !== "undefined") {
+        AttendanceView.renderTable();
+      } else if (currentTab === "exams" && typeof ExamsView !== "undefined") {
         ExamsView.renderTable();
-      }
-      if (typeof StudentAPI !== "undefined" && StudentAPI.fetchFeesCloud) {
-        await StudentAPI.fetchFeesCloud();
-      }
-      if (typeof FeesView !== "undefined" && FeesView.renderTable) {
+      } else if (currentTab === "fees" && typeof FeesView !== "undefined") {
         FeesView.renderTable();
-      }
-      if (typeof StudentAPI !== "undefined" && StudentAPI.fetchCertificatesCloud) {
-        await StudentAPI.fetchCertificatesCloud();
-      }
-      if (typeof CertificatesView !== "undefined" && CertificatesView.renderTable) {
+      } else if (currentTab === "certificates" && typeof CertificatesView !== "undefined") {
         CertificatesView.renderTable();
-      }
-      if (typeof DroppedStudentsView !== "undefined" && DroppedStudentsView.renderTable) {
+      } else if (currentTab === "dropped" && typeof DroppedStudentsView !== "undefined") {
         DroppedStudentsView.renderTable();
-      }
-      if (typeof GraduatedStudentsView !== "undefined" && GraduatedStudentsView.renderTable) {
+      } else if (currentTab === "graduated" && typeof GraduatedStudentsView !== "undefined") {
         GraduatedStudentsView.renderTable();
+      } else {
+        DashboardView.update(this.state.students);
       }
+
+      // Fetch supplementary cloud caches asynchronously without blocking or DOM churn
+      if (typeof StudentAPI !== "undefined") {
+        if (StudentAPI.fetchExamsCloud) StudentAPI.fetchExamsCloud().catch(() => {});
+        if (StudentAPI.fetchFeesCloud) StudentAPI.fetchFeesCloud().catch(() => {});
+        if (StudentAPI.fetchCertificatesCloud) StudentAPI.fetchCertificatesCloud().catch(() => {});
+      }
+
       this.updateSidebarCounters();
       HeaderComponent.updateCloudBadge(StudentAPI.isCloudConnected());
       this.updateCloudBanner();
@@ -1645,6 +1650,10 @@ const App = {
         Nationality: formData.get("nationality")?.trim() || "ខ្មែរ",
         Phone: formData.get("phone")?.trim() || "",
         EmergencyPhone: formData.get("emergencyPhone")?.trim() || "",
+        GuardianPhone: formData.get("guardianPhone")?.trim() || "",
+        FatherName: formData.get("fatherName")?.trim() || "",
+        MotherName: formData.get("motherName")?.trim() || "",
+        FamilyNote: formData.get("familyNote")?.trim() || "",
         HealthNotes: formData.get("healthNotes")?.trim() || "",
         Address: formData.get("address")?.trim() || "ខេត្តកំពត",
         CurrentAddress: formData.get("currentAddress")?.trim() || "",
@@ -1941,6 +1950,11 @@ const App = {
         DOB: formData.get("dob") || "",
         Nationality: formData.get("nationality")?.trim() || "ខ្មែរ",
         Phone: formData.get("phone")?.trim() || "",
+        EmergencyPhone: formData.get("emergencyPhone")?.trim() || "",
+        GuardianPhone: formData.get("guardianPhone")?.trim() || "",
+        FatherName: formData.get("fatherName")?.trim() || "",
+        MotherName: formData.get("motherName")?.trim() || "",
+        FamilyNote: formData.get("familyNote")?.trim() || "",
         HealthNotes: formData.get("healthNotes")?.trim() || "",
         Grade: "ថ្នាក់កុំព្យូទ័រ",
         Course: formData.get("course")?.trim() || "Typing",
@@ -1967,6 +1981,9 @@ const App = {
       this.showToast("បានកែប្រែទិន្នន័យសិស្សដោយជោគជ័យ!", "success");
       ModalsComponent.close("editModal");
       await this.loadData(false);
+      if (this.state.selectedStudent && String(this.state.selectedStudent.ID).trim() === String(studentData.ID).trim()) {
+        this.viewStudentDetails(studentData.ID);
+      }
     } catch (err) {
       this.showToast(err.message || "មានកំហុសក្នុងការកែប្រែ!", "error");
     } finally {
@@ -2193,6 +2210,7 @@ const App = {
     if (elEndDate) elEndDate.textContent = daysInfo.endDate || "—";
 
     // 4. Tab: គ្រួសារ (Family)
+    this.toggleEditFamilyMode(false);
     const fatherEl = document.getElementById("familyFatherName");
     if (fatherEl) fatherEl.textContent = student.FatherName || "—";
     const motherEl = document.getElementById("familyMotherName");
@@ -2201,6 +2219,16 @@ const App = {
     if (emgEl) emgEl.textContent = student.EmergencyPhone || student.GuardianPhone || "—";
     const famAddr = document.getElementById("familyAddress");
     if (famAddr) famAddr.textContent = student.Address || "—";
+    const famNote = document.getElementById("familyNote");
+    if (famNote) {
+      if (student.FamilyNote || student.Note) {
+        famNote.textContent = student.FamilyNote || student.Note;
+        famNote.className = "info-field-val";
+      } else {
+        famNote.textContent = "មិនមានកំណត់ចំណាំពិសេសទេ";
+        famNote.className = "info-field-val text-muted";
+      }
+    }
 
     // 5. Tab: អវត្តមាន (Attendance Breakdown)
     const elAttTotal = document.getElementById("modalDetailAttTotal");
@@ -2263,11 +2291,31 @@ const App = {
     const cardGrade = document.getElementById("cardPreviewGrade");
     const cardAvatar = document.getElementById("cardPreviewAvatar");
     const cardDob = document.getElementById("cardPreviewDob");
+    const cardShift = document.getElementById("cardPreviewShift");
+    const cardQr = document.getElementById("cardPreviewQr");
+    const cardBarcode = document.getElementById("cardPreviewBarcode");
 
-    if (cardNameKh) cardNameKh.textContent = student.NameKh;
-    if (cardNameEn) cardNameEn.textContent = student.NameEn || "";
+    if (cardNameKh) cardNameKh.textContent = student.NameKh || "ឈ្មោះសិស្ស";
+    if (cardNameEn) cardNameEn.textContent = (student.NameEn || "STUDENT NAME").toUpperCase();
     if (cardId) cardId.textContent = student.ID;
     if (cardGrade) cardGrade.textContent = student.Grade || "ថ្នាក់កុំព្យូទ័រ";
+    if (cardShift) cardShift.textContent = student.Shift || student.Time || "ព្រឹក (08:00 - 09:30)";
+    if (cardDob) cardDob.textContent = student.Dob || "2006-01-01";
+    if (cardBarcode) cardBarcode.textContent = `*${student.ID}*`;
+    if (cardAvatar) cardAvatar.src = student.Avatar || this.getDefaultAvatar(student.Gender);
+    if (cardQr) {
+      const profileUrl = this.getStudentProfileUrl(student.ID);
+      cardQr.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(profileUrl)}`;
+    }
+
+    // Restore saved card theme/custom color if student has one
+    const savedCardColor = student.cardColor || localStorage.getItem(`cardColor_${student.ID}`);
+    if (savedCardColor) {
+      this.applyCardCustomColor(savedCardColor, false);
+    } else {
+      this.setCardPreviewTheme("navy");
+    }
+
     const cardPreviewCourse = document.getElementById("cardPreviewCourse");
     if (cardPreviewCourse) {
       if (student.Course) {
@@ -2278,8 +2326,6 @@ const App = {
         cardPreviewCourse.style.display = "none";
       }
     }
-    if (cardAvatar) cardAvatar.src = student.Avatar || this.getDefaultAvatar(student.Gender);
-    if (cardDob) cardDob.textContent = student.Dob || "2006-01-01";
 
     // 7. Tab: លទ្ធផលសិក្សា (4-Course Computer Exam Results & Ladder)
     const examSection = document.getElementById("modalDetailExamSection");
@@ -2336,6 +2382,120 @@ const App = {
     }
 
     ModalsComponent.open("studentDetailsModal");
+  },
+
+  toggleEditFamilyMode(isEditing) {
+    const viewEl = document.getElementById("familyViewMode");
+    const editEl = document.getElementById("familyEditModeForm");
+    const toggleBtn = document.getElementById("btnToggleEditFamily");
+    if (!viewEl || !editEl) return;
+
+    if (isEditing) {
+      const student = this.state.selectedStudent;
+      if (!student) return;
+
+      const fFather = document.getElementById("editFamilyFatherName");
+      if (fFather) fFather.value = student.FatherName || "";
+
+      const fMother = document.getElementById("editFamilyMotherName");
+      if (fMother) fMother.value = student.MotherName || "";
+
+      const fGuard = document.getElementById("editFamilyGuardianPhone");
+      if (fGuard) fGuard.value = student.GuardianPhone || "";
+
+      const fEmg = document.getElementById("editFamilyEmergencyContact");
+      if (fEmg) fEmg.value = student.EmergencyPhone || student.GuardianPhone || "";
+
+      const fAddr = document.getElementById("editFamilyAddress");
+      if (fAddr) fAddr.value = student.Address || "ខេត្តកំពត";
+
+      const fNote = document.getElementById("editFamilyNote");
+      if (fNote) fNote.value = student.FamilyNote || student.Note || "";
+
+      viewEl.style.display = "none";
+      editEl.style.display = "block";
+      if (toggleBtn) toggleBtn.style.display = "none";
+      if (fFather) fFather.focus();
+    } else {
+      editEl.style.display = "none";
+      viewEl.style.display = "grid";
+      if (toggleBtn) toggleBtn.style.display = "inline-flex";
+    }
+  },
+
+  async saveFamilyInfo() {
+    const student = this.state.selectedStudent;
+    if (!student) return;
+
+    const btn = document.getElementById("btnSaveFamilyInfo");
+    const originalHtml = btn ? btn.innerHTML : "";
+    if (btn) {
+      btn.disabled = true;
+      btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> កំពុងរក្សាទុក...`;
+    }
+
+    try {
+      const fatherName = document.getElementById("editFamilyFatherName")?.value.trim() || "";
+      const motherName = document.getElementById("editFamilyMotherName")?.value.trim() || "";
+      const guardianPhone = document.getElementById("editFamilyGuardianPhone")?.value.trim() || "";
+      const emergencyContact = document.getElementById("editFamilyEmergencyContact")?.value.trim() || "";
+      const address = document.getElementById("editFamilyAddress")?.value.trim() || "";
+      const familyNote = document.getElementById("editFamilyNote")?.value.trim() || "";
+
+      student.FatherName = fatherName;
+      student.MotherName = motherName;
+      student.GuardianPhone = guardianPhone;
+      student.EmergencyPhone = emergencyContact;
+      if (address) student.Address = address;
+      student.FamilyNote = familyNote;
+
+      await StudentAPI.updateStudent(student);
+
+      // Update View elements immediately
+      const fatherEl = document.getElementById("familyFatherName");
+      if (fatherEl) fatherEl.textContent = student.FatherName || "—";
+
+      const motherEl = document.getElementById("familyMotherName");
+      if (motherEl) motherEl.textContent = student.MotherName || "—";
+
+      const guardEl = document.getElementById("modalDetailGuardianPhone");
+      if (guardEl) guardEl.textContent = student.GuardianPhone || "—";
+
+      const emgEl = document.getElementById("familyEmergencyContact");
+      if (emgEl) emgEl.textContent = student.EmergencyPhone || student.GuardianPhone || "—";
+
+      const addrEl = document.getElementById("familyAddress");
+      if (addrEl) addrEl.textContent = student.Address || "—";
+
+      const detAddr = document.getElementById("modalDetailAddress");
+      if (detAddr && address) detAddr.textContent = student.Address;
+
+      const noteEl = document.getElementById("familyNote");
+      if (noteEl) {
+        if (student.FamilyNote) {
+          noteEl.textContent = student.FamilyNote;
+          noteEl.className = "info-field-val";
+        } else {
+          noteEl.textContent = "មិនមានកំណត់ចំណាំពិសេសទេ";
+          noteEl.className = "info-field-val text-muted";
+        }
+      }
+
+      this.toggleEditFamilyMode(false);
+      this.showToast("បានរក្សាទុកព័ត៌មានគ្រួសារដោយជោគជ័យ!", "success");
+
+      // Refresh directory table if open
+      if (typeof DirectoryView !== "undefined" && DirectoryView.renderTable) {
+        DirectoryView.renderTable();
+      }
+    } catch (err) {
+      this.showToast(err.message || "មិនអាចរក្សាទុកព័ត៌មានគ្រួសារបានទេ!", "error");
+    } finally {
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = originalHtml;
+      }
+    }
   },
 
   async handleQuickPaymentSubmit() {
@@ -2521,6 +2681,16 @@ const App = {
     const natInput = form.querySelector("[name='nationality']");
     if (natInput) natInput.value = student.Nationality || "ខ្មែរ";
     form.querySelector("[name='phone']").value = student.Phone || "";
+    const fatherInput = form.querySelector("[name='fatherName']");
+    if (fatherInput) fatherInput.value = student.FatherName || "";
+    const motherInput = form.querySelector("[name='motherName']");
+    if (motherInput) motherInput.value = student.MotherName || "";
+    const guardianInput = form.querySelector("[name='guardianPhone']");
+    if (guardianInput) guardianInput.value = student.GuardianPhone || "";
+    const emergencyInput = form.querySelector("[name='emergencyPhone']");
+    if (emergencyInput) emergencyInput.value = student.EmergencyPhone || "";
+    const familyNoteInput = form.querySelector("[name='familyNote']");
+    if (familyNoteInput) familyNoteInput.value = student.FamilyNote || student.Note || "";
     const healthInput = form.querySelector("[name='healthNotes']");
     if (healthInput) healthInput.value = student.HealthNotes || "";
     const addressSelect = form.querySelector("[name='address']");
@@ -2596,7 +2766,119 @@ const App = {
     ModalsComponent.open("deleteConfirmModal");
   },
 
-  // Print Student ID Card
+  currentCardCustomColor: null,
+
+  // Get full public URL for scanning student profile QR code
+  getStudentProfileUrl(studentId) {
+    const cleanId = encodeURIComponent(String(studentId || '').trim());
+    let base = window.location.origin + window.location.pathname;
+    if (!base || base.includes("localhost") || base.includes("127.0.0.1") || base.startsWith("file:")) {
+      base = "https://students-computer.vercel.app/";
+    }
+    if (!base.endsWith("/")) {
+      base = base.replace(/\/index\.html$/i, "") + "/";
+    }
+    return `${base}#profile?id=${cleanId}`;
+  },
+
+  // Color brightness calculation helper
+  adjustColorBrightness(hex, percent) {
+    let cleanHex = hex.replace("#", "");
+    if (cleanHex.length === 3) {
+      cleanHex = cleanHex.split("").map(c => c + c).join("");
+    }
+    let num = parseInt(cleanHex, 16);
+    if (isNaN(num)) num = 0x0f1c3f;
+    let r = (num >> 16) + Math.round(255 * (percent / 100));
+    let g = ((num >> 8) & 0x00FF) + Math.round(255 * (percent / 100));
+    let b = (num & 0x0000FF) + Math.round(255 * (percent / 100));
+    r = Math.min(255, Math.max(0, r));
+    g = Math.min(255, Math.max(0, g));
+    b = Math.min(255, Math.max(0, b));
+    return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
+  },
+
+  // Change Student ID Card Preview Color Theme (8 Preset Themes)
+  setCardPreviewTheme(themeName) {
+    const cardEl = document.getElementById("printableIdCard");
+    if (!cardEl) return;
+    this.currentCardCustomColor = null;
+    cardEl.style.background = "";
+    cardEl.style.border = "";
+
+    // Clear all existing theme classes
+    cardEl.classList.remove(
+      "id-card-theme-navy", "id-card-theme-burgundy", "id-card-theme-emerald",
+      "id-card-theme-dark", "id-card-theme-purple", "id-card-theme-ruby",
+      "id-card-theme-amber", "id-card-theme-cyan"
+    );
+    cardEl.classList.add(`id-card-theme-${themeName}`);
+
+    // Update active button state
+    document.querySelectorAll(".btn-card-theme-pill").forEach(btn => {
+      if (btn.getAttribute("data-theme") === themeName) {
+        btn.classList.add("active");
+      } else {
+        btn.classList.remove("active");
+      }
+    });
+
+    const customPill = document.getElementById("customColorPill");
+    if (customPill) customPill.classList.remove("active");
+
+    if (this.state.selectedStudent) {
+      localStorage.removeItem(`cardColor_${this.state.selectedStudent.ID}`);
+      delete this.state.selectedStudent.cardColor;
+    }
+  },
+
+  // Apply Live Custom Color from Color Picker
+  applyCardCustomColor(hexColor, save = true) {
+    if (!hexColor) return;
+    const cardEl = document.getElementById("printableIdCard");
+    if (!cardEl) return;
+
+    this.currentCardCustomColor = hexColor;
+
+    // Remove preset theme classes so custom inline gradient takes effect
+    cardEl.classList.remove(
+      "id-card-theme-navy", "id-card-theme-burgundy", "id-card-theme-emerald",
+      "id-card-theme-dark", "id-card-theme-purple", "id-card-theme-ruby",
+      "id-card-theme-amber", "id-card-theme-cyan"
+    );
+
+    // Compute dark shade and vibrant shade from hex
+    const darkShade = this.adjustColorBrightness(hexColor, -65);
+    const midShade = this.adjustColorBrightness(hexColor, -30);
+    const grad = `linear-gradient(135deg, ${darkShade} 0%, ${midShade} 50%, ${hexColor} 100%)`;
+    cardEl.style.background = grad;
+    cardEl.style.border = `1.5px solid ${this.adjustColorBrightness(hexColor, 25)}aa`;
+
+    // Highlight custom color picker pill
+    document.querySelectorAll(".btn-card-theme-pill").forEach(btn => btn.classList.remove("active"));
+    const customPill = document.getElementById("customColorPill");
+    const customDot = document.getElementById("customColorDot");
+    const picker = document.getElementById("idCardColorPicker");
+    if (customPill) customPill.classList.add("active");
+    if (customDot) customDot.style.background = hexColor;
+    if (picker) picker.value = hexColor;
+
+    if (save && this.state.selectedStudent) {
+      this.state.selectedStudent.cardColor = hexColor;
+      localStorage.setItem(`cardColor_${this.state.selectedStudent.ID}`, hexColor);
+    }
+  },
+
+  // Reset to default Navy & Gold theme
+  resetCardTheme() {
+    this.setCardPreviewTheme("navy");
+    const customDot = document.getElementById("customColorDot");
+    if (customDot) customDot.style.background = "conic-gradient(red, yellow, lime, aqua, blue, magenta, red)";
+    const picker = document.getElementById("idCardColorPicker");
+    if (picker) picker.value = "#0f1c3f";
+  },
+
+  // Print Student ID Card (High-End PVC CR80 Standard)
   printStudentIdCard(targetStudentId = null) {
     let student = null;
     if (targetStudentId) {
@@ -2614,9 +2896,45 @@ const App = {
       return;
     }
 
+    // Determine active theme gradient & border
+    let activeGradient = "linear-gradient(135deg, #070d1e 0%, #0f1c3f 50%, #1e3a8a 100%)";
+    let activeBorder = "1px solid rgba(245, 158, 11, 0.4)";
+    const cardEl = document.getElementById("portalPrintableIdCard") || document.getElementById("printableIdCard");
+
+    const customColor = this.currentCardCustomColor || (typeof StudentPortalView !== "undefined" ? StudentPortalView.currentCardCustomColor : null) || student.cardColor || localStorage.getItem(`cardColor_${student.ID}`);
+
+    if (customColor) {
+      const darkShade = this.adjustColorBrightness(customColor, -65);
+      const midShade = this.adjustColorBrightness(customColor, -30);
+      activeGradient = `linear-gradient(135deg, ${darkShade} 0%, ${midShade} 50%, ${customColor} 100%)`;
+      activeBorder = `1px solid ${this.adjustColorBrightness(customColor, 20)}99`;
+    } else if (cardEl) {
+      if (cardEl.classList.contains("id-card-theme-burgundy")) {
+        activeGradient = "linear-gradient(135deg, #2b0316 0%, #4a0427 50%, #701a75 100%)";
+      } else if (cardEl.classList.contains("id-card-theme-emerald")) {
+        activeGradient = "linear-gradient(135deg, #021a14 0%, #064e3b 50%, #047857 100%)";
+      } else if (cardEl.classList.contains("id-card-theme-dark")) {
+        activeGradient = "linear-gradient(135deg, #090d16 0%, #111827 50%, #1f2937 100%)";
+        activeBorder = "1px solid rgba(56, 189, 248, 0.4)";
+      } else if (cardEl.classList.contains("id-card-theme-purple")) {
+        activeGradient = "linear-gradient(135deg, #18032b 0%, #3b0764 50%, #6b21a8 100%)";
+      } else if (cardEl.classList.contains("id-card-theme-ruby")) {
+        activeGradient = "linear-gradient(135deg, #2b030d 0%, #5c071a 50%, #991b1b 100%)";
+      } else if (cardEl.classList.contains("id-card-theme-amber")) {
+        activeGradient = "linear-gradient(135deg, #270f02 0%, #5c2005 50%, #9a3412 100%)";
+      } else if (cardEl.classList.contains("id-card-theme-cyan")) {
+        activeGradient = "linear-gradient(135deg, #021e2b 0%, #03445c 50%, #0284c7 100%)";
+        activeBorder = "1px solid rgba(56, 189, 248, 0.4)";
+      }
+    }
+
+    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(this.getStudentProfileUrl(student.ID))}`;
+    const avatarUrl = student.Avatar || this.getDefaultAvatar(student.Gender);
+    const studentShift = student.Shift || student.Time || "ព្រឹក (08:00 - 09:30)";
+
     let printWindow = null;
     try {
-      printWindow = window.open("", "_blank", "width=800,height=600");
+      printWindow = window.open("", "_blank", "width=850,height=600");
     } catch (e) {
       printWindow = null;
     }
@@ -2629,78 +2947,159 @@ const App = {
     try {
       printWindow.document.write(`
         <!DOCTYPE html>
-        <html>
+        <html lang="km">
         <head>
-          <title>បោះពុម្ពកាតសិស្ស - ${student?.NameKh || ''}</title>
-          <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@400;600;700&family=Plus+Jakarta+Sans:wght@600;800&display=swap" rel="stylesheet">
+          <meta charset="UTF-8">
+          <title>បោះពុម្ពកាតសិស្ស - ${student?.NameKh || student?.ID || ''}</title>
+          <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@400;600;700;800&family=Moul&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
           <style>
+            * { box-sizing: border-box; margin: 0; padding: 0; }
             body {
               margin: 0; padding: 40px; display: flex; justify-content: center; align-items: center;
-              background: #f8fafc; font-family: 'Kantumruy Pro', sans-serif;
+              background: #f1f5f9; font-family: 'Kantumruy Pro', sans-serif;
             }
             .id-card-print {
-              width: 380px; height: 240px; border-radius: 16px;
-              background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
-              color: #ffffff; padding: 16px 20px; box-sizing: border-box;
+              width: 440px; height: 275px; border-radius: 18px;
+              background: ${activeGradient};
+              border: ${activeBorder};
+              color: #ffffff; padding: 14px 16px 10px;
               display: flex; flex-direction: column; justify-content: space-between;
-              box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+              box-shadow: 0 16px 36px rgba(0,0,0,0.35);
+              position: relative; overflow: hidden;
               -webkit-print-color-adjust: exact; print-color-adjust: exact;
             }
+            .card-gloss {
+              position: absolute; top: 0; left: 0; right: 0; height: 50%;
+              background: linear-gradient(180deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%);
+              pointer-events: none;
+            }
             .card-header {
-              display: flex; align-items: center; justify-content: space-between;
-              border-bottom: 1px solid rgba(255,255,255,0.25); padding-bottom: 8px;
+              display: flex; align-items: center; justify-content: space-between; gap: 10px;
+              position: relative; z-index: 2;
             }
-            .school-title { font-size: 14px; font-weight: 700; letter-spacing: 0.5px; }
-            .school-sub { font-size: 10px; opacity: 0.85; text-transform: uppercase; }
-            .card-body { display: flex; gap: 16px; align-items: center; margin-top: 6px; }
-            .card-avatar {
-              width: 80px; height: 95px; border-radius: 8px;
-              object-fit: cover; border: 2px solid #ffffff; background: #ffffff;
+            .logo-wrap {
+              width: 38px; height: 38px; border-radius: 50%; background: #ffffff;
+              border: 2px solid #fbbf24; display: flex; align-items: center; justify-content: center;
+              padding: 1px; flex-shrink: 0;
             }
-            .card-info { flex: 1; }
-            .card-name-kh { font-size: 17px; font-weight: 700; color: #fef08a; margin-bottom: 2px; }
-            .card-name-en { font-size: 12px; font-family: 'Plus Jakarta Sans', sans-serif; opacity: 0.9; margin-bottom: 6px; }
-            .card-row { font-size: 11px; display: flex; margin-bottom: 3px; opacity: 0.95; }
-            .card-row span:first-child { width: 60px; opacity: 0.8; }
-            .card-footer {
-              display: flex; justify-content: space-between; align-items: flex-end;
-              border-top: 1px solid rgba(255,255,255,0.2); padding-top: 6px; font-size: 9px; opacity: 0.85;
+            .logo-img { width: 100%; height: 100%; object-fit: contain; border-radius: 50%; }
+            .header-text { flex: 1; text-align: left; }
+            .school-kh { font-family: 'Moul', serif; font-size: 0.92rem; color: #fbbf24; text-shadow: 0 1px 3px rgba(0,0,0,0.4); }
+            .school-en { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.62rem; font-weight: 700; color: #f8fafc; letter-spacing: 0.5px; }
+            .card-type { font-size: 0.52rem; color: #94a3b8; letter-spacing: 0.4px; }
+            .verified-badge {
+              background: rgba(16, 185, 129, 0.16); border: 1px solid rgba(16, 185, 129, 0.5);
+              color: #34d399; font-size: 0.56rem; padding: 3px 8px; border-radius: 20px; font-weight: 800;
+              letter-spacing: 0.5px;
             }
-            .barcode {
-              font-family: monospace; letter-spacing: 3px; font-weight: bold;
-              font-size: 12px; background: rgba(255,255,255,0.15); padding: 2px 6px; border-radius: 4px;
+            .divider-gold {
+              height: 1.5px;
+              background: linear-gradient(90deg, rgba(251,191,36,0.1), #fbbf24, #f59e0b, rgba(251,191,36,0.1));
+              margin: 6px 0 8px;
             }
-            @media print { body { background: transparent; padding: 0; } }
+            .card-body { display: flex; align-items: center; gap: 12px; flex: 1; position: relative; z-index: 2; }
+            .photo-col { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
+            .photo-frame {
+              width: 84px; height: 102px; border-radius: 10px; border: 2px solid #ffffff;
+              box-shadow: 0 4px 12px rgba(0,0,0,0.45); overflow: hidden; background: #ffffff;
+            }
+            .photo-img { width: 100%; height: 100%; object-fit: cover; }
+            .id-pill {
+              background: rgba(0,0,0,0.6); border: 1px solid rgba(251,191,36,0.4); border-radius: 6px;
+              padding: 2px 8px; font-size: 0.74rem; font-weight: 800; color: #fbbf24; margin-top: 4px;
+            }
+            .details-col { flex: 1; text-align: left; min-width: 0; }
+            .name-kh { font-size: 1.15rem; font-weight: 800; color: #ffffff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+            .name-en { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.74rem; font-weight: 700; color: #93c5fd; text-transform: uppercase; margin-bottom: 6px; }
+            .info-table {
+              background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px;
+              padding: 6px 10px; display: flex; flex-direction: column; gap: 3px; font-size: 0.72rem;
+            }
+            .info-pair { display: flex; align-items: center; gap: 6px; white-space: nowrap; }
+            .info-k { color: #94a3b8; font-size: 0.7rem; min-width: 58px; }
+            .info-v { color: #f1f5f9; font-weight: 600; }
+            .course-badge {
+              background: rgba(251, 191, 36, 0.2); border: 1px solid rgba(251, 191, 36, 0.5);
+              color: #fbbf24; font-size: 0.62rem; padding: 1px 6px; border-radius: 4px; font-weight: 700;
+              margin-left: 4px;
+            }
+            .qr-col { display: flex; flex-direction: column; align-items: center; gap: 4px; flex-shrink: 0; }
+            .qr-box {
+              width: 58px; height: 58px; background: #ffffff; border-radius: 8px; padding: 3px;
+              border: 1.5px solid #fbbf24; display: flex; align-items: center; justify-content: center;
+            }
+            .qr-img { width: 100%; height: 100%; object-fit: contain; }
+            .qr-label { font-family: monospace; font-size: 0.52rem; color: #cbd5e1; font-weight: 700; }
+            .bottom-strip {
+              display: flex; justify-content: space-between; align-items: center;
+              border-top: 1px solid rgba(255,255,255,0.12); padding-top: 4px;
+              font-size: 0.58rem; color: #94a3b8; position: relative; z-index: 2;
+            }
+            .barcode-val { font-family: monospace; font-size: 0.68rem; font-weight: 800; color: #fbbf24; letter-spacing: 2px; }
+            @media print {
+              body { background: transparent; padding: 0; }
+              .id-card-print { box-shadow: none; border: 1px solid #cbd5e1; page-break-inside: avoid; }
+            }
           </style>
         </head>
         <body>
           <div class="id-card-print">
+            <div class="card-gloss"></div>
             <div class="card-header">
-              <div>
-                <div class="school-title">TIS LAB COMPUTER</div>
-                <div class="school-sub">STUDENT IDENTITY CARD</div>
+              <div class="logo-wrap">
+                <img src="assets/images/logo.png" alt="Logo" class="logo-img">
               </div>
-              <div style="font-size: 22px;">🎓</div>
+              <div class="header-text">
+                <div class="school-kh">សាលា អន្តរជាតិ ធានស៊ីន</div>
+                <div class="school-en">TIAN XIN INTERNATIONAL SCHOOL (TIS)</div>
+                <div class="card-type">OFFICIAL STUDENT IDENTITY CARD</div>
+              </div>
+              <div class="verified-badge">VERIFIED</div>
             </div>
+            <div class="divider-gold"></div>
             <div class="card-body">
-              <img src="${student?.Avatar || this.getDefaultAvatar(student?.Gender)}" class="card-avatar">
-              <div class="card-info">
-                <div class="card-name-kh">${student?.NameKh}</div>
-                <div class="card-name-en">${student?.NameEn || ''}</div>
-                <div class="card-row"><span>អត្តលេខ:</span> <strong>${student?.ID}</strong></div>
-                <div class="card-row"><span>ថ្នាក់សិក្សា:</span> <strong>${student?.Grade}</strong></div>
-                <div class="card-row"><span>ថ្ងៃកំណើត:</span> <span>${student?.Dob || '—'}</span></div>
+              <div class="photo-col">
+                <div class="photo-frame">
+                  <img src="${avatarUrl}" class="photo-img">
+                </div>
+                <div class="id-pill">ID: ${student?.ID || ''}</div>
+              </div>
+              <div class="details-col">
+                <div class="name-kh">${student?.NameKh || ''}</div>
+                <div class="name-en">${(student?.NameEn || '').toUpperCase()}</div>
+                <div class="info-table">
+                  <div class="info-pair">
+                    <span class="info-k">ថ្នាក់/ជំនាញ:</span>
+                    <span class="info-v">${student?.Grade || 'ថ្នាក់កុំព្យូទ័រ'}</span>
+                    ${student?.Course ? `<span class="course-badge">${student.Course}</span>` : ''}
+                  </div>
+                  <div class="info-pair">
+                    <span class="info-k">វេនសិក្សា:</span>
+                    <span class="info-v">${studentShift}</span>
+                  </div>
+                  <div class="info-pair">
+                    <span class="info-k">ថ្ងៃកំណើត:</span>
+                    <span class="info-v">${student?.Dob || '—'}</span>
+                  </div>
+                </div>
+              </div>
+              <div class="qr-col">
+                <div class="qr-box">
+                  <img src="${qrUrl}" class="qr-img">
+                </div>
+                <div class="qr-label">SCAN ID</div>
               </div>
             </div>
-            <div class="card-footer">
-              <div>សុពលភាព: 2026 - 2027</div>
-              <div class="barcode">${student?.ID}</div>
+            <div class="bottom-strip">
+              <div>សុពលភាព: <strong style="color: #f1f5f9;">2026-2027</strong></div>
+              <div class="barcode-val">*${student?.ID || ''}*</div>
+              <div>EXCELLENCE IN DIGITAL EDUCATION</div>
             </div>
           </div>
           <script>
             window.onload = function() {
               window.print();
-              setTimeout(() => window.close(), 500);
+              setTimeout(() => window.close(), 600);
             };
           <\/script>
         </body>
@@ -3888,6 +4287,299 @@ const App = {
             <a href="index.html" class="btn-primary" style="text-decoration: none; padding: 10px 24px; font-size: 0.88rem; font-weight: 700; background: linear-gradient(135deg, #0284c7, #2563eb); border: none; border-radius: 10px; display: inline-flex; align-items: center; gap: 8px;">
               <i class="fa-solid fa-house"></i> <span>ចូលទៅកាន់ប្រព័ន្ធ</span>
             </a>
+          </div>
+
+        </div>
+      </div>
+    `;
+  },
+
+  // Public Student Profile & Verification Screen (Scanned via Phone QR Code)
+  async mountPublicStudentProfileScreen() {
+    const appEl = document.getElementById("app");
+    if (!appEl) return;
+
+    // Parse student ID from hash (#profile?id=TX10 or #student-profile?id=TX10 or #profile-TX10 or #student-login?id=TX10)
+    const hash = window.location.hash;
+    let studentId = "";
+    if (hash.includes("?")) {
+      const q = hash.split("?")[1] || "";
+      const params = new URLSearchParams(q);
+      studentId = params.get("id") || "";
+    } else if (hash.includes("=")) {
+      studentId = hash.split("=")[1] || "";
+    } else if (hash.includes("-")) {
+      studentId = hash.split("-").pop() || "";
+    }
+    studentId = (studentId || "").trim();
+
+    // Show luxury loading state
+    appEl.innerHTML = `
+      <div class="public-profile-screen" style="justify-content: center;">
+        <div style="text-align: center;">
+          <div style="width: 52px; height: 52px; border: 4px solid rgba(251,191,36,0.25); border-top-color: #fbbf24; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 16px;"></div>
+          <div style="font-size: 1.1rem; font-weight: 700; color: #fbbf24;">កំពុងផ្ទុកប្រវត្តិរូបសិស្ស...</div>
+          <div style="font-size: 0.8rem; color: #94a3b8; margin-top: 4px;">សាលា អន្តរជាតិ ធានស៊ីន (Tian Xin International School)</div>
+        </div>
+      </div>
+    `;
+
+    // Fetch student data
+    let student = null;
+    if (typeof StudentAPI !== "undefined") {
+      student = await StudentAPI.getStudentById(studentId);
+      if (!student) {
+        const list = await StudentAPI.getStudents(true);
+        if (studentId) {
+          student = (list || []).find(s => s && String(s.ID).trim().toUpperCase() === studentId.toUpperCase());
+        } else if (list && list.length > 0) {
+          student = list[0];
+        }
+      }
+    }
+
+    if (!student) {
+      // Invalid/Not found screen with Search option
+      appEl.innerHTML = `
+        <div class="public-profile-screen">
+          <div class="public-profile-container" style="max-width: 480px; text-align: center; margin-top: 40px;">
+            <div class="public-profile-logo-wrap">
+              <img src="assets/images/logo.png" alt="Logo" class="public-profile-logo">
+            </div>
+            <h2 class="public-profile-title-kh">សាលា អន្តរជាតិ ធានស៊ីន</h2>
+            <div class="public-profile-title-en">TIAN XIN INTERNATIONAL SCHOOL (TIS)</div>
+
+            <div style="background: rgba(239, 68, 68, 0.12); border: 1.5px solid rgba(239, 68, 68, 0.45); border-radius: 20px; padding: 24px 20px; margin-top: 20px;">
+              <i class="fa-solid fa-circle-exclamation" style="font-size: 2.4rem; color: #f87171; margin-bottom: 10px;"></i>
+              <h3 style="font-size: 1.15rem; font-weight: 800; color: #fca5a5; margin-bottom: 6px;">រកមិនឃើញទិន្នន័យសិស្សឡើយ</h3>
+              <p style="font-size: 0.85rem; color: #cbd5e1; margin-bottom: 16px;">
+                លេខសម្គាល់សិស្ស <strong>«${studentId || 'N/A'}»</strong> មិនមានក្នុងប្រព័ន្ធទិន្នន័យ ឬអាចត្រូវបានលុបចេញ។
+              </p>
+              
+              <div style="display: flex; gap: 8px; justify-content: center; max-width: 320px; margin: 0 auto 12px;">
+                <input type="text" id="publicSearchIdInput" placeholder="បញ្ចូលអត្តលេខ (ឧ. TX10)..." class="form-control" style="height: 42px; border-radius: 10px; background: rgba(0,0,0,0.4); border-color: rgba(255,255,255,0.2); color: #fff; text-align: center; font-weight: bold;">
+                <button type="button" class="btn-primary" onclick="window.location.hash='#profile?id=' + (document.getElementById('publicSearchIdInput').value || '').trim()" style="height: 42px; padding: 0 16px; border-radius: 10px;">
+                  <i class="fa-solid fa-magnifying-glass"></i>
+                </button>
+              </div>
+            </div>
+
+            <div style="margin-top: 20px;">
+              <a href="index.html" class="btn-secondary" style="text-decoration: none; display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; border-radius: 10px;">
+                <i class="fa-solid fa-house"></i> <span>ត្រឡប់ទៅទំព័រដើម</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      `;
+      return;
+    }
+
+    // Student found! Compute details
+    const avatarUrl = student.Avatar || this.getDefaultAvatar(student.Gender);
+    const shift = student.Shift || student.Time || "ព្រឹក (08:00 - 09:30)";
+    const course = student.Course || "Typing";
+    const dob = student.Dob || "2006-01-01";
+    const phone = student.Phone || student.phone || "—";
+    const address = student.Address || student.address || student.BirthPlace || "រាជធានីភ្នំពេញ";
+    const guardian = student.GuardianName || student.FatherName || student.MotherName || student.guardianName || "—";
+    const enrollDate = student.StartDate || student.CreatedAt || "2026-09-01";
+
+    // Exams
+    const exams = (typeof StudentAPI !== "undefined" && StudentAPI.getStudentExams)
+      ? StudentAPI.getStudentExams(student.ID)
+      : {};
+    const examSteps = [
+      { id: "Typing", name: "Typing (វាយអត្ថបទ)" },
+      { id: "Word", name: "Microsoft Word" },
+      { id: "Excel", name: "Microsoft Excel" },
+      { id: "PowerPoint", name: "PowerPoint" }
+    ];
+
+    // Attendance
+    let attPresent = 0, attPermission = 0, attAbsent = 0;
+    if (typeof StudentAPI !== "undefined" && StudentAPI.getAllAttendance) {
+      const allAtt = StudentAPI.getAllAttendance() || {};
+      Object.keys(allAtt).forEach(date => {
+        const dayMap = allAtt[date];
+        if (dayMap && dayMap[student.ID]) {
+          const st = dayMap[student.ID];
+          if (st === "Present") attPresent++;
+          else if (st === "Permission") attPermission++;
+          else if (st === "Absent") attAbsent++;
+        }
+      });
+    }
+    const totalAtt = attPresent + attPermission + attAbsent;
+    const attRate = totalAtt > 0 ? Math.round((attPresent / totalAtt) * 100) : 100;
+
+    // Render Full Public Profile
+    appEl.innerHTML = `
+      <div class="public-profile-screen">
+        <div class="public-profile-container">
+
+          <!-- 1. School Header -->
+          <div class="public-profile-header">
+            <div class="public-profile-logo-wrap">
+              <img src="assets/images/logo.png" alt="TIS Logo" class="public-profile-logo">
+            </div>
+            <h1 class="public-profile-title-kh">សាលា អន្តរជាតិ ធានស៊ីន</h1>
+            <div class="public-profile-title-en">TIAN XIN INTERNATIONAL SCHOOL (TIS LAB COMPUTER)</div>
+            
+            <!-- Official Verification Badge -->
+            <div class="public-verified-banner">
+              <span class="public-verified-dot"></span>
+              <i class="fa-solid fa-shield-check"></i>
+              <span>អត្តសញ្ញាណសិស្សផ្លូវការ (Authentic Student Identity)</span>
+            </div>
+          </div>
+
+          <!-- 2. Profile Hero Section -->
+          <div class="public-profile-hero">
+            <div class="public-hero-avatar-frame">
+              <img src="${avatarUrl}" alt="${student.NameKh}" class="public-hero-avatar">
+            </div>
+            <div class="public-hero-info">
+              <div class="public-hero-name-kh">${student.NameKh}</div>
+              <div class="public-hero-name-en">${(student.NameEn || '').toUpperCase()}</div>
+              <div class="public-hero-pills">
+                <span class="public-pill-id"><i class="fa-solid fa-id-badge"></i> ID: ${student.ID}</span>
+                <span class="public-pill-status"><i class="fa-solid fa-circle-check"></i> ${student.Status === 'Graduated' ? 'បញ្ចប់ការសិក្សា' : (student.Status === 'Dropped' ? 'ផ្អាកការសិក្សា' : 'សកម្ម')}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. Personal Information -->
+          <div class="public-card-section">
+            <div class="public-section-title">
+              <i class="fa-solid fa-user text-indigo-400"></i>
+              <span>ព័ត៌មានផ្ទាល់ខ្លួន (Personal Information)</span>
+            </div>
+            <div class="public-grid-pairs">
+              <div class="public-data-box">
+                <div class="public-data-label">ភេទ (Gender)</div>
+                <div class="public-data-val">${student.Gender || '—'}</div>
+              </div>
+              <div class="public-data-box">
+                <div class="public-data-label">ថ្ងៃខែឆ្នាំកំណើត (DOB)</div>
+                <div class="public-data-val font-mono">${dob}</div>
+              </div>
+              <div class="public-data-box">
+                <div class="public-data-label">លេខទូរស័ព្ទ (Contact)</div>
+                <div class="public-data-val">
+                  ${phone !== '—' ? `<a href="tel:${phone}" style="color: #38bdf8; text-decoration: none;"><i class="fa-solid fa-phone"></i> ${phone}</a>` : '—'}
+                </div>
+              </div>
+              <div class="public-data-box">
+                <div class="public-data-label">អាណាព្យាបាល (Guardian)</div>
+                <div class="public-data-val">${guardian}</div>
+              </div>
+              <div class="public-data-box" style="grid-column: 1 / -1;">
+                <div class="public-data-label">ទីកន្លែងកំណើត / អាសយដ្ឋាន (Address)</div>
+                <div class="public-data-val">${address}</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 4. Academic Details -->
+          <div class="public-card-section">
+            <div class="public-section-title">
+              <i class="fa-solid fa-laptop-code text-amber-400"></i>
+              <span>ការសិក្សា & បន្ទប់កុំព្យូទ័រ (Computer Lab Enrollment)</span>
+            </div>
+            <div class="public-grid-pairs">
+              <div class="public-data-box">
+                <div class="public-data-label">កម្រិតសិក្សា (Program)</div>
+                <div class="public-data-val text-amber-400">ថ្នាក់កុំព្យូទ័រ (Computer Lab)</div>
+              </div>
+              <div class="public-data-box">
+                <div class="public-data-label">វគ្គ/ជំនាញបច្ចុប្បន្ន (Course)</div>
+                <div class="public-data-val" style="color: #60a5fa;">${course}</div>
+              </div>
+              <div class="public-data-box">
+                <div class="public-data-label">វេនសិក្សា (Shift)</div>
+                <div class="public-data-val">${shift}</div>
+              </div>
+              <div class="public-data-box">
+                <div class="public-data-label">ថ្ងៃចូលរៀន (Enrollment)</div>
+                <div class="public-data-val font-mono">${enrollDate}</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 5. 4 Computer Skills Exam Ladder -->
+          <div class="public-card-section">
+            <div class="public-section-title">
+              <i class="fa-solid fa-award text-emerald-400"></i>
+              <span>លទ្ធផលប្រឡងជំនាញ ៤ វគ្គ (Computer Skill Ladder)</span>
+            </div>
+            <div class="public-exam-steps">
+              ${examSteps.map(st => {
+                const ex = exams[st.id];
+                const hasScore = ex && ex.score !== null && ex.score !== undefined;
+                const isPass = ex && ex.status === "Pass";
+                return `
+                  <div class="public-exam-step-card">
+                    <div class="public-exam-step-name">${st.name}</div>
+                    <div class="public-exam-step-score">${hasScore ? ex.score : '—'}</div>
+                    <div>
+                      ${hasScore ? `
+                        <span class="public-exam-step-badge" style="background: ${isPass ? 'rgba(16,185,129,0.2)' : 'rgba(239,68,68,0.2)'}; color: ${isPass ? '#34d399' : '#f87171'}; border: 1px solid ${isPass ? '#10b981' : '#ef4444'};">
+                          ${isPass ? '✓ ជាប់' : '✗ ធ្លាក់'} (${ex.grade || ''})
+                        </span>
+                      ` : `
+                        <span class="public-exam-step-badge" style="background: rgba(255,255,255,0.06); color: #94a3b8;">
+                          មិនទាន់ប្រឡង
+                        </span>
+                      `}
+                    </div>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          </div>
+
+          <!-- 6. Attendance Summary -->
+          <div class="public-card-section">
+            <div class="public-section-title">
+              <i class="fa-solid fa-calendar-check text-sky-400"></i>
+              <span>ស្ថានភាពវត្តមាន (Attendance Summary)</span>
+            </div>
+            <div class="public-grid-pairs" style="grid-template-columns: repeat(4, 1fr);">
+              <div class="public-data-box" style="text-align: center;">
+                <div class="public-data-label">វត្តមាន</div>
+                <div class="public-data-val" style="color: #34d399;">${attPresent} ថ្ងៃ</div>
+              </div>
+              <div class="public-data-box" style="text-align: center;">
+                <div class="public-data-label">ច្បាប់</div>
+                <div class="public-data-val" style="color: #fbbf24;">${attPermission} ថ្ងៃ</div>
+              </div>
+              <div class="public-data-box" style="text-align: center;">
+                <div class="public-data-label">អវត្តមាន</div>
+                <div class="public-data-val" style="color: #f87171;">${attAbsent} ថ្ងៃ</div>
+              </div>
+              <div class="public-data-box" style="text-align: center;">
+                <div class="public-data-label">ភាគរយ</div>
+                <div class="public-data-val" style="color: #38bdf8;">${attRate}%</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 7. Action Footer -->
+          <div class="public-profile-actions">
+            <button type="button" class="btn-primary" onclick="window.print()" style="padding: 10px 18px; border-radius: 12px; font-weight: 700; display: inline-flex; align-items: center; gap: 8px;">
+              <i class="fa-solid fa-print"></i> <span>បោះពុម្ពប្រវត្តិរូប</span>
+            </button>
+            <button type="button" class="btn-secondary" onclick="navigator.clipboard ? navigator.clipboard.writeText(window.location.href).then(() => alert('បានចម្លងតំណភ្ជាប់ប្រវត្តិរូបសិស្ស!')) : alert(window.location.href)" style="padding: 10px 18px; border-radius: 12px; font-weight: 700; display: inline-flex; align-items: center; gap: 8px;">
+              <i class="fa-solid fa-share-nodes"></i> <span>ចែករំលែកតំណ (Share)</span>
+            </button>
+            <a href="index.html" class="btn-secondary" style="padding: 10px 18px; border-radius: 12px; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 8px;">
+              <i class="fa-solid fa-arrow-right-to-bracket"></i> <span>ចូលប្រព័ន្ធសាលា</span>
+            </a>
+          </div>
+
+          <div style="text-align: center; font-size: 0.72rem; color: #64748b; margin-top: 14px; padding-bottom: 20px;">
+            © 2026 Tian Xin International School (TIS) · TIS Lab Computer Digital Identity
           </div>
 
         </div>

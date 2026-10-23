@@ -146,7 +146,49 @@ const StudentAPI = {
       student.Avatar = student.Gender === "ស្រី" ? "assets/images/default-female.svg" : "assets/images/default-male.svg";
     }
 
+    // Family & Guardian normalizations
+    if (student.fatherName && !student.FatherName) student.FatherName = student.fatherName;
+    if (student.motherName && !student.MotherName) student.MotherName = student.motherName;
+    if (student.guardianPhone && !student.GuardianPhone) student.GuardianPhone = student.guardianPhone;
+    if (student.parentPhone && !student.GuardianPhone) student.GuardianPhone = student.parentPhone;
+    if (student.emergencyPhone && !student.EmergencyPhone) student.EmergencyPhone = student.emergencyPhone;
+    if (student.familyNote && !student.FamilyNote) student.FamilyNote = student.familyNote;
+
     return student;
+  },
+
+  // Get Single Student by ID (supports offline local storage & direct Firebase cloud lookup)
+  async getStudentById(id) {
+    if (!id) return null;
+    const cleanId = String(id).trim().toUpperCase();
+
+    // 1. Try from local storage
+    const local = this.getLocalStudents() || [];
+    let found = local.find(s => s && String(s.ID).trim().toUpperCase() === cleanId);
+    if (found) return this.normalizeStudent(found);
+
+    // 2. Direct Cloud lookup if connected
+    if (this.isCloudConnected()) {
+      try {
+        const cloudPath = this.getCloudPath("students");
+        // Direct child lookup by key
+        const snap = await firebase.database().ref(`${cloudPath}/${cleanId}`).once("value");
+        const val = snap.val();
+        if (val) return this.normalizeStudent(val);
+
+        // Fallback: search all records in cloud
+        const allSnap = await firebase.database().ref(cloudPath).once("value");
+        const allVal = allSnap.val();
+        if (allVal) {
+          const list = Array.isArray(allVal) ? allVal : Object.values(allVal);
+          const match = list.find(s => s && String(s.ID).trim().toUpperCase() === cleanId);
+          if (match) return this.normalizeStudent(match);
+        }
+      } catch (e) {
+        console.warn("getStudentById cloud lookup error:", e);
+      }
+    }
+    return null;
   },
 
   // Dynamic Fetching: Pulls directly from Firebase Realtime Database
@@ -604,6 +646,51 @@ const StudentAPI = {
       }
       return { success: false, error: msg };
     }
+  },
+
+  // Push all local data (Students, Attendance, Exams, Fees, Teachers) to Firebase Cloud
+  async pushAllLocalToCloud() {
+    if (!this.isCloudConnected()) {
+      throw new Error("Firebase មិនទាន់បាន Initialize នៅឡើយទេ!");
+    }
+    const students = this.getLocalStudents();
+    const attendance = this.getAllAttendance();
+    const exams = this.getAllExams();
+    const fees = this.getAllFees();
+    const teachers = typeof AuthService !== "undefined" ? AuthService.getTeachers() : [];
+
+    const updates = {};
+    if (students && students.length > 0) {
+      const studentMap = {};
+      students.forEach(s => {
+        if (s && s.ID) studentMap[s.ID] = s;
+      });
+      updates["students"] = studentMap;
+    }
+    if (attendance && Object.keys(attendance).length > 0) {
+      updates["attendance"] = attendance;
+    }
+    if (exams && Object.keys(exams).length > 0) {
+      updates["exams"] = exams;
+    }
+    if (fees && Object.keys(fees).length > 0) {
+      updates["fees"] = fees;
+    }
+    if (teachers && teachers.length > 0) {
+      updates["teachers"] = teachers;
+    }
+
+    if (Object.keys(updates).length === 0) {
+      throw new Error("មិនមានទិន្នន័យក្នុងម៉ាស៊ីននេះសម្រាប់បញ្ជូនទៅកាន់ Cloud ឡើយ!");
+    }
+
+    await firebase.database().ref().update(updates);
+    console.log("🚀 [Firebase] បានបញ្ជូនទិន្នន័យទាំងអស់ពី Local ឡើងទៅ Cloud ជោគជ័យ!", updates);
+    return {
+      studentsCount: students ? students.length : 0,
+      attendanceDays: attendance ? Object.keys(attendance).length : 0,
+      examsCount: exams ? Object.keys(exams).length : 0
+    };
   },
 
   // Client-Side Image Compression

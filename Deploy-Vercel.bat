@@ -9,16 +9,22 @@ echo   ▲ Deploy & Host on Vercel (Cloud Hosting Pro)
 echo ========================================================
 echo.
 
-:: Detect git executable
+:: Detect git executable across system paths
 set "GIT_CMD=git"
 where git >nul 2>nul
 if %errorlevel% neq 0 (
-    if exist "C:\Users\khien\.cache\codex-runtimes\codex-primary-runtime\dependencies\native\git\cmd\git.exe" (
-        set "GIT_CMD=C:\Users\khien\.cache\codex-runtimes\codex-primary-runtime\dependencies\native\git\cmd\git.exe"
+    if exist "%USERPROFILE%\.cache\codex-runtimes\codex-primary-runtime\dependencies\native\git\cmd\git.exe" (
+        set "GIT_CMD=%USERPROFILE%\.cache\codex-runtimes\codex-primary-runtime\dependencies\native\git\cmd\git.exe"
+    ) else if exist "C:\Users\KhienThou\.cache\codex-runtimes\codex-primary-runtime\dependencies\native\git\cmd\git.exe" (
+        set "GIT_CMD=C:\Users\KhienThou\.cache\codex-runtimes\codex-primary-runtime\dependencies\native\git\cmd\git.exe"
     ) else if exist "C:\Program Files\Git\cmd\git.exe" (
         set "GIT_CMD=C:\Program Files\Git\cmd\git.exe"
+    ) else if exist "C:\Program Files (x86)\Git\cmd\git.exe" (
+        set "GIT_CMD=C:\Program Files (x86)\Git\cmd\git.exe"
     ) else if exist "%LOCALAPPDATA%\Programs\Git\cmd\git.exe" (
         set "GIT_CMD=%LOCALAPPDATA%\Programs\Git\cmd\git.exe"
+    ) else if exist "C:\Users\khien\.cache\codex-runtimes\codex-primary-runtime\dependencies\native\git\cmd\git.exe" (
+        set "GIT_CMD=C:\Users\khien\.cache\codex-runtimes\codex-primary-runtime\dependencies\native\git\cmd\git.exe"
     ) else (
         echo [ERROR] រកមិនឃើញកម្មវិធី Git នៅក្នុងកុំព្យូទ័រឡើយ!
         echo សូមដំឡើង Git ឬពិនិត្យ PATH ឡើងវិញ។
@@ -28,12 +34,16 @@ if %errorlevel% neq 0 (
     )
 )
 
+:: Auto-fix safe directory to prevent ownership errors
+"%GIT_CMD%" config --global --add safe.directory "%~dp0" >nul 2>&1
+"%GIT_CMD%" config --global --add safe.directory "D:/System Student/masterSchool/masterSchool" >nul 2>&1
+
 echo [1/4] កំពុងពិនិត្យ និងជ្រើសរើសឯកសារដែលបានកែសម្រួល...
 "%GIT_CMD%" add -A
 
 echo.
 echo [2/4] កំពុង Commit ទិន្នន័យទៅកាន់ Git...
-"%GIT_CMD%" commit -m "feat(deploy): optimize vercel deployment, routing and ip monitor system" >nul 2>&1
+"%GIT_CMD%" commit -m "feat(deploy): optimize vercel deployment, routing and student portal" >nul 2>&1
 if %errorlevel% equ 0 (
     echo    ✓ បាន Commit កំណែប្រែជោគជ័យ!
 ) else (
@@ -63,14 +73,14 @@ set /p DEPLOY_CHOICE="សូមវាយលេខជម្រើស [1, 2 ឬ 3]
 if "%DEPLOY_CHOICE%"=="3" (
     echo.
     echo 🔑 កំពុងបើកផ្ទាំង Login Vercel...
-    call npx vercel login
+    call npx.cmd vercel login
     echo.
     echo 🚀 កំពុងបញ្ជូនកូដឡើង Vercel Production...
-    call npx vercel --prod --yes
+    call npx.cmd vercel --prod --yes
 ) else if "%DEPLOY_CHOICE%"=="2" (
     echo.
     echo 🚀 កំពុងបញ្ជូនកូដឡើង Vercel Production តាម CLI...
-    call npx vercel --prod --yes
+    call npx.cmd vercel --prod --yes
 )
 
 echo.

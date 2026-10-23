@@ -1,9 +1,16 @@
 {
-  "version": 2,
   "cleanUrls": false,
   "rewrites": [
     {
+      "source": "/api",
+      "destination": "/api/index.js"
+    },
+    {
       "source": "/api/:path*",
+      "destination": "/api/index.js"
+    },
+    {
+      "source": "/enroll",
       "destination": "/api/index.js"
     },
     {
@@ -11,7 +18,7 @@
       "destination": "/api/index.js"
     },
     {
-      "source": "/((?!api/|enroll/|uploads/|.*\\.[a-zA-Z0-9]+$).*)",
+      "source": "/((?!api|enroll|assets|css|js|uploads|.*\\.[a-zA-Z0-9]+$).*)",
       "destination": "/index.html"
     }
   ],
@@ -35,6 +42,15 @@
         {
           "key": "Cache-Control",
           "value": "no-cache, no-store, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/assets/books/(.*)\\.json",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, must-revalidate"
         }
       ]
     },

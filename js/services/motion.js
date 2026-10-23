@@ -342,123 +342,16 @@ const Motion = {
   },
 
   /**
-   * 6. Dynamic Ambient Light Canvas Effect (High-Performance GPU Particle & Constellation Glow)
+   * 6. Dynamic Ambient Light Canvas Effect (Optimized for 0% CPU & Cool Machine Operation)
    */
   initDynamicBackdrop() {
-    let canvas = document.getElementById("msAmbientCanvas");
-    if (!canvas) {
-      canvas = document.createElement("canvas");
-      canvas.id = "msAmbientCanvas";
-      canvas.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        pointer-events: none;
-        z-index: 0;
-        opacity: 0.55;
-      `;
-      document.body.prepend(canvas);
-    }
-
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    let width = (canvas.width = window.innerWidth);
-    let height = (canvas.height = window.innerHeight);
-
-    window.addEventListener("resize", () => {
-      width = canvas.width = window.innerWidth;
-      height = canvas.height = window.innerHeight;
-    });
-
-    const mouse = { x: -1000, y: -1000, radius: 140 };
-    window.addEventListener("mousemove", (e) => {
-      mouse.x = e.clientX;
-      mouse.y = e.clientY;
-    });
-    window.addEventListener("mouseleave", () => {
-      mouse.x = -1000;
-      mouse.y = -1000;
-    });
-
-    const particles = [];
-    const particleCount = 28; // High performance, 60+ FPS guarantee
-
-    for (let i = 0; i < particleCount; i++) {
-      particles.push({
-        x: Math.random() * width,
-        y: Math.random() * height,
-        baseX: Math.random() * width,
-        baseY: Math.random() * height,
-        radius: Math.random() * 2.2 + 1.2,
-        color: i % 3 === 0 ? "rgba(124, 58, 237, 0.65)" : (i % 3 === 1 ? "rgba(6, 182, 212, 0.6)" : "rgba(245, 158, 11, 0.45)"),
-        vx: (Math.random() - 0.5) * 0.45,
-        vy: (Math.random() - 0.5) * 0.45
-      });
-    }
-
-    function renderParticles() {
-      ctx.clearRect(0, 0, width, height);
-
-      // Draw subtle connecting constellation lines
-      for (let i = 0; i < particles.length; i++) {
-        for (let j = i + 1; j < particles.length; j++) {
-          const dx = particles[i].x - particles[j].x;
-          const dy = particles[i].y - particles[j].y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < 115) {
-            const alpha = (1 - dist / 115) * 0.18;
-            ctx.beginPath();
-            ctx.moveTo(particles[i].x, particles[i].y);
-            ctx.lineTo(particles[j].x, particles[j].y);
-            ctx.strokeStyle = `rgba(124, 58, 237, ${alpha})`;
-            ctx.lineWidth = 0.8;
-            ctx.stroke();
-          }
-        }
-      }
-
-      // Draw and update particles
-      particles.forEach((p) => {
-        // Natural drift
-        p.x += p.vx;
-        p.y += p.vy;
-
-        // Interactive mouse repulsion
-        const dx = mouse.x - p.x;
-        const dy = mouse.y - p.y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist < mouse.radius && dist > 0) {
-          const force = (mouse.radius - dist) / mouse.radius;
-          p.x -= (dx / dist) * force * 3;
-          p.y -= (dy / dist) * force * 3;
-        }
-
-        if (p.x < 0) p.x = width;
-        if (p.x > width) p.x = 0;
-        if (p.y < 0) p.y = height;
-        if (p.y > height) p.y = 0;
-
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-        ctx.fillStyle = p.color;
-        ctx.shadowColor = p.color;
-        ctx.shadowBlur = 10;
-        ctx.fill();
-      });
-
-      requestAnimationFrame(renderParticles);
-    }
-
-    if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      requestAnimationFrame(renderParticles);
-    }
+    // Remove continuous canvas loop to guarantee 0% idle CPU and keep machine cool
+    const canvas = document.getElementById("msAmbientCanvas");
+    if (canvas) canvas.remove();
   },
 
   /**
-   * 7. Interactive Button Click Ripple System
+   * 7. Interactive Button Click Ripple System (Lightweight)
    */
   bindButtonRipples() {
     document.addEventListener("click", (e) => {
@@ -472,34 +365,16 @@ const Motion = {
       ripple.style.left = `${x}px`;
       ripple.style.top = `${y}px`;
       btn.appendChild(ripple);
-      setTimeout(() => ripple.remove(), 600);
+      setTimeout(() => ripple.remove(), 400);
     });
   },
 
   /**
-   * 8. Dynamic Card Cursor Spotlight Reflection
+   * 8. Dynamic Card Cursor Spotlight Reflection (Disabled for Zero Style-Recalculation Overhead)
    */
   bindCardSpotlight() {
-    let ticking = false;
-    document.addEventListener("mousemove", (e) => {
-      if (!ticking) {
-        requestAnimationFrame(() => {
-          document.documentElement.style.setProperty("--cursor-x", `${e.clientX}px`);
-          document.documentElement.style.setProperty("--cursor-y", `${e.clientY}px`);
-
-          const card = e.target.closest(".card, .kpi-card, .login-master-container, .student-card");
-          if (card) {
-            const rect = card.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            card.style.setProperty("--mouse-x", `${x}px`);
-            card.style.setProperty("--mouse-y", `${y}px`);
-          }
-          ticking = false;
-        });
-        ticking = true;
-      }
-    });
+    // Disabled global document.documentElement mousemove style invalidation
+    // This prevents expensive full-DOM style recalculations on every mouse movement
   }
 };
 

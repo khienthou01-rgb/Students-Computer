@@ -24,6 +24,8 @@ google-apps-script/
 deploy/
 
 # Ephemeral state & logs
+.env*
+scratch/
 .lab_data/
 .sent_daily_att_*
 *.log

@@ -73,9 +73,11 @@ const StudentPortalView = {
     const currentCourseInfo = courseMeta[activeCourseKey] || courseMeta.Typing;
     const activeExam = exams[activeCourseKey] || {};
 
+    const currentTab = this.activePortalTab || "exams";
+
     return `
       <div class="student-portal-wrapper animate-fadeIn">
-        <!-- 1. TOP WELCOME HERO BANNER -->
+        <!-- 1. TOP WELCOME HERO BANNER (Executive Modern Glassmorphism) -->
         <div class="portal-hero-banner">
           <div class="portal-hero-ambient"></div>
           
@@ -103,19 +105,27 @@ const StudentPortalView = {
               <div class="portal-name-en">${student.NameEn || ''}</div>
               <p class="portal-welcome-quote">
                 <i class="fa-solid fa-quote-left text-purple-400"></i>
-                ស្វាគមន៍មកកាន់ប្រព័ន្ធគ្រប់គ្រងការសិក្សា និងការប្រឡងផ្ទាល់ខ្លួន។ អ្នកអាចចូលប្រឡង តាមដានពិន្ទុ និងបោះពុម្ពកាតសិស្សបាននៅទីនេះ។
+                ស្វាគមន៍មកកាន់ប្រព័ន្ធគ្រប់គ្រងការសិក្សា និងការប្រឡងផ្ទាល់ខ្លួន។ តាមដានពិន្ទុ កិច្ចការ វត្តមាន និងបោះពុម្ពកាតសិស្សយ៉ាងងាយស្រួល។
               </p>
             </div>
 
             <!-- Header Quick Action Buttons -->
             <div class="portal-hero-actions">
-              <button type="button" class="btn-portal-action btn-print-id" id="portalPrintIdCardBtn" title="បោះពុម្ពកាតសិស្សឌីជីថល">
+              <button type="button" class="btn-portal-action" onclick="App.printStudentIdCard('${student.ID}')" title="បោះពុម្ពកាតសិស្សឌីជីថល">
                 <i class="fa-solid fa-address-card"></i>
                 <span>បោះពុម្ពកាតសិស្ស</span>
               </button>
-              <button type="button" class="btn-portal-action btn-print-transcript" id="portalPrintTranscriptBtn" title="បោះពុម្ពព្រឹត្តិបត្រពិន្ទុផ្លូវការ">
+              <button type="button" class="btn-portal-action" onclick="ExamsView.printStudentTranscript('${student.ID}')" title="បោះពុម្ពព្រឹត្តិបត្រពិន្ទុផ្លូវការ">
                 <i class="fa-solid fa-file-invoice"></i>
                 <span>ព្រឹត្តិបត្រពិន្ទុ</span>
+              </button>
+              <button type="button" class="btn-portal-action" onclick="BookStudyEngine.openBookReaderModal()" title="បើកអានសៀវភៅមូលដ្ឋានកុំព្យូទ័រ">
+                <i class="fa-solid fa-book-open"></i>
+                <span>សៀវភៅ E-Book</span>
+              </button>
+              <button type="button" class="btn-portal-action" onclick="BookStudyEngine.openPreExamReviewModal('${activeCourseKey}')" title="សំណួររំលឹកមុនប្រឡង">
+                <i class="fa-solid fa-graduation-cap"></i>
+                <span>សំណួររំលឹក</span>
               </button>
             </div>
           </div>
@@ -132,526 +142,646 @@ const StudentPortalView = {
           </div>
         </div>
 
-        <!-- 2. CURRENT COURSE EXAM ACTION HUB (HERO ACTION) -->
-        <div class="portal-section-header">
-          <div class="section-title-wrap">
-            <div class="section-icon-bubble" style="background: ${currentCourseInfo.bg}; color: ${currentCourseInfo.color};">
-              <i class="fa-solid ${currentCourseInfo.icon}"></i>
+        <!-- 2. EXECUTIVE 4-KPI SUMMARY ROW -->
+        <div class="portal-kpi-summary-grid">
+          <!-- KPI 1: Exams -->
+          <div class="portal-kpi-card" style="--kpi-accent: #8b5cf6; --kpi-bg: rgba(139, 92, 246, 0.12); --kpi-color: #8b5cf6;" data-portal-kpi-target="exams" title="ចុចដើម្បីមើលលទ្ធផលប្រឡង ៤ វគ្គ">
+            <div class="portal-kpi-icon-box">
+              <i class="fa-solid fa-laptop-code"></i>
             </div>
-            <div>
-              <h2 class="section-title">មជ្ឈមណ្ឌលប្រឡងវគ្គបច្ចុប្បន្ន (Current Course Exam Hub)</h2>
-              <p class="section-desc">មុខវិជ្ជាកំពុងសិក្សា និងលទ្ធភាពចូលប្រឡងបញ្ចប់វគ្គជាក់ស្តែង</p>
-            </div>
-          </div>
-          <span class="badge badge-course-status ${activeExam.status === 'Pass' ? 'badge-pass' : 'badge-in-progress'}">
-            ${activeExam.status === 'Pass' ? '✓ បានប្រឡងជាប់រួចរាល់' : '⏳ ដល់ពេលប្រឡងបញ្ចប់វគ្គ'}
-          </span>
-        </div>
-
-        <div class="portal-exam-hero-card" style="border-left: 5px solid ${currentCourseInfo.color};">
-          <div class="exam-hero-left">
-            <div class="exam-hero-course-tag" style="background: ${currentCourseInfo.bg}; color: ${currentCourseInfo.color};">
-              <i class="fa-solid ${currentCourseInfo.icon}"></i> ${currentCourseInfo.title}
-            </div>
-            <h3 class="exam-hero-course-name">${currentCourseInfo.fullName}</h3>
-            <p class="exam-hero-desc">
-              ${activeCourseKey === 'Typing' 
-                ? 'ការប្រឡងវាស់ស្ទង់ល្បឿន និងភាពត្រឹមត្រូវនៃការវាយអត្ថបទខ្មែរ-អង់គ្លេស ផ្ទាល់លើកម្មវិធី (Live Typing Test) ជាមួយប្រព័ន្ធគណនាពិន្ទុស្វ័យប្រវត្តិ។' 
-                : 'វិញ្ញាសាអនុវត្តជាក់ស្តែងតាមស្តង់ដាររដ្ឋបាល។ សិស្សត្រូវអនុវត្តកិច្ចការតាមក្រដាសវិញ្ញាសា និងបញ្ជូនការងារជូនគ្រូបង្រៀន។'}
-            </p>
-
-            <div class="exam-hero-stats-row">
-              <div class="exam-stat-item">
-                <span class="stat-label">ស្ថានភាពប្រឡង</span>
-                <span class="stat-value ${activeExam.status === 'Pass' ? 'text-emerald-500' : 'text-amber-500'}">
-                  ${activeExam.status === 'Pass' ? '✓ បានជាប់ (Pass)' : (activeExam.status === 'Fail' ? '✗ ធ្លាក់ (ត្រូវប្រឡងសង)' : 'មិនទាន់ប្រឡង')}
-                </span>
-              </div>
-              <div class="exam-stat-item">
-                <span class="stat-label">ពិន្ទុទទួលបាន</span>
-                <span class="stat-value font-bold ${activeExam.score >= 50 ? 'text-purple-600' : ''}">
-                  ${activeExam.score !== undefined && activeExam.score !== null ? `${activeExam.score}/100` : '—'}
-                </span>
-              </div>
-              <div class="exam-stat-item">
-                <span class="stat-label">និទ្ទេស (Grade)</span>
-                <span class="stat-value font-bold">
-                  ${activeExam.grade ? `<span class="badge-grade grade-${activeExam.grade}">${activeExam.grade}</span>` : '—'}
-                </span>
-              </div>
-              <div class="exam-stat-item">
-                <span class="stat-label">កាលបរិច្ឆេទប្រឡង</span>
-                <span class="stat-value">${activeExam.date || '—'}</span>
-              </div>
+            <div class="portal-kpi-info">
+              <span class="portal-kpi-label">វឌ្ឍនភាពប្រឡង</span>
+              <span class="portal-kpi-value text-purple-500">${passedCount}/4 វគ្គ (${progressPercent}%)</span>
+              <span class="portal-kpi-subtext">វគ្គ៖ ${currentCourseInfo.title}</span>
             </div>
           </div>
 
-          <!-- Hero Action Buttons -->
-          <div class="exam-hero-right">
-            <button type="button" class="btn-hero-exam-start" onclick="StudentPortalView.launchCourseExam('${activeCourseKey}', '${student.ID}')">
-              <div class="btn-icon-circle"><i class="fa-solid fa-play"></i></div>
-              <div class="btn-text-content">
-                <span class="btn-label-sup">ចាប់ផ្តើមឥឡូវនេះ</span>
-                <span class="btn-label-main">🚀 ចូលប្រឡងផ្ទាល់ ${currentCourseInfo.title}</span>
-              </div>
-            </button>
-            <button type="button" class="btn-hero-exam-secondary" onclick="ExamsView.openExamPapersModal('${activeCourseKey}')">
-              <i class="fa-solid fa-file-lines"></i>
-              <span>📑 មើលវិញ្ញាសា ${activeCourseKey}</span>
-            </button>
-            <button type="button" class="btn-hero-exam-secondary" onclick="ExamsView.printOfficialExamPaper(null, '${activeCourseKey}')">
-              <i class="fa-solid fa-print"></i>
-              <span>🖨️ បោះពុម្ពក្រដាសវិញ្ញាសា A4</span>
-            </button>
-          </div>
-        </div>
-
-        <!-- 3. FOUR-STEP COMPUTER EXAMS PROGRESS LADDER -->
-        <div class="portal-section-header mt-5">
-          <div class="section-title-wrap">
-            <div class="section-icon-bubble" style="background: rgba(139, 92, 246, 0.1); color: #8b5cf6;">
-              <i class="fa-solid fa-stairs"></i>
+          <!-- KPI 2: Attendance -->
+          <div class="portal-kpi-card" style="--kpi-accent: #10b981; --kpi-bg: rgba(16, 185, 129, 0.12); --kpi-color: #10b981;" data-portal-kpi-target="idcard" title="ចុចដើម្បីមើលកាតសិស្ស និងវត្តមាន">
+            <div class="portal-kpi-icon-box">
+              <i class="fa-solid fa-calendar-check"></i>
             </div>
-            <div>
-              <h2 class="section-title">ដំណើរការប្រឡង ៤ វគ្គ (4-Step Computer Exam Ladder)</h2>
-              <p class="section-desc">តារាងតាមដានលទ្ធផលប្រឡងពីវគ្គទី ១ ដល់វគ្គទី ៤ និងការចេញវិញ្ញាបនបត្រ</p>
+            <div class="portal-kpi-info">
+              <span class="portal-kpi-label">អត្រាវត្តមានសិក្សា</span>
+              <span class="portal-kpi-value text-emerald-500">${att.rate}% (${att.present}/${att.totalDays} ថ្ងៃ)</span>
+              <span class="portal-kpi-subtext">ច្បាប់ ${att.permission} • អវត្តមាន ${att.absent}</span>
+            </div>
+          </div>
+
+          <!-- KPI 3: Assignments -->
+          <div class="portal-kpi-card" style="--kpi-accent: #f59e0b; --kpi-bg: rgba(245, 158, 11, 0.12); --kpi-color: #f59e0b;" data-portal-kpi-target="assignments" title="ចុចដើម្បីមើលកិច្ចការ និងសុំច្បាប់">
+            <div class="portal-kpi-icon-box">
+              <i class="fa-solid fa-list-check"></i>
+            </div>
+            <div class="portal-kpi-info">
+              <span class="portal-kpi-label">កិច្ចការអនុវត្ត</span>
+              <span class="portal-kpi-value text-amber-500">កិច្ចការ ៣ វគ្គ</span>
+              <span class="portal-kpi-subtext">ប្រគល់ & តាមដានពិន្ទុ</span>
+            </div>
+          </div>
+
+          <!-- KPI 4: Tuition Fee -->
+          <div class="portal-kpi-card" style="--kpi-accent: #0284c7; --kpi-bg: rgba(2, 132, 199, 0.12); --kpi-color: #0284c7;" data-portal-kpi-target="finance" title="ចុចដើម្បីមើលវិក្កយបត្រ និងវិញ្ញាបនបត្រ">
+            <div class="portal-kpi-icon-box">
+              <i class="fa-solid fa-file-invoice-dollar"></i>
+            </div>
+            <div class="portal-kpi-info">
+              <span class="portal-kpi-label">ស្ថានភាពថ្លៃសិក្សា</span>
+              <span class="portal-kpi-value ${fee && fee.balance > 0 ? 'text-rose-500' : 'text-emerald-500'}">
+                ${fee && fee.balance > 0 ? ('នៅខ្វះ $' + fee.balance) : '$' + (fee?.paidAmount || 50) + ' (រួចរាល់)'}
+              </span>
+              <span class="portal-kpi-subtext">${fee?.receiptNo || ('INV-2026-' + student.ID)}</span>
             </div>
           </div>
         </div>
 
-        <div class="portal-ladder-grid">
-          ${courseKeys.map((cKey, idx) => {
-            const meta = courseMeta[cKey];
-            const ex = exams[cKey] || {};
-            const isPassed = ex.status === "Pass";
-            const isCurrent = activeCourseKey === cKey;
+        <!-- 3. MODERN SEGMENTED NAVIGATION TABS BAR -->
+        <div class="portal-nav-tabs-bar">
+          <button type="button" class="portal-tab-btn ${currentTab === 'exams' ? 'active' : ''}" data-portal-tab="exams">
+            <i class="fa-solid fa-laptop-code"></i>
+            <span>១. ការប្រឡង & ការសិក្សា</span>
+            <span class="portal-tab-badge">${passedCount}/4</span>
+          </button>
+          <button type="button" class="portal-tab-btn ${currentTab === 'idcard' ? 'active' : ''}" data-portal-tab="idcard">
+            <i class="fa-solid fa-address-card"></i>
+            <span>២. កាតសិស្ស & ប្រវត្តិរូប</span>
+          </button>
+          <button type="button" class="portal-tab-btn ${currentTab === 'assignments' ? 'active' : ''}" data-portal-tab="assignments">
+            <i class="fa-solid fa-list-check"></i>
+            <span>៣. កិច្ចការ & ស្នើសុំច្បាប់</span>
+          </button>
+          <button type="button" class="portal-tab-btn ${currentTab === 'finance' ? 'active' : ''}" data-portal-tab="finance">
+            <i class="fa-solid fa-award"></i>
+            <span>៤. ថ្លៃសិក្សា & វិញ្ញាបនបត្រ</span>
+          </button>
+        </div>
 
-            return `
-              <div class="portal-ladder-card ${isPassed ? 'card-passed' : (isCurrent ? 'card-current' : 'card-pending')}">
-                <div class="ladder-card-top">
-                  <span class="ladder-step-num">វគ្គទី ${idx + 1}</span>
-                  <span class="ladder-status-badge ${isPassed ? 'badge-pass' : (isCurrent ? 'badge-in-progress' : 'badge-pending')}">
-                    ${isPassed ? '✓ ជាប់ (Pass)' : (isCurrent ? '● កំពុងរៀន' : '○ រង់ចាំ')}
+        <!-- ======================================================== -->
+        <!-- TAB PANE 1: ការប្រឡង & ការសិក្សា (Exams & Learning)        -->
+        <!-- ======================================================== -->
+        <div class="portal-tab-pane ${currentTab === 'exams' ? 'active' : ''}" data-portal-content="exams">
+          <!-- Current Course Hero Exam Action Card -->
+          <div class="portal-section-header">
+            <div class="section-title-wrap">
+              <div class="section-icon-bubble" style="background: ${currentCourseInfo.bg}; color: ${currentCourseInfo.color};">
+                <i class="fa-solid ${currentCourseInfo.icon}"></i>
+              </div>
+              <div>
+                <h2 class="section-title">មជ្ឈមណ្ឌលប្រឡងវគ្គបច្ចុប្បន្ន (Current Course Exam Hub)</h2>
+                <p class="section-desc">មុខវិជ្ជាកំពុងសិក្សា និងលទ្ធភាពចូលប្រឡងបញ្ចប់វគ្គជាក់ស្តែង</p>
+              </div>
+            </div>
+            <span class="badge badge-course-status ${activeExam.status === 'Pass' ? 'badge-pass' : 'badge-in-progress'}">
+              ${activeExam.status === 'Pass' ? '✓ បានប្រឡងជាប់រួចរាល់' : '⏳ ដល់ពេលប្រឡងបញ្ចប់វគ្គ'}
+            </span>
+          </div>
+
+          <div class="portal-exam-hero-card" style="border-left: 5px solid ${currentCourseInfo.color};">
+            <div class="exam-hero-left">
+              <div class="exam-hero-course-tag" style="background: ${currentCourseInfo.bg}; color: ${currentCourseInfo.color};">
+                <i class="fa-solid ${currentCourseInfo.icon}"></i> ${currentCourseInfo.title}
+              </div>
+              <h3 class="exam-hero-course-name">${currentCourseInfo.fullName}</h3>
+              <p class="exam-hero-desc">
+                ${activeCourseKey === 'Typing' 
+                  ? 'ការប្រឡងវាស់ស្ទង់ល្បឿន និងភាពត្រឹមត្រូវនៃការវាយអត្ថបទខ្មែរ-អង់គ្លេស ផ្ទាល់លើកម្មវិធី (Live Typing Test) ជាមួយប្រព័ន្ធគណនាពិន្ទុស្វ័យប្រវត្តិ។' 
+                  : 'វិញ្ញាសាអនុវត្តជាក់ស្តែងតាមស្តង់ដាររដ្ឋបាល។ សិស្សត្រូវអនុវត្តកិច្ចការតាមក្រដាសវិញ្ញាសា និងបញ្ជូនការងារជូនគ្រូបង្រៀន។'}
+              </p>
+
+              <div class="exam-hero-stats-row">
+                <div class="exam-stat-item">
+                  <span class="stat-label">ស្ថានភាពប្រឡង</span>
+                  <span class="stat-value ${activeExam.status === 'Pass' ? 'text-emerald-500' : 'text-amber-500'}">
+                    ${activeExam.status === 'Pass' ? '✓ បានជាប់ (Pass)' : (activeExam.status === 'Fail' ? '✗ ធ្លាក់ (ត្រូវប្រឡងសង)' : 'មិនទាន់ប្រឡង')}
                   </span>
                 </div>
-
-                <div class="ladder-card-icon" style="background: ${meta.bg}; color: ${meta.color};">
-                  <i class="fa-solid ${meta.icon}"></i>
+                <div class="exam-stat-item">
+                  <span class="stat-label">ពិន្ទុទទួលបាន</span>
+                  <span class="stat-value font-bold ${activeExam.score >= 50 ? 'text-purple-600' : ''}">
+                    ${activeExam.score !== undefined && activeExam.score !== null ? `${activeExam.score}/100` : '—'}
+                  </span>
                 </div>
-
-                <h4 class="ladder-card-title">${meta.title}</h4>
-                <p class="ladder-card-subtitle">${meta.fullName}</p>
-
-                <div class="ladder-card-score-box">
-                  <div class="ladder-score-val">
-                    ${ex.score !== undefined && ex.score !== null ? `${ex.score}` : '—'}
-                    <span class="ladder-score-unit">/100</span>
-                  </div>
-                  <div class="ladder-grade-val">
-                    ${ex.grade ? `និទ្ទេស <strong class="badge-grade grade-${ex.grade}">${ex.grade}</strong>` : '<span class="text-muted">មិនទាន់ប្រឡង</span>'}
-                  </div>
+                <div class="exam-stat-item">
+                  <span class="stat-label">និទ្ទេស (Grade)</span>
+                  <span class="stat-value font-bold">
+                    ${activeExam.grade ? `<span class="badge-grade grade-${activeExam.grade}">${activeExam.grade}</span>` : '—'}
+                  </span>
                 </div>
+                <div class="exam-stat-item">
+                  <span class="stat-label">កាលបរិច្ឆេទប្រឡង</span>
+                  <span class="stat-value">${activeExam.date || '—'}</span>
+                </div>
+              </div>
+            </div>
 
-                <div class="ladder-card-footer">
-                  <button type="button" class="btn-ladder-action" onclick="StudentPortalView.launchCourseExam('${cKey}', '${student.ID}')">
+            <!-- Hero Action Buttons -->
+            <div class="exam-hero-right">
+              <button type="button" class="btn-hero-exam-start" onclick="StudentPortalView.launchCourseExam('${activeCourseKey}', '${student.ID}')">
+                <div class="btn-icon-circle"><i class="fa-solid fa-play"></i></div>
+                <div class="btn-text-content">
+                  <span class="btn-label-sup">ចាប់ផ្តើមឥឡូវនេះ</span>
+                  <span class="btn-label-main">🚀 ចូលប្រឡងផ្ទាល់ ${currentCourseInfo.title}</span>
+                </div>
+              </button>
+              <button type="button" class="btn-hero-exam-secondary" onclick="ExamsView.openExamPapersModal('${activeCourseKey}')">
+                <i class="fa-solid fa-file-lines"></i>
+                <span>📑 មើលវិញ្ញាសា ${activeCourseKey}</span>
+              </button>
+              <button type="button" class="btn-hero-exam-secondary" onclick="ExamsView.printOfficialExamPaper(null, '${activeCourseKey}')">
+                <i class="fa-solid fa-print"></i>
+                <span>🖨️ បោះពុម្ពក្រដាសវិញ្ញាសា A4</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- 4-Step Computer Exams Progress Ladder -->
+          <div class="portal-section-header mt-5">
+            <div class="section-title-wrap">
+              <div class="section-icon-bubble" style="background: rgba(139, 92, 246, 0.1); color: #8b5cf6;">
+                <i class="fa-solid fa-stairs"></i>
+              </div>
+              <div>
+                <h2 class="section-title">ដំណើរការប្រឡង ៤ វគ្គ (4-Step Computer Exam Ladder)</h2>
+                <p class="section-desc">តារាងតាមដានលទ្ធផលប្រឡងពីវគ្គទី ១ ដល់វគ្គទី ៤ និងការចេញវិញ្ញាបនបត្រ</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="portal-ladder-grid">
+            ${courseKeys.map((cKey, idx) => {
+              const meta = courseMeta[cKey];
+              const ex = exams[cKey] || {};
+              const isPassed = ex.status === "Pass";
+              const isCurrent = activeCourseKey === cKey;
+
+              return `
+                <div class="portal-ladder-card ${isPassed ? 'card-passed' : (isCurrent ? 'card-current' : 'card-pending')}">
+                  <div class="ladder-card-top">
+                    <span class="ladder-step-num">វគ្គទី ${idx + 1}</span>
+                    <span class="ladder-status-badge ${isPassed ? 'badge-pass' : (isCurrent ? 'badge-in-progress' : 'badge-pending')}">
+                      ${isPassed ? '✓ ជាប់ (Pass)' : (isCurrent ? '● កំពុងរៀន' : '○ រង់ចាំ')}
+                    </span>
+                  </div>
+
+                  <div class="ladder-card-icon" style="background: ${meta.bg}; color: ${meta.color};">
                     <i class="fa-solid ${meta.icon}"></i>
-                    <span>${isPassed ? 'ប្រឡងឡើងវិញ' : `ចូលប្រឡង ${meta.title}`}</span>
+                  </div>
+
+                  <h4 class="ladder-card-title">${meta.title}</h4>
+                  <p class="ladder-card-subtitle">${meta.fullName}</p>
+
+                  <div class="ladder-card-score-box">
+                    <div class="ladder-score-val">
+                      ${ex.score !== undefined && ex.score !== null ? `${ex.score}` : '—'}
+                      <span class="ladder-score-unit">/100</span>
+                    </div>
+                    <div class="ladder-grade-val">
+                      ${ex.grade ? `និទ្ទេស <strong class="badge-grade grade-${ex.grade}">${ex.grade}</strong>` : '<span class="text-muted">មិនទាន់ប្រឡង</span>'}
+                    </div>
+                  </div>
+
+                  <div class="ladder-card-footer">
+                    <button type="button" class="btn-ladder-action" onclick="StudentPortalView.launchCourseExam('${cKey}', '${student.ID}')">
+                      <i class="fa-solid ${meta.icon}"></i>
+                      <span>${isPassed ? 'ប្រឡងឡើងវិញ' : `ចូលប្រឡង ${meta.title}`}</span>
+                    </button>
+                  </div>
+                </div>
+              `;
+            }).join("")}
+          </div>
+
+          <!-- Official School E-Book & Pre-Exam Study Guide -->
+          <div class="card" style="margin-top: 24px; padding: 20px 24px; background: linear-gradient(135deg, rgba(30, 27, 75, 0.9), rgba(49, 46, 129, 0.9)); border: 1.5px solid rgba(168, 85, 247, 0.4); border-radius: 16px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+            <div style="display: flex; align-items: center; gap: 16px;">
+              <div style="width: 56px; height: 56px; border-radius: 14px; background: rgba(168, 85, 247, 0.25); border: 1.5px solid #a855f7; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; color: #d8b4fe;">
+                <i class="fa-solid fa-book-bookmark"></i>
+              </div>
+              <div>
+                <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 4px;">
+                  <h3 style="margin: 0; font-size: 1.15rem; font-weight: 800; color: #fff;">
+                    សៀវភៅមូលដ្ឋានគ្រឹះកុំព្យូទ័ររដ្ឋបាល & IT (កម្រាស់ ១២០ ទំព័រ)
+                  </h3>
+                  <span class="badge" style="background: #10b981; color: #fff; font-size: 0.72rem; padding: 2px 8px; border-radius: 6px;">សៀវភៅផ្លូវការរបស់សាលា</span>
+                </div>
+                <p style="margin: 0; font-size: 0.84rem; color: #cbd5e1;">
+                  មេរៀនគ្រឹះកុំព្យូទ័រ, Windows 10, Typing, MS Word, PowerPoint និង Excel 2019 រួមទាំងគន្លឹះ និងសំណួររំលឹកមុនប្រឡង
+                </p>
+              </div>
+            </div>
+
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+              <button type="button" class="btn-primary" onclick="BookStudyEngine.openBookReaderModal()" style="height: 40px; padding: 0 18px; font-size: 0.88rem; background: linear-gradient(135deg, #8b5cf6, #6366f1); border: none; box-shadow: 0 4px 14px rgba(139, 92, 246, 0.4); font-weight: 700; border-radius: 10px; display: inline-flex; align-items: center; gap: 8px;">
+                <i class="fa-solid fa-book-open"></i>
+                <span>📖 បើកអានសៀវភៅ (E-Book)</span>
+              </button>
+              <button type="button" class="btn-primary" onclick="BookStudyEngine.openPreExamReviewModal('${activeCourseKey}')" style="height: 40px; padding: 0 18px; font-size: 0.88rem; background: linear-gradient(135deg, #ec4899, #d946ef); border: none; box-shadow: 0 4px 14px rgba(236, 72, 153, 0.4); font-weight: 700; border-radius: 10px; display: inline-flex; align-items: center; gap: 8px;">
+                <i class="fa-solid fa-graduation-cap"></i>
+                <span>🎯 សំណួររំលឹកមុនប្រឡង</span>
+              </button>
+              <a href="assets/books/computer_basics_book.pdf" download="សៀវភៅមូលដ្ឋានកុំព្យូទ័រ_TIS_LAB.pdf" class="btn-secondary" style="height: 40px; padding: 0 16px; font-size: 0.86rem; border-radius: 10px; display: inline-flex; align-items: center; gap: 8px; text-decoration: none;">
+                <i class="fa-solid fa-download"></i>
+                <span>ទាញយក PDF</span>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- ======================================================== -->
+        <!-- TAB PANE 2: កាតសិស្ស & ប្រវត្តិរូប (Digital ID & Profile)   -->
+        <!-- ======================================================== -->
+        <div class="portal-tab-pane ${currentTab === 'idcard' ? 'active' : ''}" data-portal-content="idcard">
+          <div class="portal-section-header">
+            <div class="section-title-wrap">
+              <div class="section-icon-bubble" style="background: rgba(99, 102, 241, 0.12); color: #6366f1;">
+                <i class="fa-solid fa-address-card"></i>
+              </div>
+              <div>
+                <h2 class="section-title">កាតសិស្សឌីជីថល & ព័ត៌មានប្រវត្តិរូប (Digital ID Card & Profile)</h2>
+                <p class="section-desc">កាតសិស្ស PVC CR80 ស្តង់ដារពិតប្រាកដ និងព័ត៌មានលម្អិតអំពីការសិក្សា</p>
+              </div>
+            </div>
+            <button type="button" class="btn-primary btn-sm" onclick="App.printStudentIdCard('${student.ID}')">
+              <i class="fa-solid fa-print"></i> <span>បោះពុម្ពកាត</span>
+            </button>
+          </div>
+
+          <div class="portal-bottom-grid">
+            <!-- Left: Digital ID Card Preview (Prestigious PVC CR80 Card) -->
+            <div class="portal-card-box id-preview-box">
+              <div class="box-header">
+                <h3><i class="fa-solid fa-id-card text-purple-500"></i> កាតសិស្សផ្លូវការ (Official Card)</h3>
+                <span class="badge" style="background: rgba(16, 185, 129, 0.15); color: #059669; font-weight: 700; font-size: 0.72rem;">
+                  <i class="fa-solid fa-shield-halved"></i> Active
+                </span>
+              </div>
+
+              <!-- Card Color Theme Selector -->
+              <div class="id-card-theme-bar-wrap mb-3" style="display: flex; flex-direction: column; gap: 8px;">
+                <div style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); display: flex; align-items: center; justify-content: space-between;">
+                  <span><i class="fa-solid fa-palette text-amber-500 mr-1"></i> ជ្រើសរើសពណ៌កាត (Theme / Color):</span>
+                  <span style="font-size: 0.7rem; color: #94a3b8; font-weight: 500;">PVC CR80 Standard</span>
+                </div>
+                <div class="id-card-theme-swatches" style="display: flex; gap: 6px; flex-wrap: wrap; align-items: center;">
+                  <button type="button" class="btn-card-theme-pill portal-theme-pill active" data-theme="navy" onclick="StudentPortalView.setPortalCardTheme('navy')" title="Royal Navy & Gold">
+                    <span class="swatch-dot" style="background: linear-gradient(135deg, #070d1e, #1e3a8a);"></span>
+                    <span>Navy</span>
+                  </button>
+                  <button type="button" class="btn-card-theme-pill portal-theme-pill" data-theme="burgundy" onclick="StudentPortalView.setPortalCardTheme('burgundy')" title="Burgundy Academy">
+                    <span class="swatch-dot" style="background: linear-gradient(135deg, #2b0316, #701a75);"></span>
+                    <span>Burgundy</span>
+                  </button>
+                  <button type="button" class="btn-card-theme-pill portal-theme-pill" data-theme="emerald" onclick="StudentPortalView.setPortalCardTheme('emerald')" title="Emerald Prestige">
+                    <span class="swatch-dot" style="background: linear-gradient(135deg, #021a14, #047857);"></span>
+                    <span>Emerald</span>
+                  </button>
+                  <button type="button" class="btn-card-theme-pill portal-theme-pill" data-theme="dark" onclick="StudentPortalView.setPortalCardTheme('dark')" title="Obsidian Tech">
+                    <span class="swatch-dot" style="background: linear-gradient(135deg, #090d16, #1f2937);"></span>
+                    <span>Dark</span>
+                  </button>
+                  <button type="button" class="btn-card-theme-pill portal-theme-pill" data-theme="purple" onclick="StudentPortalView.setPortalCardTheme('purple')" title="Imperial Purple">
+                    <span class="swatch-dot" style="background: linear-gradient(135deg, #18032b, #6b21a8);"></span>
+                    <span>Purple</span>
+                  </button>
+                  <button type="button" class="btn-card-theme-pill portal-theme-pill" data-theme="ruby" onclick="StudentPortalView.setPortalCardTheme('ruby')" title="Crimson Ruby">
+                    <span class="swatch-dot" style="background: linear-gradient(135deg, #2b030d, #991b1b);"></span>
+                    <span>Ruby</span>
+                  </button>
+                  <button type="button" class="btn-card-theme-pill portal-theme-pill" data-theme="amber" onclick="StudentPortalView.setPortalCardTheme('amber')" title="Sunset Amber">
+                    <span class="swatch-dot" style="background: linear-gradient(135deg, #270f02, #9a3412);"></span>
+                    <span>Amber</span>
+                  </button>
+                  <button type="button" class="btn-card-theme-pill portal-theme-pill" data-theme="cyan" onclick="StudentPortalView.setPortalCardTheme('cyan')" title="Ocean Cyan">
+                    <span class="swatch-dot" style="background: linear-gradient(135deg, #021e2b, #0284c7);"></span>
+                    <span>Cyan</span>
+                  </button>
+                  
+                  <!-- Real Native Color Picker -->
+                  <label class="btn-card-theme-pill portal-theme-pill btn-card-color-picker-wrap" id="portalCustomColorPill" title="ចុចដើម្បីជ្រើសរើសពណ៌ដោយខ្លួនឯង (Custom Color Picker)">
+                    <span class="swatch-dot" id="portalCustomColorDot" style="background: conic-gradient(red, yellow, lime, aqua, blue, magenta, red);"></span>
+                    <span>កែពណ៌...</span>
+                    <input type="color" id="portalCardColorPicker" value="#0f1c3f" oninput="StudentPortalView.applyPortalCardCustomColor(this.value)" onchange="StudentPortalView.applyPortalCardCustomColor(this.value)">
+                  </label>
+
+                  <!-- Reset Theme Button -->
+                  <button type="button" class="btn-card-theme-pill" onclick="StudentPortalView.resetPortalCardTheme()" title="កំណត់ពណ៌ដើមឡើងវិញ" style="padding: 0 8px;">
+                    <i class="fa-solid fa-rotate-left"></i>
                   </button>
                 </div>
               </div>
-            `;
-          }).join("")}
-        </div>
 
-        <!-- 3.5 OFFICIAL SCHOOL E-BOOK & PRE-EXAM STUDY GUIDE -->
-        <div class="card" style="margin-top: 24px; padding: 20px 24px; background: linear-gradient(135deg, rgba(30, 27, 75, 0.9), rgba(49, 46, 129, 0.9)); border: 1.5px solid rgba(168, 85, 247, 0.4); border-radius: 16px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
-          <div style="display: flex; align-items: center; gap: 16px;">
-            <div style="width: 56px; height: 56px; border-radius: 14px; background: rgba(168, 85, 247, 0.25); border: 1.5px solid #a855f7; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; color: #d8b4fe;">
-              <i class="fa-solid fa-book-bookmark"></i>
-            </div>
-            <div>
-              <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 4px;">
-                <h3 style="margin: 0; font-size: 1.15rem; font-weight: 800; color: #fff;">
-                  សៀវភៅមូលដ្ឋានគ្រឹះកុំព្យូទ័ររដ្ឋបាល & IT (កម្រាស់ ១២០ ទំព័រ)
-                </h3>
-                <span class="badge" style="background: #10b981; color: #fff; font-size: 0.72rem; padding: 2px 8px; border-radius: 6px;">សៀវភៅផ្លូវការរបស់សាលា</span>
-              </div>
-              <p style="margin: 0; font-size: 0.84rem; color: #cbd5e1;">
-                មេរៀនគ្រឹះកុំព្យូទ័រ, Windows 10, Typing, MS Word, PowerPoint និង Excel 2019 រួមទាំងគន្លឹះ និងសំណួររំលឹកមុនប្រឡង
-              </p>
-            </div>
-          </div>
-
-          <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-            <button type="button" class="btn-primary" onclick="BookStudyEngine.openBookReaderModal()" style="height: 40px; padding: 0 18px; font-size: 0.88rem; background: linear-gradient(135deg, #8b5cf6, #6366f1); border: none; box-shadow: 0 4px 14px rgba(139, 92, 246, 0.4); font-weight: 700; border-radius: 10px; display: inline-flex; align-items: center; gap: 8px;">
-              <i class="fa-solid fa-book-open"></i>
-              <span>📖 បើកអានសៀវភៅ (E-Book)</span>
-            </button>
-            <button type="button" class="btn-primary" onclick="BookStudyEngine.openPreExamReviewModal('${activeCourseKey}')" style="height: 40px; padding: 0 18px; font-size: 0.88rem; background: linear-gradient(135deg, #ec4899, #d946ef); border: none; box-shadow: 0 4px 14px rgba(236, 72, 153, 0.4); font-weight: 700; border-radius: 10px; display: inline-flex; align-items: center; gap: 8px;">
-              <i class="fa-solid fa-graduation-cap"></i>
-              <span>🎯 សំណួររំលឹកមុនប្រឡង</span>
-            </button>
-            <button type="button" class="btn-primary" onclick="MockExamEngine.openLauncherModal('${activeCourseKey}')" style="height: 40px; padding: 0 18px; font-size: 0.88rem; background: linear-gradient(135deg, #10b981, #059669); border: none; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4); font-weight: 700; border-radius: 10px; display: inline-flex; align-items: center; gap: 8px;">
-              <i class="fa-solid fa-stopwatch-20"></i>
-              <span>⏱️ ប្រឡងសាកល្បង Mock Exam</span>
-            </button>
-            <a href="assets/books/computer_basics_book.pdf" download="សៀវភៅមូលដ្ឋានកុំព្យូទ័រ_TIS_LAB.pdf" class="btn-secondary" style="height: 40px; padding: 0 16px; font-size: 0.86rem; border-radius: 10px; display: inline-flex; align-items: center; gap: 8px; text-decoration: none;">
-              <i class="fa-solid fa-download"></i>
-              <span>ទាញយក PDF</span>
-            </a>
-          </div>
-        </div>
-
-        <!-- 3.6 SMART EDTECH SUITE: AI TUTOR, ASSIGNMENT CHECKER, TEMPLATES & INTERACTIVE LABS -->
-        <div style="margin-top: 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px;">
-          <!-- Card 1: AI Tutor 24/7 -->
-          <div onclick="AITutor.openChatModal()" style="background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 14px; padding: 16px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 14px;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
-            <div style="width: 46px; height: 46px; border-radius: 12px; background: rgba(56, 189, 248, 0.2); border: 1px solid #38bdf8; display: flex; align-items: center; justify-content: center; color: #38bdf8; font-size: 1.3rem;">
-              <i class="fa-solid fa-robot"></i>
-            </div>
-            <div>
-              <div style="font-weight: 800; font-size: 0.92rem; color: #fff;">AI គ្រូកុំព្យូទ័រ ២៤ ម៉ោង</div>
-              <div style="font-size: 0.76rem; color: #94a3b8; margin-top: 2px;">ឆ្លើយចម្ងល់តាមសៀវភៅមូលដ្ឋាន</div>
-            </div>
-          </div>
-
-          <!-- Card 2: AI Assignment Checker -->
-          <div onclick="AIAssignmentChecker.openModal('${activeCourseKey}')" style="background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(168, 85, 247, 0.3); border-radius: 14px; padding: 16px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 14px;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
-            <div style="width: 46px; height: 46px; border-radius: 12px; background: rgba(168, 85, 247, 0.2); border: 1px solid #a855f7; display: flex; align-items: center; justify-content: center; color: #d8b4fe; font-size: 1.3rem;">
-              <i class="fa-solid fa-file-circle-check"></i>
-            </div>
-            <div>
-              <div style="font-weight: 800; font-size: 0.92rem; color: #fff;">AI ពិនិត្យកិច្ចការជាក់ស្តែង</div>
-              <div style="font-size: 0.76rem; color: #94a3b8; margin-top: 2px;">ពិនិត្យ Margins & រូបមន្ត Excel</div>
-            </div>
-          </div>
-
-          <!-- Card 3: Office Templates Library -->
-          <div onclick="OfficeTemplates.openModal('${activeCourseKey}')" style="background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 14px; padding: 16px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 14px;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
-            <div style="width: 46px; height: 46px; border-radius: 12px; background: rgba(16, 185, 129, 0.2); border: 1px solid #10b981; display: flex; align-items: center; justify-content: center; color: #34d399; font-size: 1.3rem;">
-              <i class="fa-solid fa-folder-open"></i>
-            </div>
-            <div>
-              <div style="font-weight: 800; font-size: 0.92rem; color: #fff;">បណ្ណាល័យគំរូ Office</div>
-              <div style="font-size: 0.76rem; color: #94a3b8; margin-top: 2px;">លិខិតរដ្ឋបាល & តារាង Excel ស្រាប់ៗ</div>
-            </div>
-          </div>
-
-          <!-- Card 4: Live Quiz Battle -->
-          <div onclick="LiveQuizArena.openModal()" style="background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(250, 204, 21, 0.3); border-radius: 14px; padding: 16px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 14px;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
-            <div style="width: 46px; height: 46px; border-radius: 12px; background: rgba(250, 204, 21, 0.2); border: 1px solid #facc15; display: flex; align-items: center; justify-content: center; color: #facc15; font-size: 1.3rem;">
-              <i class="fa-solid fa-trophy"></i>
-            </div>
-            <div>
-              <div style="font-weight: 800; font-size: 0.92rem; color: #fff;">Live Quiz Battle 🏆</div>
-              <div style="font-size: 0.76rem; color: #94a3b8; margin-top: 2px;">ប្រកួតសំណួរ Live បែប Kahoot</div>
-            </div>
-          </div>
-
-          <!-- Card 5: AI Lesson Slides -->
-          <div onclick="AILessonSlides.openModal()" style="background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(236, 72, 153, 0.3); border-radius: 14px; padding: 16px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 14px;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
-            <div style="width: 46px; height: 46px; border-radius: 12px; background: rgba(236, 72, 153, 0.2); border: 1px solid #ec4899; display: flex; align-items: center; justify-content: center; color: #f472b6; font-size: 1.3rem;">
-              <i class="fa-solid fa-chalkboard-user"></i>
-            </div>
-            <div>
-              <div style="font-weight: 800; font-size: 0.92rem; color: #fff;">AI Slide បង្រៀន 📽️</div>
-              <div style="font-size: 0.76rem; color: #94a3b8; margin-top: 2px;">បង្កើត Slide តាមសៀវភៅ ១២០ ទំព័រ</div>
-            </div>
-          </div>
-
-          <!-- Card 6: Shortcut Key Trainer -->
-          <div onclick="ShortcutTrainer.openModal()" style="background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(6, 182, 212, 0.3); border-radius: 14px; padding: 16px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 14px;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
-            <div style="width: 46px; height: 46px; border-radius: 12px; background: rgba(6, 182, 212, 0.2); border: 1px solid #06b6d4; display: flex; align-items: center; justify-content: center; color: #22d3ee; font-size: 1.3rem;">
-              <i class="fa-solid fa-keyboard"></i>
-            </div>
-            <div>
-              <div style="font-weight: 800; font-size: 0.92rem; color: #fff;">Shortcut Trainer ⌨️</div>
-              <div style="font-size: 0.76rem; color: #94a3b8; margin-top: 2px;">ហ្វឹកហាត់លើក្តារចុចនិម្មិត</div>
-            </div>
-          </div>
-
-          <!-- Card 7: Excel Formula Sandbox -->
-          <div onclick="ExcelSandbox.openModal()" style="background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 14px; padding: 16px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 14px;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
-            <div style="width: 46px; height: 46px; border-radius: 12px; background: rgba(16, 185, 129, 0.2); border: 1px solid #10b981; display: flex; align-items: center; justify-content: center; color: #34d399; font-size: 1.3rem;">
-              <i class="fa-solid fa-table"></i>
-            </div>
-            <div>
-              <div style="font-weight: 800; font-size: 0.92rem; color: #fff;">Excel Sandbox 📊</div>
-              <div style="font-size: 0.76rem; color: #94a3b8; margin-top: 2px;">រៀនវាយរូបមន្តផ្ទាល់លើ Web</div>
-            </div>
-          </div>
-
-          <!-- Card 8: Anime AI Companion (ម៉ីលីង AI) -->
-          <div onclick="if(typeof AnimeAIAssistant !== 'undefined') AnimeAIAssistant.openStudioModal();" style="background: linear-gradient(135deg, rgba(168, 85, 247, 0.2), rgba(6, 182, 212, 0.2)); border: 1px solid rgba(168, 85, 247, 0.45); border-radius: 14px; padding: 16px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 14px;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
-            <img src="assets/images/anime_ai_assistant.jpg" style="width: 46px; height: 46px; border-radius: 12px; object-fit: cover; object-position: 50% 12%; border: 2px solid #a855f7; box-shadow: 0 0 10px rgba(168, 85, 247, 0.5);">
-            <div>
-              <div style="font-weight: 800; font-size: 0.92rem; color: #f3e8ff;">ម៉ីលីង AI (Anime Companion) ✨</div>
-              <div style="font-size: 0.76rem; color: #cbd5e1; margin-top: 2px;">ជំនួយការឆ្លាតវៃ & អានសំឡេង</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- 4. PROFILE DETAILS & ATTENDANCE STATS SECTION -->
-        <div class="portal-bottom-grid mt-5">
-          <!-- Left: Digital ID Card Preview -->
-          <div class="portal-card-box id-preview-box">
-            <div class="box-header">
-              <h3><i class="fa-solid fa-address-card text-purple-500"></i> កាតសិស្សឌីជីថល (Digital Student ID)</h3>
-              <button type="button" class="btn-secondary btn-sm" onclick="App.printStudentIdCard('${student.ID}')">
-                <i class="fa-solid fa-print"></i> បោះពុម្ពកាត
-              </button>
-            </div>
-
-            <div class="student-id-card-render-wrap">
-              <div class="id-card-preview-mini">
-                <div class="id-mini-top">
-                  <div style="display: flex; align-items: center; gap: 6px;">
-                    <img src="assets/images/logo.png" alt="TIS Logo" style="width: 20px; height: 20px; border-radius: 50%; background: #fff; padding: 1px;">
-                    <div class="id-mini-school">សាលា ធានស៊ីន (TIS)</div>
+              <!-- PVC CR80 Printable Student ID Card Preview -->
+              <div class="id-card-preview-wrapper" style="margin: 10px auto;">
+                <div id="portalPrintableIdCard" class="id-card-element id-card-theme-navy">
+                  <div class="card-gloss-sheen"></div>
+                  
+                  <!-- Card Header -->
+                  <div class="id-card-header">
+                    <div class="id-card-logo-wrap">
+                      <img src="assets/images/logo.png" alt="TIS Logo" class="id-card-logo">
+                    </div>
+                    <div class="id-card-header-text">
+                      <div class="school-name">សាលា អន្តរជាតិ ធានស៊ីន</div>
+                      <div class="card-tag">TIAN XIN INTERNATIONAL SCHOOL (TIS)</div>
+                      <div class="card-type-badge">OFFICIAL STUDENT IDENTITY CARD</div>
+                    </div>
+                    <div class="id-card-verified-badge">
+                      <i class="fa-solid fa-shield-halved"></i> <span>VERIFIED</span>
+                    </div>
                   </div>
-                  <div class="id-mini-badge">STUDENT CARD</div>
-                </div>
-                <div class="id-mini-body">
-                  <img src="${student.Avatar || (student.Gender === 'ស្រី' ? 'assets/images/default-female.svg' : 'assets/images/default-male.svg')}" 
-                       alt="${student.NameKh}" class="id-mini-avatar" onerror="this.src='assets/images/default-male.svg'">
-                  <div class="id-mini-info">
-                    <div class="id-mini-name">${student.NameKh}</div>
-                    <div class="id-mini-name-en">${student.NameEn || ''}</div>
-                    <div class="id-mini-code">ID: <strong>${student.ID}</strong></div>
-                    <div class="id-mini-detail">ថ្នាក់: ${student.Grade || 'ថ្នាក់កុំព្យូទ័រ'}</div>
-                    <div class="id-mini-detail">វេន: ${student.Shift || 'ព្រឹក'}</div>
+
+                  <!-- Gold Ribbon Divider -->
+                  <div class="id-card-divider-gold"></div>
+
+                  <!-- Card Main Body -->
+                  <div class="id-card-body">
+                    <!-- Left Photo Frame -->
+                    <div class="id-card-photo-col">
+                      <div class="id-card-photo-frame">
+                        <img src="${student.Avatar || (student.Gender === 'ស្រី' ? 'assets/images/default-female.svg' : 'assets/images/default-male.svg')}" 
+                             alt="${student.NameKh}" class="id-card-avatar" onerror="this.src='assets/images/default-male.svg'">
+                      </div>
+                      <div class="id-card-id-pill">ID: <span class="font-mono">${student.ID}</span></div>
+                    </div>
+
+                    <!-- Middle Student Details -->
+                    <div class="id-card-details">
+                      <div class="id-card-name-kh">${student.NameKh}</div>
+                      <div class="id-card-name-en">${student.NameEn || ''}</div>
+                      
+                      <div class="id-card-info-table">
+                        <div class="info-pair">
+                          <span class="info-k">ថ្នាក់/ជំនាញ:</span>
+                          <span class="info-v">${student.Grade || 'ថ្នាក់កុំព្យូទ័រ'}</span>
+                        </div>
+                        <div class="info-pair">
+                          <span class="info-k">វេនសិក្សា:</span>
+                          <span class="info-v">${student.Shift || 'ព្រឹក (08:00 - 09:30)'}</span>
+                        </div>
+                        <div class="info-pair">
+                          <span class="info-k">ថ្ងៃកំណើត:</span>
+                          <span class="info-v font-mono">${student.Dob || '2006-01-01'}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Right QR Code for Attendance Scanner & Public Mobile Profile -->
+                    <div class="id-card-qr-col">
+                      <div class="id-card-qr-box">
+                        <img class="id-card-qr-img" src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(typeof App !== 'undefined' && App.getStudentProfileUrl ? App.getStudentProfileUrl(student.ID) : ('#profile?id=' + student.ID))}" alt="QR">
+                      </div>
+                      <div class="id-card-scan-label">SCAN ID</div>
+                    </div>
+                  </div>
+
+                  <!-- Bottom Barcode & Security Strip -->
+                  <div class="id-card-bottom-strip">
+                    <div>សុពលភាព: <strong class="font-mono" style="color: #f1f5f9;">2026-2027</strong></div>
+                    <div class="id-card-barcode-val">*${student.ID}*</div>
+                    <div class="id-card-footer-motto">EXCELLENCE IN DIGITAL EDUCATION</div>
                   </div>
                 </div>
-                <div class="id-mini-barcode">
-                  <i class="fa-solid fa-barcode fa-2x text-gray-700"></i>
-                  <span>${student.ID}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Right: Personal Information & Attendance KPIs -->
-          <div class="portal-card-box profile-info-box">
-            <div class="box-header">
-              <h3><i class="fa-solid fa-user-check text-emerald-500"></i> ព័ត៌មានលម្អិត & វត្តមានសរុប</h3>
-              <span class="badge badge-sub"><i class="fa-solid fa-calendar-check"></i> វត្តមាន ${att.rate}%</span>
-            </div>
-
-            <!-- Attendance Stats 4 Mini Cards -->
-            <div class="portal-att-mini-grid">
-              <div class="att-mini-card">
-                <span class="att-mini-num text-purple-600">${att.totalDays}</span>
-                <span class="att-mini-lbl">ថ្ងៃសិក្សាសរុប</span>
-              </div>
-              <div class="att-mini-card">
-                <span class="att-mini-num text-emerald-600">${att.present}</span>
-                <span class="att-mini-lbl">វត្តមាន (Present)</span>
-              </div>
-              <div class="att-mini-card">
-                <span class="att-mini-num text-amber-500">${att.permission}</span>
-                <span class="att-mini-lbl">ច្បាប់ (Permit)</span>
-              </div>
-              <div class="att-mini-card">
-                <span class="att-mini-num text-rose-500">${att.absent}</span>
-                <span class="att-mini-lbl">អវត្តមាន (Absent)</span>
-              </div>
-            </div>
-
-            <!-- Profile Fields Table -->
-            <table class="portal-profile-table mt-3">
-              <tbody>
-                <tr>
-                  <td class="field-lbl"><i class="fa-solid fa-venus-mars"></i> ភេទ</td>
-                  <td class="field-val font-semibold">${student.Gender || '—'}</td>
-                  <td class="field-lbl"><i class="fa-solid fa-cake-candles"></i> ថ្ងៃខែកំណើត</td>
-                  <td class="field-val">${student.Dob || '—'}</td>
-                </tr>
-                <tr>
-                  <td class="field-lbl"><i class="fa-solid fa-phone"></i> ទូរស័ព្ទផ្ទាល់ខ្លួន</td>
-                  <td class="field-val font-semibold">${student.Phone || '—'}</td>
-                  <td class="field-lbl"><i class="fa-solid fa-phone-volume"></i> ទូរស័ព្ទអាណាព្យាបាល</td>
-                  <td class="field-val">${student.GuardianPhone || '—'}</td>
-                </tr>
-                <tr>
-                  <td class="field-lbl"><i class="fa-solid fa-calendar-day"></i> ថ្ងៃចាប់ផ្តើម</td>
-                  <td class="field-val">${student.StartDate || '—'}</td>
-                  <td class="field-lbl"><i class="fa-solid fa-flag-checkered"></i> ថ្ងៃបញ្ចប់រំពឹងទុក</td>
-                  <td class="field-val">${student.EndDate || '—'}</td>
-                </tr>
-                <tr>
-                  <td class="field-lbl"><i class="fa-solid fa-location-dot"></i> អាសយដ្ឋាន</td>
-                  <td class="field-val" colspan="3">${student.Address || 'ខេត្តកំពត'}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- 5. PRACTICAL ASSIGNMENTS & LEAVE REQUESTS SECTION -->
-        <div class="portal-section-header mt-5">
-          <div class="section-title-wrap">
-            <div class="section-icon-bubble" style="background: rgba(99, 102, 241, 0.12); color: #6366f1;">
-              <i class="fa-solid fa-laptop-file"></i>
-            </div>
-            <div>
-              <h2 class="section-title">កិច្ចការអនុវត្តជាក់ស្តែង & ស្នើសុំច្បាប់ (Assignments & Leave Requests)</h2>
-              <p class="section-desc">ប្រគល់កិច្ចការផ្ទះ តាមដានការដាក់ពិន្ទុពីលោកគ្រូ និងស្នើសុំច្បាប់អវត្តមានតាម Online</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="portal-bottom-grid">
-          <!-- Left: Practical Assignments Hub -->
-          <div class="portal-card-box">
-            <div class="box-header">
-              <h3><i class="fa-solid fa-list-check text-indigo-500"></i> កិច្ចការអនុវត្តជាក់ស្តែង (Assignments)</h3>
-              <span class="badge badge-sub">វគ្គ៖ ${currentCourseInfo.title}</span>
-            </div>
-
-            <div id="portalAssignmentsListMount" style="padding-top: 10px;">
-              ${this.renderAssignmentsList(student, activeCourseKey)}
-            </div>
-          </div>
-
-          <!-- Right: Online Leave Request Form & History -->
-          <div class="portal-card-box">
-            <div class="box-header">
-              <h3><i class="fa-solid fa-envelope-open-text text-amber-500"></i> ស្នើសុំច្បាប់អវត្តមាន (Leave Request)</h3>
-              <span class="badge" style="background: rgba(245, 158, 11, 0.12); color: #d97706; font-size: 0.76rem; font-weight: 700;">
-                <i class="fa-solid fa-shield-halved"></i> ជូនដំណឹងគ្រូផ្ទាល់
-              </span>
-            </div>
-
-            <!-- Submit Leave Form -->
-            <form id="portalLeaveRequestForm" style="margin-top: 10px; background: var(--border-light); padding: 14px; border-radius: 10px; border: 1px solid var(--border-color);">
-              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
-                <div class="form-group" style="margin-bottom: 0;">
-                  <label style="font-size: 0.8rem; font-weight: 700; display: block; margin-bottom: 4px;">សុំឈប់ពីថ្ងៃ៖ <span style="color: #ef4444;">*</span></label>
-                  <input type="date" id="portalLeaveStartDate" class="form-control" style="font-size: 0.84rem; height: 36px;" required value="${new Date().toISOString().split('T')[0]}">
-                </div>
-                <div class="form-group" style="margin-bottom: 0;">
-                  <label style="font-size: 0.8rem; font-weight: 700; display: block; margin-bottom: 4px;">ដល់ថ្ងៃ៖ <span style="color: #ef4444;">*</span></label>
-                  <input type="date" id="portalLeaveEndDate" class="form-control" style="font-size: 0.84rem; height: 36px;" required value="${new Date().toISOString().split('T')[0]}">
-                </div>
               </div>
 
-              <div class="form-group" style="margin-bottom: 10px;">
-                <label style="font-size: 0.8rem; font-weight: 700; display: block; margin-bottom: 4px;">មូលហេតុនៃការសុំច្បាប់៖ <span style="color: #ef4444;">*</span></label>
-                <select id="portalLeaveReasonSelect" class="form-control" style="font-size: 0.84rem; height: 36px; margin-bottom: 6px;">
-                  <option value="ឈឺ / មិនស្រួលខ្លួន">ឈឺ / មិនស្រួលខ្លួន (Sick Leave)</option>
-                  <option value="មានធុរៈគ្រួសារចាំបាច់">មានធុរៈគ្រួសារចាំបាច់ (Family Urgent Matter)</option>
-                  <option value="ជាប់ប្រឡងនៅសាលាចំណេះទូទៅ">ជាប់ប្រឡងនៅសាលាចំណេះទូទៅ (Exam at High School/Uni)</option>
-                  <option value="ផ្សេងៗ">ផ្សេងៗ (Other Reason)</option>
-                </select>
-                <input type="text" id="portalLeaveReasonOther" class="form-control" placeholder="បញ្ជាក់លម្អិតបន្ថែម (បើមាន)..." style="font-size: 0.82rem; height: 34px;">
-              </div>
-
-              <div class="form-group" style="margin-bottom: 12px;">
-                <label style="font-size: 0.8rem; font-weight: 700; display: block; margin-bottom: 4px;">លេខទូរស័ព្ទសម្រាប់ទំនាក់ទំនង៖</label>
-                <input type="tel" id="portalLeavePhone" class="form-control" value="${student.Phone || student.GuardianPhone || ''}" placeholder="012 345 678" style="font-size: 0.84rem; height: 36px;">
-              </div>
-
-              <button type="submit" class="btn-primary" style="width: 100%; height: 38px; font-size: 0.86rem; background: linear-gradient(135deg, #f59e0b, #d97706); border: none; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.35);">
-                <i class="fa-solid fa-paper-plane"></i> <span>ផ្ញើសំណើសុំច្បាប់ទៅលោកគ្រូ</span>
-              </button>
-            </form>
-
-            <!-- Student's Leave History -->
-            <div style="margin-top: 14px;">
-              <h4 style="font-size: 0.88rem; margin: 0 0 8px 0; color: var(--text-main); font-weight: 700;">
-                <i class="fa-solid fa-clock-rotate-left"></i> ប្រវត្តិនៃការសុំច្បាប់កន្លងមក៖
-              </h4>
-              <div id="portalLeaveHistoryMount">
-                ${this.renderStudentLeaveHistory(student.ID)}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- 6. TUITION INVOICE & DIGITAL CERTIFICATE HUB -->
-        <div class="portal-section-header mt-5">
-          <div class="section-title-wrap">
-            <div class="section-icon-bubble" style="background: rgba(16, 185, 129, 0.1); color: #10b981;">
-              <i class="fa-solid fa-receipt"></i>
-            </div>
-            <div>
-              <h2 class="section-title">វិក្កយបត្រ & វិញ្ញាបនបត្រឌីជីថល (Invoices & Certificates)</h2>
-              <p class="section-desc">តាមដានស្ថានភាពថ្លៃសិក្សា វិក្កយបត្រផ្លូវការ និងវិញ្ញាបនបត្របញ្ចប់ការសិក្សា</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="portal-bottom-grid">
-          <!-- Left: Tuition Fee & Official Invoice -->
-          <div class="portal-card-box">
-            <div class="box-header">
-              <h3><i class="fa-solid fa-file-invoice-dollar text-emerald-500"></i> វិក្កយបត្រថ្លៃសិក្សា (Tuition Invoice)</h3>
-              <span class="badge ${fee && fee.status === 'Paid' ? 'badge-pass' : 'badge-in-progress'}">
-                ${fee && fee.status === 'Paid' ? '✓ បានបង់រួច' : (fee && fee.status === 'Partial' ? '⏳ បង់ខ្លះ' : '○ ជំពាក់')}
-              </span>
-            </div>
-
-            <div style="padding: 16px; background: var(--border-light); border-radius: 8px; margin-top: 10px;">
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                <span style="color: var(--text-muted); font-size: 0.85rem;">លេខវិក្កយបត្រ៖</span>
-                <strong class="font-mono text-main">${fee?.receiptNo || ('INV-2026-' + student.ID.replace(/\D/g,''))}</strong>
-              </div>
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                <span style="color: var(--text-muted); font-size: 0.85rem;">ថ្លៃសិក្សាសរុប៖</span>
-                <strong class="font-mono text-main">$${fee?.totalAmount || 50}</strong>
-              </div>
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                <span style="color: var(--text-muted); font-size: 0.85rem;">បានបង់រួច៖</span>
-                <strong class="font-mono text-emerald-600 font-bold">$${fee?.paidAmount || 50}</strong>
-              </div>
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                <span style="color: var(--text-muted); font-size: 0.85rem;">ប្រាក់នៅខ្វះ (Balance Due)៖</span>
-                <strong class="font-mono ${fee && fee.balance > 0 ? 'text-rose-600 font-bold' : 'text-muted'}">$${fee?.balance || 0}</strong>
-              </div>
-              <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 8px; border-top: 1px dashed var(--border-color);">
-                <span style="color: var(--text-muted); font-size: 0.8rem;">វិធីបង់៖ ${fee?.paymentMethod || 'ABA KHQR'}</span>
-                <span style="color: var(--text-muted); font-size: 0.8rem;">${fee?.date || '2026-08-15'}</span>
-              </div>
-            </div>
-
-            <div style="margin-top: 14px; text-align: right;">
-              <button type="button" class="btn-primary" style="height: 36px; padding: 0 16px; font-size: 0.84rem; background: #10b981; border-color: #10b981;" onclick="FeesView.printOfficialReceipt('${student.ID}')">
-                <i class="fa-solid fa-print"></i>
-                <span>ទាញយក / បោះពុម្ពវិក្កយបត្រផ្លូវការ</span>
-              </button>
-            </div>
-          </div>
-
-          <!-- Right: Official Certificate Preview & Download -->
-          <div class="portal-card-box">
-            <div class="box-header">
-              <h3><i class="fa-solid fa-graduation-cap text-amber-500"></i> វិញ្ញាបនបត្រឌីជីថល (Digital Certificate)</h3>
-              <span class="badge ${cert ? 'badge-pass' : (passedCount === 4 ? 'badge-pass' : 'badge-in-progress')}">
-                ${cert ? '🏆 បានចេញរួចរាល់' : (passedCount === 4 ? '✨ គ្រប់លក្ខខណ្ឌ' : '⏳ កំពុងបន្ត ៤ វគ្គ')}
-              </span>
-            </div>
-
-            <div style="padding: 16px; background: linear-gradient(135deg, rgba(245, 158, 11, 0.08), rgba(99, 102, 241, 0.06)); border: 1.5px dashed #f59e0b; border-radius: 8px; margin-top: 10px; text-align: center;">
-              <div style="font-size: 2rem; margin-bottom: 4px;">🎓</div>
-              <h4 style="margin: 0 0 4px 0; color: #b45309; font-size: 1.05rem; font-weight: 700;">វិញ្ញាបនបត្របញ្ចប់ការសិក្សា</h4>
-              <p style="margin: 0 0 10px 0; font-size: 0.8rem; color: var(--text-muted);">
-                វគ្គបណ្តុះបណ្តាលកុំព្យូទ័ររដ្ឋបាល & ការិយាល័យ TIS Lab Computer
-              </p>
-              <div style="font-size: 0.82rem; color: var(--text-main); margin-bottom: 12px;">
-                ${cert ? `លេខកូដ៖ <strong class="font-mono">${cert.certId}</strong> • និទ្ទេស <strong>${cert.gpa}</strong>` : (passedCount === 4 ? `អ្នកបានប្រឡងជាប់គ្រប់ ៤ វគ្គ! អាចស្នើសុំ ឬទាញយកវិញ្ញាបនបត្របាន។` : `សិស្សត្រូវប្រឡងជាប់ទាំង ៤ វគ្គ (Typing, Word, Excel, PowerPoint) ដើម្បីទទួលបានវិញ្ញាបនបត្រ។`)}
-              </div>
-
-              ${(cert || passedCount === 4) ? `
-                <button type="button" class="btn-primary" style="height: 38px; padding: 0 20px; font-size: 0.86rem; background: linear-gradient(135deg, #f59e0b, #d97706); border: none; box-shadow: 0 4px 14px rgba(245, 158, 11, 0.35);" onclick="CertificatesView.printOfficialCertificate('${student.ID}')">
-                  <i class="fa-solid fa-award"></i>
-                  <span>🖨️ បោះពុម្ពវិញ្ញាបនបត្រ A4 Landscape</span>
+              <!-- Bottom Action Button -->
+              <div style="margin-top: 14px; display: flex; justify-content: center; gap: 10px;">
+                <button type="button" id="portalPrintIdCardBtn" class="btn-primary" onclick="App.printStudentIdCard('${student.ID}')" style="height: 38px; padding: 0 20px; font-size: 0.85rem;">
+                  <i class="fa-solid fa-print"></i> <span>បោះពុម្ពកាតសិស្ស (Print ID Card)</span>
                 </button>
-              ` : `
-                <button type="button" class="btn-secondary" style="height: 36px; padding: 0 14px; font-size: 0.82rem; opacity: 0.7; cursor: not-allowed;" title="រៀនចប់ ៤ វគ្គដើម្បីដោះសោរ">
-                  <i class="fa-solid fa-lock"></i>
-                  <span>មិនទាន់គ្រប់លក្ខខណ្ឌ (${passedCount}/4 វគ្គ)</span>
+              </div>
+            </div>
+
+            <!-- Right: Personal Information & Attendance KPIs -->
+            <div class="portal-card-box profile-info-box">
+              <div class="box-header">
+                <h3><i class="fa-solid fa-user-check text-emerald-500"></i> ព័ត៌មានលម្អិត & វត្តមានសរុប</h3>
+                <span class="badge badge-sub"><i class="fa-solid fa-calendar-check"></i> វត្តមាន ${att.rate}%</span>
+              </div>
+
+              <!-- Attendance Stats 4 Mini Cards -->
+              <div class="portal-att-mini-grid">
+                <div class="att-mini-card">
+                  <span class="att-mini-num text-purple-600">${att.totalDays}</span>
+                  <span class="att-mini-lbl">ថ្ងៃសិក្សាសរុប</span>
+                </div>
+                <div class="att-mini-card">
+                  <span class="att-mini-num text-emerald-600">${att.present}</span>
+                  <span class="att-mini-lbl">វត្តមាន (Present)</span>
+                </div>
+                <div class="att-mini-card">
+                  <span class="att-mini-num text-amber-500">${att.permission}</span>
+                  <span class="att-mini-lbl">ច្បាប់ (Permit)</span>
+                </div>
+                <div class="att-mini-card">
+                  <span class="att-mini-num text-rose-500">${att.absent}</span>
+                  <span class="att-mini-lbl">អវត្តមាន (Absent)</span>
+                </div>
+              </div>
+
+              <!-- Profile Fields Table -->
+              <table class="portal-profile-table mt-3">
+                <tbody>
+                  <tr>
+                    <td class="field-lbl"><i class="fa-solid fa-venus-mars"></i> ភេទ</td>
+                    <td class="field-val font-semibold">${student.Gender || '—'}</td>
+                    <td class="field-lbl"><i class="fa-solid fa-cake-candles"></i> ថ្ងៃខែកំណើត</td>
+                    <td class="field-val">${student.Dob || '—'}</td>
+                  </tr>
+                  <tr>
+                    <td class="field-lbl"><i class="fa-solid fa-phone"></i> ទូរស័ព្ទផ្ទាល់ខ្លួន</td>
+                    <td class="field-val font-semibold">${student.Phone || '—'}</td>
+                    <td class="field-lbl"><i class="fa-solid fa-phone-volume"></i> ទូរស័ព្ទអាណាព្យាបាល</td>
+                    <td class="field-val">${student.GuardianPhone || '—'}</td>
+                  </tr>
+                  <tr>
+                    <td class="field-lbl"><i class="fa-solid fa-calendar-day"></i> ថ្ងៃចាប់ផ្តើម</td>
+                    <td class="field-val">${student.StartDate || '—'}</td>
+                    <td class="field-lbl"><i class="fa-solid fa-flag-checkered"></i> ថ្ងៃបញ្ចប់រំពឹងទុក</td>
+                    <td class="field-val">${student.EndDate || '—'}</td>
+                  </tr>
+                  <tr>
+                    <td class="field-lbl"><i class="fa-solid fa-location-dot"></i> អាសយដ្ឋាន</td>
+                    <td class="field-val" colspan="3">${student.Address || 'ខេត្តកំពត'}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- ======================================================== -->
+        <!-- TAB PANE 3: កិច្ចការ & ស្នើសុំច្បាប់ (Assignments & Leave) -->
+        <!-- ======================================================== -->
+        <div class="portal-tab-pane ${currentTab === 'assignments' ? 'active' : ''}" data-portal-content="assignments">
+          <div class="portal-section-header">
+            <div class="section-title-wrap">
+              <div class="section-icon-bubble" style="background: rgba(99, 102, 241, 0.12); color: #6366f1;">
+                <i class="fa-solid fa-laptop-file"></i>
+              </div>
+              <div>
+                <h2 class="section-title">កិច្ចការអនុវត្តជាក់ស្តែង & ស្នើសុំច្បាប់ (Assignments & Leave Requests)</h2>
+                <p class="section-desc">ប្រគល់កិច្ចការផ្ទះ តាមដានការដាក់ពិន្ទុពីលោកគ្រូ និងស្នើសុំច្បាប់អវត្តមានតាម Online</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="portal-bottom-grid">
+            <!-- Left: Practical Assignments Hub -->
+            <div class="portal-card-box">
+              <div class="box-header">
+                <h3><i class="fa-solid fa-list-check text-indigo-500"></i> កិច្ចការអនុវត្តជាក់ស្តែង (Assignments)</h3>
+                <span class="badge badge-sub">វគ្គ៖ ${currentCourseInfo.title}</span>
+              </div>
+
+              <div id="portalAssignmentsListMount" style="padding-top: 10px;">
+                ${this.renderAssignmentsList(student, activeCourseKey)}
+              </div>
+            </div>
+
+            <!-- Right: Online Leave Request Form & History -->
+            <div class="portal-card-box">
+              <div class="box-header">
+                <h3><i class="fa-solid fa-envelope-open-text text-amber-500"></i> ស្នើសុំច្បាប់អវត្តមាន (Leave Request)</h3>
+                <span class="badge" style="background: rgba(245, 158, 11, 0.12); color: #d97706; font-size: 0.76rem; font-weight: 700;">
+                  <i class="fa-solid fa-shield-halved"></i> ជូនដំណឹងគ្រូផ្ទាល់
+                </span>
+              </div>
+
+              <!-- Submit Leave Form -->
+              <form id="portalLeaveRequestForm" style="margin-top: 10px; background: var(--border-light); padding: 14px; border-radius: 10px; border: 1px solid var(--border-color);">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                  <div class="form-group" style="margin-bottom: 0;">
+                    <label style="font-size: 0.8rem; font-weight: 700; display: block; margin-bottom: 4px;">សុំឈប់ពីថ្ងៃ៖ <span style="color: #ef4444;">*</span></label>
+                    <input type="date" id="portalLeaveStartDate" class="form-control" style="font-size: 0.84rem; height: 36px;" required value="${new Date().toISOString().split('T')[0]}">
+                  </div>
+                  <div class="form-group" style="margin-bottom: 0;">
+                    <label style="font-size: 0.8rem; font-weight: 700; display: block; margin-bottom: 4px;">ដល់ថ្ងៃ៖ <span style="color: #ef4444;">*</span></label>
+                    <input type="date" id="portalLeaveEndDate" class="form-control" style="font-size: 0.84rem; height: 36px;" required value="${new Date().toISOString().split('T')[0]}">
+                  </div>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 10px;">
+                  <label style="font-size: 0.8rem; font-weight: 700; display: block; margin-bottom: 4px;">មូលហេតុនៃការសុំច្បាប់៖ <span style="color: #ef4444;">*</span></label>
+                  <select id="portalLeaveReasonSelect" class="form-control" style="font-size: 0.84rem; height: 36px; margin-bottom: 6px;">
+                    <option value="ឈឺ / មិនស្រួលខ្លួន">ឈឺ / មិនស្រួលខ្លួន (Sick Leave)</option>
+                    <option value="មានធុរៈគ្រួសារចាំបាច់">មានធុរៈគ្រួសារចាំបាច់ (Family Urgent Matter)</option>
+                    <option value="ជាប់ប្រឡងនៅសាលាចំណេះទូទៅ">ជាប់ប្រឡងនៅសាលាចំណេះទូទៅ (Exam at High School/Uni)</option>
+                    <option value="ផ្សេងៗ">ផ្សេងៗ (Other Reason)</option>
+                  </select>
+                  <input type="text" id="portalLeaveReasonOther" class="form-control" placeholder="បញ្ជាក់លម្អិតបន្ថែម (បើមាន)..." style="font-size: 0.82rem; height: 34px;">
+                </div>
+
+                <div class="form-group" style="margin-bottom: 12px;">
+                  <label style="font-size: 0.8rem; font-weight: 700; display: block; margin-bottom: 4px;">លេខទូរស័ព្ទសម្រាប់ទំនាក់ទំនង៖</label>
+                  <input type="tel" id="portalLeavePhone" class="form-control" value="${student.Phone || student.GuardianPhone || ''}" placeholder="012 345 678" style="font-size: 0.84rem; height: 36px;">
+                </div>
+
+                <button type="submit" class="btn-primary" style="width: 100%; height: 38px; font-size: 0.86rem; background: linear-gradient(135deg, #f59e0b, #d97706); border: none; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.35);">
+                  <i class="fa-solid fa-paper-plane"></i> <span>ផ្ញើសំណើសុំច្បាប់ទៅលោកគ្រូ</span>
                 </button>
-              `}
+              </form>
+
+              <!-- Student's Leave History -->
+              <div style="margin-top: 14px;">
+                <h4 style="font-size: 0.88rem; margin: 0 0 8px 0; color: var(--text-main); font-weight: 700;">
+                  <i class="fa-solid fa-clock-rotate-left"></i> ប្រវត្តិនៃការសុំច្បាប់កន្លងមក៖
+                </h4>
+                <div id="portalLeaveHistoryMount">
+                  ${this.renderStudentLeaveHistory(student.ID)}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ======================================================== -->
+        <!-- TAB PANE 4: ថ្លៃសិក្សា & វិញ្ញាបនបត្រ (Finance & Cert)    -->
+        <!-- ======================================================== -->
+        <div class="portal-tab-pane ${currentTab === 'finance' ? 'active' : ''}" data-portal-content="finance">
+          <div class="portal-section-header">
+            <div class="section-title-wrap">
+              <div class="section-icon-bubble" style="background: rgba(16, 185, 129, 0.1); color: #10b981;">
+                <i class="fa-solid fa-receipt"></i>
+              </div>
+              <div>
+                <h2 class="section-title">វិក្កយបត្រ & វិញ្ញាបនបត្រឌីជីថល (Invoices & Certificates)</h2>
+                <p class="section-desc">តាមដានស្ថានភាពថ្លៃសិក្សា វិក្កយបត្រផ្លូវការ និងវិញ្ញាបនបត្របញ្ចប់ការសិក្សា</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="portal-bottom-grid">
+            <!-- Left: Tuition Fee & Official Invoice -->
+            <div class="portal-card-box">
+              <div class="box-header">
+                <h3><i class="fa-solid fa-file-invoice-dollar text-emerald-500"></i> វិក្កយបត្រថ្លៃសិក្សា (Tuition Invoice)</h3>
+                <span class="badge ${fee && fee.status === 'Paid' ? 'badge-pass' : 'badge-in-progress'}">
+                  ${fee && fee.status === 'Paid' ? '✓ បានបង់រួច' : (fee && fee.status === 'Partial' ? '⏳ បង់ខ្លះ' : '○ ជំពាក់')}
+                </span>
+              </div>
+
+              <div style="padding: 16px; background: var(--border-light); border-radius: 8px; margin-top: 10px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                  <span style="color: var(--text-muted); font-size: 0.85rem;">លេខវិក្កយបត្រ៖</span>
+                  <strong class="font-mono text-main">${fee?.receiptNo || ('INV-2026-' + student.ID.replace(/\D/g,''))}</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                  <span style="color: var(--text-muted); font-size: 0.85rem;">ថ្លៃសិក្សាសរុប៖</span>
+                  <strong class="font-mono text-main">$${fee?.totalAmount || 50}</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                  <span style="color: var(--text-muted); font-size: 0.85rem;">បានបង់រួច៖</span>
+                  <strong class="font-mono text-emerald-600 font-bold">$${fee?.paidAmount || 50}</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                  <span style="color: var(--text-muted); font-size: 0.85rem;">ប្រាក់នៅខ្វះ (Balance Due)៖</span>
+                  <strong class="font-mono ${fee && fee.balance > 0 ? 'text-rose-600 font-bold' : 'text-muted'}">$${fee?.balance || 0}</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 8px; border-top: 1px dashed var(--border-color);">
+                  <span style="color: var(--text-muted); font-size: 0.8rem;">វិធីបង់៖ ${fee?.paymentMethod || 'ABA KHQR'}</span>
+                  <span style="color: var(--text-muted); font-size: 0.8rem;">${fee?.date || '2026-08-15'}</span>
+                </div>
+              </div>
+
+              <div style="margin-top: 14px; text-align: right;">
+                <button type="button" class="btn-primary" style="height: 36px; padding: 0 16px; font-size: 0.84rem; background: #10b981; border-color: #10b981;" onclick="FeesView.printOfficialReceipt('${student.ID}')">
+                  <i class="fa-solid fa-print"></i>
+                  <span>ទាញយក / បោះពុម្ពវិក្កយបត្រផ្លូវការ</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Right: Official Certificate Preview & Download -->
+            <div class="portal-card-box">
+              <div class="box-header">
+                <h3><i class="fa-solid fa-graduation-cap text-amber-500"></i> វិញ្ញាបនបត្រឌីជីថល (Digital Certificate)</h3>
+                <span class="badge ${cert ? 'badge-pass' : (passedCount === 4 ? 'badge-pass' : 'badge-in-progress')}">
+                  ${cert ? '🏆 បានចេញរួចរាល់' : (passedCount === 4 ? '✨ គ្រប់លក្ខខណ្ឌ' : '⏳ កំពុងបន្ត ៤ វគ្គ')}
+                </span>
+              </div>
+
+              <div style="padding: 16px; background: linear-gradient(135deg, rgba(245, 158, 11, 0.08), rgba(99, 102, 241, 0.06)); border: 1.5px dashed #f59e0b; border-radius: 8px; margin-top: 10px; text-align: center;">
+                <div style="font-size: 2rem; margin-bottom: 4px;">🎓</div>
+                <h4 style="margin: 0 0 4px 0; color: #b45309; font-size: 1.05rem; font-weight: 700;">វិញ្ញាបនបត្របញ្ចប់ការសិក្សា</h4>
+                <p style="margin: 0 0 10px 0; font-size: 0.8rem; color: var(--text-muted);">
+                  វគ្គបណ្តុះបណ្តាលកុំព្យូទ័ររដ្ឋបាល & ការិយាល័យ TIS Lab Computer
+                </p>
+                <div style="font-size: 0.82rem; color: var(--text-main); margin-bottom: 12px;">
+                  ${cert ? `លេខកូដ៖ <strong class="font-mono">${cert.certId}</strong> • និទ្ទេស <strong>${cert.gpa}</strong>` : (passedCount === 4 ? `អ្នកបានប្រឡងជាប់គ្រប់ ៤ វគ្គ! អាចស្នើសុំ ឬទាញយកវិញ្ញាបនបត្របាន។` : `សិស្សត្រូវប្រឡងជាប់ទាំង ៤ វគ្គ (Typing, Word, Excel, PowerPoint) ដើម្បីទទួលបានវិញ្ញាបនបត្រ។`)}
+                </div>
+
+                ${(cert || passedCount === 4) ? `
+                  <button type="button" class="btn-primary" style="height: 38px; padding: 0 20px; font-size: 0.86rem; background: linear-gradient(135deg, #f59e0b, #d97706); border: none; box-shadow: 0 4px 14px rgba(245, 158, 11, 0.35);" onclick="CertificatesView.printOfficialCertificate('${student.ID}')">
+                    <i class="fa-solid fa-award"></i>
+                    <span>🖨️ បោះពុម្ពវិញ្ញាបនបត្រ A4 Landscape</span>
+                  </button>
+                ` : `
+                  <button type="button" class="btn-secondary" style="height: 36px; padding: 0 14px; font-size: 0.82rem; opacity: 0.7; cursor: not-allowed;" title="រៀនចប់ ៤ វគ្គដើម្បីដោះសោរ">
+                    <i class="fa-solid fa-lock"></i>
+                    <span>មិនទាន់គ្រប់លក្ខខណ្ឌ (${passedCount}/4 វគ្គ)</span>
+                  </button>
+                `}
+              </div>
             </div>
           </div>
         </div>
@@ -660,9 +790,43 @@ const StudentPortalView = {
     `;
   },
 
+  switchPortalTab(tabKey) {
+    if (!tabKey) return;
+    this.activePortalTab = tabKey;
+    document.querySelectorAll(".portal-tab-btn").forEach(b => {
+      b.classList.toggle("active", b.getAttribute("data-portal-tab") === tabKey);
+    });
+    document.querySelectorAll(".portal-tab-pane").forEach(c => {
+      c.classList.toggle("active", c.getAttribute("data-portal-content") === tabKey);
+    });
+    const tabsBar = document.querySelector(".portal-nav-tabs-bar");
+    if (tabsBar) {
+      const rect = tabsBar.getBoundingClientRect();
+      if (rect.top < 70) {
+        tabsBar.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }
+  },
+
   initEvents() {
     const student = this.getStudent();
     if (!student) return;
+
+    // Segmented Tab Switching
+    document.querySelectorAll(".portal-tab-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const tabKey = btn.getAttribute("data-portal-tab");
+        this.switchPortalTab(tabKey);
+      });
+    });
+
+    // KPI Box direct tab jumping
+    document.querySelectorAll("[data-portal-kpi-target]").forEach(box => {
+      box.addEventListener("click", () => {
+        const targetTab = box.getAttribute("data-portal-kpi-target");
+        this.switchPortalTab(targetTab);
+      });
+    });
 
     // Start Live Typing Exam Button
     const startTypingBtn = document.getElementById("portalStartTypingExamBtn");
@@ -670,6 +834,12 @@ const StudentPortalView = {
       startTypingBtn.addEventListener("click", () => {
         this.launchTypingExam(student.ID);
       });
+    }
+
+    // Restore saved custom card color if available
+    const savedCardColor = localStorage.getItem(`cardColor_${student.ID}`) || student.cardColor;
+    if (savedCardColor) {
+      this.applyPortalCardCustomColor(savedCardColor, false);
     }
 
     // Print ID Card Button
@@ -893,6 +1063,100 @@ const StudentPortalView = {
 
   launchTypingExam(studentId) {
     this.launchCourseExam("Typing", studentId);
+  },
+
+  // Change Student Portal ID Card Preview Color Theme (8 Preset Themes)
+  setPortalCardTheme(themeName) {
+    const cardEl = document.getElementById("portalPrintableIdCard");
+    if (!cardEl) return;
+    this.currentCardCustomColor = null;
+    if (typeof App !== "undefined") {
+      App.currentCardCustomColor = null;
+    }
+    cardEl.style.background = "";
+    cardEl.style.border = "";
+
+    // Clear all existing theme classes
+    cardEl.classList.remove(
+      "id-card-theme-navy", "id-card-theme-burgundy", "id-card-theme-emerald",
+      "id-card-theme-dark", "id-card-theme-purple", "id-card-theme-ruby",
+      "id-card-theme-amber", "id-card-theme-cyan"
+    );
+    cardEl.classList.add(`id-card-theme-${themeName}`);
+
+    // Update active button state inside portal
+    document.querySelectorAll(".portal-theme-pill").forEach(btn => {
+      if (btn.getAttribute("data-theme") === themeName) {
+        btn.classList.add("active");
+      } else {
+        btn.classList.remove("active");
+      }
+    });
+
+    const customPill = document.getElementById("portalCustomColorPill");
+    if (customPill) customPill.classList.remove("active");
+
+    const student = this.getStudent();
+    if (student) {
+      localStorage.removeItem(`cardColor_${student.ID}`);
+      delete student.cardColor;
+    }
+  },
+
+  // Apply Live Custom Color from Color Picker in Student Portal
+  applyPortalCardCustomColor(hexColor, save = true) {
+    if (!hexColor) return;
+    const cardEl = document.getElementById("portalPrintableIdCard");
+    if (!cardEl) return;
+
+    this.currentCardCustomColor = hexColor;
+    if (typeof App !== "undefined") {
+      App.currentCardCustomColor = hexColor;
+    }
+
+    // Remove preset theme classes so custom inline gradient takes effect
+    cardEl.classList.remove(
+      "id-card-theme-navy", "id-card-theme-burgundy", "id-card-theme-emerald",
+      "id-card-theme-dark", "id-card-theme-purple", "id-card-theme-ruby",
+      "id-card-theme-amber", "id-card-theme-cyan"
+    );
+
+    const adjust = (hex, percent) => {
+      if (typeof App !== "undefined" && App.adjustColorBrightness) {
+        return App.adjustColorBrightness(hex, percent);
+      }
+      return hex;
+    };
+
+    const darkShade = adjust(hexColor, -65);
+    const midShade = adjust(hexColor, -30);
+    const grad = `linear-gradient(135deg, ${darkShade} 0%, ${midShade} 50%, ${hexColor} 100%)`;
+    cardEl.style.background = grad;
+    cardEl.style.border = `1.5px solid ${adjust(hexColor, 25)}aa`;
+
+    // Highlight custom color picker pill
+    document.querySelectorAll(".portal-theme-pill").forEach(btn => btn.classList.remove("active"));
+    const customPill = document.getElementById("portalCustomColorPill");
+    const customDot = document.getElementById("portalCustomColorDot");
+    const picker = document.getElementById("portalCardColorPicker");
+    if (customPill) customPill.classList.add("active");
+    if (customDot) customDot.style.background = hexColor;
+    if (picker) picker.value = hexColor;
+
+    const student = this.getStudent();
+    if (save && student) {
+      student.cardColor = hexColor;
+      localStorage.setItem(`cardColor_${student.ID}`, hexColor);
+    }
+  },
+
+  // Reset to default Navy & Gold theme in Student Portal
+  resetPortalCardTheme() {
+    this.setPortalCardTheme("navy");
+    const customDot = document.getElementById("portalCustomColorDot");
+    if (customDot) customDot.style.background = "conic-gradient(red, yellow, lime, aqua, blue, magenta, red)";
+    const picker = document.getElementById("portalCardColorPicker");
+    if (picker) picker.value = "#0f1c3f";
   },
 
   init(studentId) {

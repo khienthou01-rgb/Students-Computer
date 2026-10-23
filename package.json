@@ -4,8 +4,12 @@
   "description": "Tian Xin International School (TIS) - Modern Student Management System",
   "main": "server.js",
   "scripts": {
+    "build": "echo [Vercel Build] Deploying Tian Xin International School...",
     "start": "node server.js",
     "dev": "node server.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   },
   "keywords": [
     "student-management",

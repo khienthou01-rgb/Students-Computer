@@ -396,25 +396,34 @@ const ModalsComponent = {
               <!-- ========================================== -->
               <div class="student-tab-pane" id="pane-family">
                 <div class="info-card-section">
-                  <h4 class="info-card-title"><i class="fa-solid fa-people-roof text-indigo-500"></i> ព័ត៌មានអាណាព្យាបាល & ទំនាក់ទំនងបន្ទាន់ (Family & Guardian)</h4>
-                  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;">
-                    <div class="info-field-row" style="border-bottom: 1px solid #f1f5f9;">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
+                    <h4 class="info-card-title" style="margin: 0; padding: 0; border: none;">
+                      <i class="fa-solid fa-people-roof text-indigo-500"></i> ព័ត៌មានអាណាព្យាបាល & ទំនាក់ទំនងបន្ទាន់ (Family & Guardian)
+                    </h4>
+                    <button type="button" id="btnToggleEditFamily" class="btn-secondary" onclick="App.toggleEditFamilyMode(true)" style="height: 32px; padding: 0 14px; font-size: 0.8rem; border-radius: 8px; display: inline-flex; align-items: center; gap: 6px; cursor: pointer;" title="កែប្រែព័ត៌មានឪពុកម្តាយ និងអាណាព្យាបាល">
+                      <i class="fa-solid fa-pen-to-square text-indigo-500"></i> <span>កែប្រែព័ត៌មាន (Edit)</span>
+                    </button>
+                  </div>
+
+                  <!-- View Mode -->
+                  <div id="familyViewMode" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;">
+                    <div class="info-field-row" style="border-bottom: 1px solid var(--border-color, #f1f5f9);">
                       <span class="info-field-label">ឈ្មោះឪពុក (Father's Name)</span>
                       <span id="familyFatherName" class="info-field-val">—</span>
                     </div>
-                    <div class="info-field-row" style="border-bottom: 1px solid #f1f5f9;">
+                    <div class="info-field-row" style="border-bottom: 1px solid var(--border-color, #f1f5f9);">
                       <span class="info-field-label">ឈ្មោះម្តាយ (Mother's Name)</span>
                       <span id="familyMotherName" class="info-field-val">—</span>
                     </div>
-                    <div class="info-field-row" style="border-bottom: 1px solid #f1f5f9;">
+                    <div class="info-field-row" style="border-bottom: 1px solid var(--border-color, #f1f5f9);">
                       <span class="info-field-label">លេខទូរស័ព្ទអាណាព្យាបាល</span>
                       <span id="modalDetailGuardianPhone" class="info-field-val">—</span>
                     </div>
-                    <div class="info-field-row" style="border-bottom: 1px solid #f1f5f9;">
+                    <div class="info-field-row" style="border-bottom: 1px solid var(--border-color, #f1f5f9);">
                       <span class="info-field-label">ទំនាក់ទំនងពេលមានអាសន្ន</span>
                       <span id="familyEmergencyContact" class="info-field-val">—</span>
                     </div>
-                    <div class="info-field-row" style="border-bottom: 1px solid #f1f5f9; grid-column: 1 / -1;">
+                    <div class="info-field-row" style="border-bottom: 1px solid var(--border-color, #f1f5f9); grid-column: 1 / -1;">
                       <span class="info-field-label">អាសយដ្ឋានគ្រួសារ</span>
                       <span id="familyAddress" class="info-field-val">—</span>
                     </div>
@@ -423,6 +432,62 @@ const ModalsComponent = {
                       <span id="familyNote" class="info-field-val text-muted">មិនមានកំណត់ចំណាំពិសេសទេ</span>
                     </div>
                   </div>
+
+                  <!-- Inline Edit Mode Form -->
+                  <form id="familyEditModeForm" onsubmit="event.preventDefault(); App.saveFamilyInfo();" style="display: none; margin-top: 8px;">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px;">
+                      <div class="form-group">
+                        <label class="form-label" style="font-size: 0.82rem; font-weight: 600; margin-bottom: 4px; display: block;">
+                          <i class="fa-solid fa-user-tie text-indigo-400"></i> ឈ្មោះឪពុក (Father's Name)
+                        </label>
+                        <input type="text" id="editFamilyFatherName" class="form-control" placeholder="ឧ. ចាន់ សុខា" style="height: 38px;">
+                      </div>
+
+                      <div class="form-group">
+                        <label class="form-label" style="font-size: 0.82rem; font-weight: 600; margin-bottom: 4px; display: block;">
+                          <i class="fa-solid fa-person-dress text-pink-400"></i> ឈ្មោះម្តាយ (Mother's Name)
+                        </label>
+                        <input type="text" id="editFamilyMotherName" class="form-control" placeholder="ឧ. កែវ ធីតា" style="height: 38px;">
+                      </div>
+
+                      <div class="form-group">
+                        <label class="form-label" style="font-size: 0.82rem; font-weight: 600; margin-bottom: 4px; display: block;">
+                          <i class="fa-solid fa-phone text-emerald-400"></i> លេខទូរស័ព្ទអាណាព្យាបាល (Guardian Phone)
+                        </label>
+                        <input type="tel" id="editFamilyGuardianPhone" class="form-control" placeholder="012 345 678" style="height: 38px;">
+                      </div>
+
+                      <div class="form-group">
+                        <label class="form-label" style="font-size: 0.82rem; font-weight: 600; margin-bottom: 4px; display: block;">
+                          <i class="fa-solid fa-truck-medical text-rose-400"></i> ទំនាក់ទំនងពេលមានអាសន្ន (Emergency Phone)
+                        </label>
+                        <input type="tel" id="editFamilyEmergencyContact" class="form-control" placeholder="098 765 432" style="height: 38px;">
+                      </div>
+
+                      <div class="form-group" style="grid-column: 1 / -1;">
+                        <label class="form-label" style="font-size: 0.82rem; font-weight: 600; margin-bottom: 4px; display: block;">
+                          <i class="fa-solid fa-location-dot text-amber-400"></i> អាសយដ្ឋានគ្រួសារ (Family Address)
+                        </label>
+                        <input type="text" id="editFamilyAddress" class="form-control" placeholder="ឧ. ភូមិ១ ឃុំត្រពាំងព្រីង ស្រុកទឹកឈូ ខេត្តកំពត" style="height: 38px;">
+                      </div>
+
+                      <div class="form-group" style="grid-column: 1 / -1;">
+                        <label class="form-label" style="font-size: 0.82rem; font-weight: 600; margin-bottom: 4px; display: block;">
+                          <i class="fa-solid fa-comment-dots text-sky-400"></i> កំណត់ចំណាំបន្ថែម (Family Notes)
+                        </label>
+                        <textarea id="editFamilyNote" class="form-control" rows="2" placeholder="កំណត់ចំណាំទូទៅអំពីស្ថានភាពគ្រួសារ ឬការសង្កេត..." style="resize: vertical;"></textarea>
+                      </div>
+                    </div>
+
+                    <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--border-color, #e2e8f0);">
+                      <button type="button" class="btn-secondary" onclick="App.toggleEditFamilyMode(false)" style="height: 36px; padding: 0 16px; font-size: 0.85rem;">
+                        <i class="fa-solid fa-xmark"></i> <span>បោះបង់ (Cancel)</span>
+                      </button>
+                      <button type="submit" id="btnSaveFamilyInfo" class="btn-primary" style="height: 36px; padding: 0 20px; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 6px;">
+                        <i class="fa-solid fa-floppy-disk"></i> <span>រក្សាទុក (Save Changes)</span>
+                      </button>
+                    </div>
+                  </form>
                 </div>
               </div>
 
@@ -511,37 +576,138 @@ const ModalsComponent = {
               <!-- ========================================== -->
               <div class="student-tab-pane" id="pane-services">
                 <div class="info-card-section" style="text-align: center;">
-                  <h4 class="info-card-title" style="justify-content: center;"><i class="fa-solid fa-id-card text-indigo-500"></i> កាតសិស្សផ្លូវការ (Official Student ID Card)</h4>
-                  <!-- Printable Student ID Card Preview -->
-                  <div class="id-card-preview-wrapper" style="margin: 12px auto;">
-                    <div id="printableIdCard" class="id-card-element">
+                  <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-bottom: 14px;">
+                    <h4 class="info-card-title" style="margin-bottom: 0;">
+                      <i class="fa-solid fa-id-card text-indigo-500"></i> កាតសិស្សផ្លូវការ (Official Student ID Card)
+                    </h4>
+                    <!-- Color Theme Switcher Swatches with Custom Color Picker -->
+                    <div class="id-card-theme-bar" style="display: flex; gap: 5px; align-items: center; justify-content: center; flex-wrap: wrap;">
+                      <span style="font-size: 0.72rem; color: var(--text-muted, #94a3b8); margin-right: 2px;">ពណ៌កាត:</span>
+                      <button type="button" class="btn-card-theme-pill active" data-theme="navy" onclick="App.setCardPreviewTheme('navy')" title="Royal Navy & Gold">
+                        <span class="swatch-dot" style="background: linear-gradient(135deg, #070d1e, #1e3a8a);"></span>
+                        <span>Navy</span>
+                      </button>
+                      <button type="button" class="btn-card-theme-pill" data-theme="burgundy" onclick="App.setCardPreviewTheme('burgundy')" title="Academy Burgundy">
+                        <span class="swatch-dot" style="background: linear-gradient(135deg, #2b0316, #701a75);"></span>
+                        <span>Burgundy</span>
+                      </button>
+                      <button type="button" class="btn-card-theme-pill" data-theme="emerald" onclick="App.setCardPreviewTheme('emerald')" title="Emerald Prestige">
+                        <span class="swatch-dot" style="background: linear-gradient(135deg, #021a14, #047857);"></span>
+                        <span>Emerald</span>
+                      </button>
+                      <button type="button" class="btn-card-theme-pill" data-theme="dark" onclick="App.setCardPreviewTheme('dark')" title="Obsidian Tech">
+                        <span class="swatch-dot" style="background: linear-gradient(135deg, #090d16, #1f2937);"></span>
+                        <span>Dark</span>
+                      </button>
+                      <button type="button" class="btn-card-theme-pill" data-theme="purple" onclick="App.setCardPreviewTheme('purple')" title="Imperial Purple">
+                        <span class="swatch-dot" style="background: linear-gradient(135deg, #18032b, #6b21a8);"></span>
+                        <span>Purple</span>
+                      </button>
+                      <button type="button" class="btn-card-theme-pill" data-theme="ruby" onclick="App.setCardPreviewTheme('ruby')" title="Crimson Ruby">
+                        <span class="swatch-dot" style="background: linear-gradient(135deg, #2b030d, #991b1b);"></span>
+                        <span>Ruby</span>
+                      </button>
+                      <button type="button" class="btn-card-theme-pill" data-theme="amber" onclick="App.setCardPreviewTheme('amber')" title="Sunset Amber">
+                        <span class="swatch-dot" style="background: linear-gradient(135deg, #270f02, #9a3412);"></span>
+                        <span>Amber</span>
+                      </button>
+                      <button type="button" class="btn-card-theme-pill" data-theme="cyan" onclick="App.setCardPreviewTheme('cyan')" title="Ocean Cyan">
+                        <span class="swatch-dot" style="background: linear-gradient(135deg, #021e2b, #0284c7);"></span>
+                        <span>Cyan</span>
+                      </button>
+                      
+                      <!-- Real Native Color Picker -->
+                      <label class="btn-card-theme-pill btn-card-color-picker-wrap" id="customColorPill" title="ចុចដើម្បីជ្រើសរើសពណ៌ដោយខ្លួនឯង (Custom Color Picker)">
+                        <span class="swatch-dot" id="customColorDot" style="background: conic-gradient(red, yellow, lime, aqua, blue, magenta, red);"></span>
+                        <span>កែពណ៌...</span>
+                        <input type="color" id="idCardColorPicker" value="#0f1c3f" oninput="App.applyCardCustomColor(this.value)" onchange="App.applyCardCustomColor(this.value)">
+                      </label>
+
+                      <!-- Reset Theme Button -->
+                      <button type="button" class="btn-card-theme-pill" onclick="App.resetCardTheme()" title="កំណត់ពណ៌ដើមឡើងវិញ" style="padding: 0 8px;">
+                        <i class="fa-solid fa-rotate-left"></i>
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Printable Student ID Card Preview (PVC CR80 Standard) -->
+                  <div class="id-card-preview-wrapper">
+                    <div id="printableIdCard" class="id-card-element id-card-theme-navy">
+                      <div class="card-gloss-sheen"></div>
+                      
+                      <!-- Card Header -->
                       <div class="id-card-header">
-                        <div style="display: flex; align-items: center; gap: 8px;">
-                          <img src="assets/images/logo.png" alt="Logo" style="width: 28px; height: 28px; border-radius: 50%; background: #fff; padding: 1px; flex-shrink: 0;">
-                          <div>
-                            <div class="school-name">សាលា អន្តរជាតិ ធានស៊ីន</div>
-                            <div class="card-tag">TIAN XIN INTERNATIONAL SCHOOL (TIS)</div>
-                          </div>
+                        <div class="id-card-logo-wrap">
+                          <img src="assets/images/logo.png" alt="Logo" class="id-card-logo">
+                        </div>
+                        <div class="id-card-header-text">
+                          <div class="school-name">សាលា អន្តរជាតិ ធានស៊ីន</div>
+                          <div class="card-tag">TIAN XIN INTERNATIONAL SCHOOL (TIS)</div>
+                          <div class="card-type-badge">OFFICIAL STUDENT IDENTITY CARD</div>
+                        </div>
+                        <div class="id-card-verified-badge">
+                          <i class="fa-solid fa-shield-halved"></i> <span>VERIFIED</span>
                         </div>
                       </div>
+
+                      <!-- Gold Ribbon Divider -->
+                      <div class="id-card-divider-gold"></div>
+
+                      <!-- Card Main Body -->
                       <div class="id-card-body">
-                        <img id="cardPreviewAvatar" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%23e2e8f0'/%3E%3Cpath d='M50 48a16 16 0 100-32 16 16 0 000 32zm0 8c-18 0-32 12-32 26v4h64v-4c0-14-14-26-32-26z' fill='%2394a3b8'/%3E%3C/svg%3E" alt="Avatar" class="id-card-avatar">
-                        <div class="id-card-details">
-                          <h4 id="cardPreviewNameKh">ឈ្មោះសិស្ស</h4>
-                          <div id="cardPreviewNameEn" class="id-en">Student Name</div>
-                          <div class="info-row">អត្តលេខ: <strong id="cardPreviewId" class="font-mono">TX01</strong></div>
-                          <div class="info-row">ថ្នាក់: <strong id="cardPreviewGrade">ថ្នាក់កុំព្យូទ័រ</strong> <span id="cardPreviewCourse" class="badge-course badge-course-word" style="display:none;"></span></div>
-                          <div class="info-row">ថ្ងៃកំណើត: <span id="cardPreviewDob">2006-05-12</span></div>
+                        <!-- Left Photo Frame -->
+                        <div class="id-card-photo-col">
+                          <div class="id-card-photo-frame">
+                            <img id="cardPreviewAvatar" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%23e2e8f0'/%3E%3Cpath d='M50 48a16 16 0 100-32 16 16 0 000 32zm0 8c-18 0-32 12-32 26v4h64v-4c0-14-14-26-32-26z' fill='%2394a3b8'/%3E%3C/svg%3E" alt="Photo" class="id-card-avatar">
+                          </div>
+                          <div class="id-card-id-pill">ID: <span id="cardPreviewId" class="font-mono">TX10</span></div>
                         </div>
+
+                        <!-- Middle Student Details -->
+                        <div class="id-card-details">
+                          <div class="id-card-name-kh" id="cardPreviewNameKh">ឈ្មោះសិស្ស</div>
+                          <div class="id-card-name-en" id="cardPreviewNameEn">STUDENT NAME</div>
+                          
+                          <div class="id-card-info-table">
+                            <div class="info-pair">
+                              <span class="info-k">ថ្នាក់/ជំនាញ:</span>
+                              <span class="info-v" id="cardPreviewGrade">ថ្នាក់កុំព្យូទ័រ</span>
+                              <span id="cardPreviewCourse" class="badge-course badge-course-word" style="display:none;"></span>
+                            </div>
+                            <div class="info-pair">
+                              <span class="info-k">វេនសិក្សា:</span>
+                              <span class="info-v" id="cardPreviewShift">ព្រឹក (08:00 - 09:30)</span>
+                            </div>
+                            <div class="info-pair">
+                              <span class="info-k">ថ្ងៃកំណើត:</span>
+                              <span class="info-v font-mono" id="cardPreviewDob">2006-01-01</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <!-- Right QR Code for Attendance Scanner -->
+                        <div class="id-card-qr-col">
+                          <div class="id-card-qr-box">
+                            <img id="cardPreviewQr" class="id-card-qr-img" src="" alt="QR">
+                          </div>
+                          <div class="id-card-scan-label">SCAN ID</div>
+                        </div>
+                      </div>
+
+                      <!-- Bottom Barcode & Security Strip -->
+                      <div class="id-card-bottom-strip">
+                        <div>សុពលភាព: <strong class="font-mono" style="color: #f1f5f9;">2026-2027</strong></div>
+                        <div class="id-card-barcode-val" id="cardPreviewBarcode">*TX10*</div>
+                        <div class="id-card-footer-motto">EXCELLENCE IN DIGITAL EDUCATION</div>
                       </div>
                     </div>
                   </div>
 
                   <div style="margin-top: 14px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
-                    <button type="button" id="printIdCardBtn" class="btn-primary" style="height: 36px; padding: 0 18px; font-size: 0.85rem;">
+                    <button type="button" id="printIdCardBtn" class="btn-primary" style="height: 38px; padding: 0 20px; font-size: 0.85rem;">
                       <i class="fa-solid fa-print"></i> <span>បោះពុម្ពកាតសិស្ស (Print ID Card)</span>
                     </button>
-                    <button type="button" id="servicesCertBtn" class="btn-secondary" style="height: 36px; padding: 0 16px; font-size: 0.85rem;">
+                    <button type="button" id="servicesCertBtn" class="btn-secondary" style="height: 38px; padding: 0 18px; font-size: 0.85rem;">
                       <i class="fa-solid fa-award text-amber-500"></i> <span>ចេញវិញ្ញាបនបត្រឌីជីថល</span>
                     </button>
                   </div>
@@ -1013,6 +1179,45 @@ const ModalsComponent = {
                     <div class="enroll-field">
                       <label><span>ព័ត៌មានសុខភាព (អាឡែស៊ី/ជំងឺប្រចាំកាយ)</span></label>
                       <input type="text" name="healthNotes" class="enroll-input-ctrl" placeholder="បញ្ជាក់ប្រសិនបើមានប្រតិកម្មអាឡែស៊ី ឬជំងឺប្រចាំកាយ...">
+                    </div>
+                  </div>
+
+                  <!-- Sub-section: ព័ត៌មានអាណាព្យាបាល & គ្រួសារ (Family & Guardian) -->
+                  <div style="margin-top: 18px; padding-top: 14px; border-top: 1px dashed var(--border-color, #e2e8f0);">
+                    <div style="font-size: 0.88rem; font-weight: 700; color: var(--primary); margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                      <i class="fa-solid fa-people-roof"></i> <span>ព័ត៌មានអាណាព្យាបាល & គ្រួសារ (Family & Guardian)</span>
+                    </div>
+
+                    <!-- Row: ឈ្មោះឪពុក & ឈ្មោះម្តាយ (2 cols) -->
+                    <div class="enroll-grid-row enroll-cols-2">
+                      <div class="enroll-field">
+                        <label><i class="fa-solid fa-user-tie"></i> <span>ឈ្មោះឪពុក (Father's Name)</span></label>
+                        <input type="text" name="fatherName" class="enroll-input-ctrl" placeholder="ឈ្មោះឪពុក">
+                      </div>
+                      <div class="enroll-field">
+                        <label><i class="fa-solid fa-person-dress"></i> <span>ឈ្មោះម្តាយ (Mother's Name)</span></label>
+                        <input type="text" name="motherName" class="enroll-input-ctrl" placeholder="ឈ្មោះម្តាយ">
+                      </div>
+                    </div>
+
+                    <!-- Row: លេខទូរស័ព្ទអាណាព្យាបាល & ទំនាក់ទំនងពេលមានអាសន្ន (2 cols) -->
+                    <div class="enroll-grid-row enroll-cols-2">
+                      <div class="enroll-field">
+                        <label><i class="fa-solid fa-phone"></i> <span>លេខទូរស័ព្ទអាណាព្យាបាល</span></label>
+                        <input type="tel" name="guardianPhone" class="enroll-input-ctrl" placeholder="012 345 678">
+                      </div>
+                      <div class="enroll-field">
+                        <label><i class="fa-solid fa-truck-medical"></i> <span>ទំនាក់ទំនងពេលមានអាសន្ន</span></label>
+                        <input type="tel" name="emergencyPhone" class="enroll-input-ctrl" placeholder="098 765 432">
+                      </div>
+                    </div>
+
+                    <!-- Row: កំណត់ចំណាំបន្ថែម (1 col) -->
+                    <div class="enroll-grid-row enroll-cols-1">
+                      <div class="enroll-field">
+                        <label><i class="fa-solid fa-comment-dots"></i> <span>កំណត់ចំណាំគ្រួសារ (Family Notes)</span></label>
+                        <input type="text" name="familyNote" class="enroll-input-ctrl" placeholder="កំណត់ចំណាំអំពីគ្រួសារ ឬអាណាព្យាបាល...">
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -4891,224 +5096,6 @@ const ModalsComponent = {
           </div>
         </div>
       </div>
-
-      <!-- Modal: AI Quiz & Exercise Generator (Gemini AI Studio) -->
-      <div id="aiQuizGeneratorModal" class="modal-overlay">
-        <div class="modal-card" style="max-width: 920px; width: 95%; max-height: 92vh; display: flex; flex-direction: column; background: #0f172a; border: 1px solid rgba(168, 85, 247, 0.4); border-radius: 20px; box-shadow: 0 24px 60px rgba(0, 0, 0, 0.7), 0 0 30px rgba(168, 85, 247, 0.25); overflow: hidden;">
-          <!-- Header -->
-          <div class="modal-header" style="background: linear-gradient(135deg, #3b0764, #1e1b4b); padding: 16px 22px; border-bottom: 1px solid rgba(168, 85, 247, 0.3); display: flex; align-items: center; justify-content: space-between;">
-            <div style="display: flex; align-items: center; gap: 12px;">
-              <div style="width: 40px; height: 40px; border-radius: 12px; background: linear-gradient(135deg, #a855f7, #6366f1); display: flex; align-items: center; justify-content: center; font-size: 1.25rem; color: #fff; box-shadow: 0 4px 14px rgba(168, 85, 247, 0.4);">
-                <i class="fa-solid fa-brain"></i>
-              </div>
-              <div>
-                <h3 style="margin: 0; font-size: 1.12rem; font-weight: 800; color: #fff;">
-                  ✨ AI Quiz & Exercise Generator
-                </h3>
-                <p style="margin: 2px 0 0; font-size: 0.78rem; color: #c084fc;">
-                  បង្កើតកម្រងសំណួរពហុជ្រើសរើស និងលំហាត់កុំព្យូទ័រស្វ័យប្រវត្តិតាម Gemini AI • សាលា អន្តរជាតិ ធានស៊ីន
-                </p>
-              </div>
-            </div>
-            <button type="button" class="header-close-btn" data-close-modal="aiQuizGeneratorModal" title="បិទផ្ទាំង" style="background: rgba(255,255,255,0.1); border: none; color: #fff; width: 32px; height: 32px; border-radius: 50%; cursor: pointer;">
-              <i class="fa-solid fa-xmark"></i>
-            </button>
-          </div>
-
-          <!-- Body -->
-          <div class="modal-body" style="padding: 20px; overflow-y: auto; flex: 1;">
-            <!-- Inputs Form Panel -->
-            <div style="background: rgba(30, 27, 75, 0.4); border: 1px solid rgba(168, 85, 247, 0.2); border-radius: 14px; padding: 18px; margin-bottom: 18px;">
-              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-bottom: 12px;">
-                <!-- Topic -->
-                <div style="grid-column: 1 / -1;">
-                  <label style="display: block; font-size: 0.82rem; font-weight: 700; color: #e2e8f0; margin-bottom: 6px;">
-                    <i class="fa-solid fa-book-open" style="color: #c084fc;"></i> ប្រធានបទមេរៀន (Lesson Topic / Subject):
-                  </label>
-                  <input type="text" id="aiQuizTopicInput" class="form-control" placeholder="ឧ. រូបមន្ត VLOOKUP និង IF ក្នុង Excel, ការវាយអក្សរខ្មែរ Unicode, Microsoft Word Formatting..." style="height: 42px; font-size: 0.9rem; background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(168, 85, 247, 0.3); color: #fff; border-radius: 10px; padding: 0 14px;">
-                  
-                  <!-- Clickable Topic Suggestions -->
-                  <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-top: 8px;">
-                    <span style="font-size: 0.74rem; color: #94a3b8; font-weight: 600;">គំរូប្រធានបទលឿន៖</span>
-                    <button type="button" class="badge" onclick="document.getElementById('aiQuizTopicInput').value='Microsoft Excel: រូបមន្ត SUM, AVERAGE, IF & VLOOKUP'" style="cursor: pointer; background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); padding: 3px 8px; border-radius: 12px; font-size: 0.72rem;">Excel Formulas</button>
-                    <button type="button" class="badge" onclick="document.getElementById('aiQuizTopicInput').value='Microsoft Word: ការកំណត់ទំព័រ A4, Table & Header/Footer'" style="cursor: pointer; background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); padding: 3px 8px; border-radius: 12px; font-size: 0.72rem;">Word Formatting</button>
-                    <button type="button" class="badge" onclick="document.getElementById('aiQuizTopicInput').value='Computer Typing: វិធីវាយអក្សរខ្មែរយូនីកូដ និងគ្រាប់ចុចផ្ញើជើង'" style="cursor: pointer; background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); padding: 3px 8px; border-radius: 12px; font-size: 0.72rem;">Khmer Typing</button>
-                    <button type="button" class="badge" onclick="document.getElementById('aiQuizTopicInput').value='មូលដ្ឋានគ្រឹះ Hardware កុំព្យូទ័រ & Windows 11 Shortcuts'" style="cursor: pointer; background: rgba(168, 85, 247, 0.15); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.3); padding: 3px 8px; border-radius: 12px; font-size: 0.72rem;">Hardware & OS</button>
-                    <button type="button" class="badge" onclick="document.getElementById('aiQuizTopicInput').value='PowerPoint: ការរចនាស្លាយបទបង្ហាញ Presentation ស្អាត'" style="cursor: pointer; background: rgba(236, 72, 153, 0.15); color: #f472b6; border: 1px solid rgba(236, 72, 153, 0.3); padding: 3px 8px; border-radius: 12px; font-size: 0.72rem;">PowerPoint</button>
-                  </div>
-                </div>
-
-                <!-- Level -->
-                <div>
-                  <label style="display: block; font-size: 0.8rem; font-weight: 700; color: #cbd5e1; margin-bottom: 5px;">កម្រិតសិក្សា (Level):</label>
-                  <select id="aiQuizLevelSelect" class="form-control" style="height: 38px; font-size: 0.84rem; background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(168, 85, 247, 0.3); color: #fff; border-radius: 10px;">
-                    <option value="កម្រិតដំបូង (Beginner)">កម្រិតដំបូង (Beginner)</option>
-                    <option value="កម្រិតមធ្យម (Intermediate)" selected>កម្រិតមធ្យម (Intermediate)</option>
-                    <option value="កម្រិតខ្ពស់ (Advanced)">កម្រិតខ្ពស់ (Advanced)</option>
-                    <option value="បឋមសិក្សា (Primary)">បឋមសិក្សា (Primary)</option>
-                    <option value="អនុវិទ្យាល័យ (Secondary)">អនុវិទ្យាល័យ (Secondary)</option>
-                  </select>
-                </div>
-
-                <!-- Format -->
-                <div>
-                  <label style="display: block; font-size: 0.8rem; font-weight: 700; color: #cbd5e1; margin-bottom: 5px;">ទម្រង់វិញ្ញាសា (Format):</label>
-                  <select id="aiQuizTypeSelect" class="form-control" style="height: 38px; font-size: 0.84rem; background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(168, 85, 247, 0.3); color: #fff; border-radius: 10px;">
-                    <option value="mixed" selected>⚡ ចម្រុះ (ពហុជ្រើសរើស + អនុវត្ត Lab)</option>
-                    <option value="mcq">📝 សំណួរពហុជ្រើសរើស (A, B, C, D)</option>
-                    <option value="practical">💻 លំហាត់អនុវត្តកុំព្យូទ័រផ្ទាល់ (Lab Tasks)</option>
-                  </select>
-                </div>
-
-                <!-- Question Count -->
-                <div>
-                  <label style="display: block; font-size: 0.8rem; font-weight: 700; color: #cbd5e1; margin-bottom: 5px;">ចំនួនសំណួរ (Count):</label>
-                  <select id="aiQuizCountSelect" class="form-control" style="height: 38px; font-size: 0.84rem; background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(168, 85, 247, 0.3); color: #fff; border-radius: 10px;">
-                    <option value="3">៣ សំណួរ (រហ័ស 15 នាទី)</option>
-                    <option value="5" selected>៥ សំណួរ (ស្តង់ដារ 30 នាទី)</option>
-                    <option value="10">១០ សំណួរ (ប្រឡងពេញលេញ 45 នាទី)</option>
-                  </select>
-                </div>
-              </div>
-
-              <!-- Generate Button -->
-              <div style="display: flex; justify-content: flex-end; align-items: center; gap: 12px; margin-top: 14px;">
-                <span id="aiQuizStatusText" style="font-size: 0.82rem; color: #94a3b8;"></span>
-                <button type="button" id="btnRunAiQuizGenerate" class="btn-primary" onclick="ModalsComponent.generateAiQuizAction()" style="height: 42px; padding: 0 24px; font-size: 0.9rem; font-weight: 800; border-radius: 12px; background: linear-gradient(135deg, #a855f7, #6366f1); border: none; box-shadow: 0 4px 16px rgba(168, 85, 247, 0.45); cursor: pointer; display: inline-flex; align-items: center; gap: 8px;">
-                  <i class="fa-solid fa-sparkles"></i>
-                  <span>បង្កើតជាមួយ Gemini AI</span>
-                </button>
-              </div>
-            </div>
-
-            <!-- Generated Output Container -->
-            <div id="aiQuizOutputContainer" style="display: none;">
-              <!-- Tabs & Actions Toolbar -->
-              <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 14px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;">
-                <div style="display: flex; gap: 8px;">
-                  <button type="button" id="btnTabAiQuizStudent" class="btn-primary btn-sm" onclick="ModalsComponent.switchAiQuizTab('student')" style="background: #6366f1; border-color: #6366f1; font-weight: 700;">
-                    <i class="fa-solid fa-file-lines"></i> ក្រដាសវិញ្ញាសាសិស្ស
-                  </button>
-                  <button type="button" id="btnTabAiQuizTeacher" class="btn-secondary btn-sm" onclick="ModalsComponent.switchAiQuizTab('teacher')" style="font-weight: 700;">
-                    <i class="fa-solid fa-key"></i> ចម្លើយ & ការពន្យល់គ្រូ
-                  </button>
-                </div>
-                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                  <button type="button" class="btn-secondary btn-sm" onclick="ModalsComponent.copyAiQuizToClipboard()" style="color: #38bdf8; border-color: rgba(56, 189, 248, 0.4);">
-                    <i class="fa-solid fa-copy"></i> ចម្លង (Copy)
-                  </button>
-                  <button type="button" class="btn-secondary btn-sm" onclick="ModalsComponent.saveAiQuizToLibrary()" style="color: #a855f7; border-color: rgba(168, 85, 247, 0.4);">
-                    <i class="fa-solid fa-bookmark"></i> រក្សាទុកក្នុងបណ្ណាល័យ
-                  </button>
-                  <button type="button" class="btn-primary btn-sm" onclick="ModalsComponent.printAiQuizPaper()" style="background: linear-gradient(135deg, #10b981, #059669); border: none; font-weight: 800;">
-                    <i class="fa-solid fa-print"></i> បោះពុម្ព A4
-                  </button>
-                </div>
-              </div>
-
-              <!-- Output Paper Mount -->
-              <div id="aiQuizRenderMount" style="background: #ffffff; color: #0f172a; padding: 28px 32px; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.3); font-family: 'Kantumruy Pro', sans-serif;">
-                <!-- Dynamically filled -->
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Modal: AI Student Performance Insight & Early Warning -->
-      <div id="aiStudentInsightModal" class="modal-overlay">
-        <div class="modal-card" style="max-width: 950px; width: 95%; max-height: 92vh; display: flex; flex-direction: column; background: #0f172a; border: 1px solid rgba(6, 182, 212, 0.4); border-radius: 20px; box-shadow: 0 24px 60px rgba(0, 0, 0, 0.7), 0 0 30px rgba(6, 182, 212, 0.25); overflow: hidden;">
-          <!-- Header -->
-          <div class="modal-header" style="background: linear-gradient(135deg, #083344, #1e1b4b); padding: 16px 22px; border-bottom: 1px solid rgba(6, 182, 212, 0.3); display: flex; align-items: center; justify-content: space-between;">
-            <div style="display: flex; align-items: center; gap: 12px;">
-              <div style="width: 40px; height: 40px; border-radius: 12px; background: linear-gradient(135deg, #06b6d4, #10b981); display: flex; align-items: center; justify-content: center; font-size: 1.25rem; color: #fff; box-shadow: 0 4px 14px rgba(6, 182, 212, 0.4);">
-                <i class="fa-solid fa-chart-line-up"></i>
-              </div>
-              <div>
-                <h3 style="margin: 0; font-size: 1.12rem; font-weight: 800; color: #fff;">
-                  📊 AI Student Performance Insight & Early Warning
-                </h3>
-                <p style="margin: 2px 0 0; font-size: 0.78rem; color: #67e8f9;">
-                  វិភាគវត្តមាន ពិន្ទុធ្លាក់ចុះ និងផ្តល់ដំណឹងជាមុនទប់ស្កាត់ការបោះបង់ • សាលា អន្តរជាតិ ធានស៊ីន
-                </p>
-              </div>
-            </div>
-            <button type="button" class="header-close-btn" data-close-modal="aiStudentInsightModal" title="បិទផ្ទាំង" style="background: rgba(255,255,255,0.1); border: none; color: #fff; width: 32px; height: 32px; border-radius: 50%; cursor: pointer;">
-              <i class="fa-solid fa-xmark"></i>
-            </button>
-          </div>
-
-          <!-- Body -->
-          <div class="modal-body" style="padding: 20px; overflow-y: auto; flex: 1;">
-            <!-- Real-time Metrics 4 Pills -->
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 18px;">
-              <div style="background: rgba(239, 68, 68, 0.12); border: 1px solid rgba(239, 68, 68, 0.35); border-radius: 12px; padding: 14px 16px;">
-                <div style="font-size: 0.75rem; color: #f87171; font-weight: 700; text-transform: uppercase;">🔴 ហានិភ័យខ្ពស់ (Critical)</div>
-                <div id="aiInsightCriticalCount" style="font-size: 1.8rem; font-weight: 900; color: #ef4444; margin: 4px 0;">0 នាក់</div>
-                <div style="font-size: 0.72rem; color: #94a3b8;">អវត្តមាន >= ៣ ឬពិន្ទុ < 50</div>
-              </div>
-              <div style="background: rgba(245, 158, 11, 0.12); border: 1px solid rgba(245, 158, 11, 0.35); border-radius: 12px; padding: 14px 16px;">
-                <div style="font-size: 0.75rem; color: #fbbf24; font-weight: 700; text-transform: uppercase;">🟡 ត្រូវតាមដាន (Moderate)</div>
-                <div id="aiInsightModerateCount" style="font-size: 1.8rem; font-weight: 900; color: #f59e0b; margin: 4px 0;">0 នាក់</div>
-                <div style="font-size: 0.72rem; color: #94a3b8;">អវត្តមាន ២ ឬពិន្ទុខ្សោយ</div>
-              </div>
-              <div style="background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.35); border-radius: 12px; padding: 14px 16px;">
-                <div style="font-size: 0.75rem; color: #34d399; font-weight: 700; text-transform: uppercase;">🟢 រៀនទៀងទាត់ (Good)</div>
-                <div id="aiInsightGoodCount" style="font-size: 1.8rem; font-weight: 900; color: #10b981; margin: 4px 0;">0 នាក់</div>
-                <div style="font-size: 0.72rem; color: #94a3b8;">វត្តមាន និងពិន្ទុល្អប្រសើរ</div>
-              </div>
-              <div style="background: rgba(6, 182, 212, 0.12); border: 1px solid rgba(6, 182, 212, 0.35); border-radius: 12px; padding: 14px 16px;">
-                <div style="font-size: 0.75rem; color: #22d3ee; font-weight: 700; text-transform: uppercase;">💙 សុខភាពថ្នាក់រៀន (Health)</div>
-                <div id="aiInsightHealthScore" style="font-size: 1.8rem; font-weight: 900; color: #06b6d4; margin: 4px 0;">100%</div>
-                <div style="font-size: 0.72rem; color: #94a3b8;">អត្រាសរុបនៃសិស្សទាំងអស់</div>
-              </div>
-            </div>
-
-            <!-- AI Executive Analysis Banner -->
-            <div id="aiInsightExecutiveBox" style="background: rgba(30, 27, 75, 0.5); border: 1px solid rgba(168, 85, 247, 0.3); border-radius: 14px; padding: 16px 20px; margin-bottom: 18px;">
-              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
-                <div style="display: flex; align-items: center; gap: 8px; font-weight: 800; color: #c084fc; font-size: 0.9rem;">
-                  <i class="fa-solid fa-robot"></i> ការវិភាគឆ្លាតវៃពី Gemini AI (Intelligent Diagnosis):
-                </div>
-                <button type="button" class="btn-secondary btn-sm" onclick="ModalsComponent.refreshAiStudentInsights()" style="font-size: 0.75rem; padding: 3px 10px;">
-                  <i class="fa-solid fa-rotate"></i> វិភាគឡើងវិញ
-                </button>
-              </div>
-              <div id="aiInsightExecutiveText" style="font-size: 0.86rem; color: #e2e8f0; line-height: 1.6;">
-                កំពុងដំណើរការវិភាគទិន្នន័យ...
-              </div>
-            </div>
-
-            <!-- Action Recommendations for Teachers -->
-            <div id="aiInsightRecommendationsBox" style="background: rgba(6, 78, 59, 0.2); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 14px; padding: 16px 20px; margin-bottom: 18px;">
-              <div style="font-weight: 800; color: #34d399; font-size: 0.9rem; margin-bottom: 8px;">
-                <i class="fa-solid fa-lightbulb"></i> អនុសាសន៍យុទ្ធសាស្ត្រគរុកោសល្យសម្រាប់លោកគ្រូអ្នកគ្រូ៖
-              </div>
-              <ul id="aiInsightRecommendationsList" style="margin: 0; padding-left: 20px; font-size: 0.84rem; color: #cbd5e1; line-height: 1.6;">
-              </ul>
-            </div>
-
-            <!-- Filter and At-Risk Student Cards List -->
-            <div>
-              <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 12px;">
-                <h4 style="margin: 0; font-size: 0.95rem; font-weight: 800; color: #fff;">
-                  បញ្ជីសិស្សប្រឈមហានិភ័យ (At-Risk Students Watchlist)
-                </h4>
-                <div style="display: flex; gap: 8px;">
-                  <button type="button" class="btn-secondary btn-sm" onclick="ModalsComponent.printAiStudentInsightReport()" style="color: #38bdf8; border-color: rgba(56, 189, 248, 0.4);">
-                    <i class="fa-solid fa-print"></i> បោះពុម្ពរបាយការណ៍ A4
-                  </button>
-                </div>
-              </div>
-
-              <!-- List Container -->
-              <div id="aiInsightStudentsListMount" style="display: flex; flex-direction: column; gap: 10px;">
-                <!-- Rendered dynamically -->
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
     `;
   },
 
@@ -8893,574 +8880,7 @@ ${scoresList}
     }
   },
 
-  // ========================================================================
-  // 34. GEMINI AI QUIZ & EXERCISE GENERATOR CONTROLLERS
-  // ========================================================================
-  _currentAiQuizData: null,
-  _currentAiQuizMode: "student",
-
-  openAiQuizGeneratorModal(prefillTopic = "") {
-    this.open("aiQuizGeneratorModal");
-    const input = document.getElementById("aiQuizTopicInput");
-    if (input) {
-      if (prefillTopic) {
-        input.value = prefillTopic;
-      } else if (!input.value) {
-        input.value = "Microsoft Excel: រូបមន្ត SUM, AVERAGE, IF & VLOOKUP";
-      }
-    }
-  },
-
-  async generateAiQuizAction() {
-    const topicInput = document.getElementById("aiQuizTopicInput");
-    const levelSelect = document.getElementById("aiQuizLevelSelect");
-    const typeSelect = document.getElementById("aiQuizTypeSelect");
-    const countSelect = document.getElementById("aiQuizCountSelect");
-    const btn = document.getElementById("btnRunAiQuizGenerate");
-    const statusText = document.getElementById("aiQuizStatusText");
-    const outContainer = document.getElementById("aiQuizOutputContainer");
-
-    const topic = topicInput ? topicInput.value.trim() : "";
-    if (!topic) {
-      if (typeof App !== "undefined") App.showToast("សូមបញ្ចូលប្រធានបទមេរៀនជាមុនសិន!", "warning");
-      return;
-    }
-
-    const gradeLevel = levelSelect ? levelSelect.value : "កម្រិតមធ្យម (Intermediate)";
-    const type = typeSelect ? typeSelect.value : "mixed";
-    const questionCount = countSelect ? countSelect.value : "5";
-
-    if (btn) {
-      btn.disabled = true;
-      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> <span>កំពុងបង្កើតជាមួយ Gemini AI...</span>`;
-    }
-    if (statusText) {
-      statusText.innerHTML = `<span style="color: #c084fc;"><i class="fa-solid fa-sparkles fa-spin"></i> កំពុងដំណើរការគរុកោសល្យឆ្លាតវៃ...</span>`;
-    }
-
-    try {
-      if (typeof GeminiAIService === "undefined") {
-        throw new Error("GeminiAIService is not loaded");
-      }
-
-      const result = await GeminiAIService.generateQuiz({
-        topic,
-        gradeLevel,
-        type,
-        questionCount
-      });
-
-      this._currentAiQuizData = result;
-      this._currentAiQuizMode = "student";
-
-      if (outContainer) {
-        outContainer.style.display = "block";
-      }
-
-      this.renderAiQuizContent("student");
-
-      if (statusText) {
-        const qCount = result.questions ? result.questions.length : 0;
-        const taskCount = result.practicalTasks ? result.practicalTasks.length : 0;
-        statusText.innerHTML = `<span style="color: #34d399;"><i class="fa-solid fa-circle-check"></i> បង្កើតជោគជ័យ! (${qCount} សំណួរ, ${taskCount} កិច្ចការ Lab)</span>`;
-      }
-
-      if (typeof App !== "undefined") {
-        App.showToast("🎉 បានបង្កើតកម្រងសំណួរដោយជោគជ័យ!", "success");
-      }
-    } catch (err) {
-      console.error("AI Quiz generation error:", err);
-      if (statusText) {
-        statusText.innerHTML = `<span style="color: #ef4444;"><i class="fa-solid fa-triangle-exclamation"></i> បរាជ័យ: ${err.message}</span>`;
-      }
-      if (typeof App !== "undefined") {
-        App.showToast("មានបញ្ហាក្នុងការបង្កើត: " + err.message, "error");
-      }
-    } finally {
-      if (btn) {
-        btn.disabled = false;
-        btn.innerHTML = `<i class="fa-solid fa-sparkles"></i> <span>បង្កើតជាមួយ Gemini AI</span>`;
-      }
-    }
-  },
-
-  switchAiQuizTab(mode) {
-    this._currentAiQuizMode = mode;
-    const btnStudent = document.getElementById("btnTabAiQuizStudent");
-    const btnTeacher = document.getElementById("btnTabAiQuizTeacher");
-
-    if (mode === "student") {
-      if (btnStudent) {
-        btnStudent.className = "btn-primary btn-sm";
-        btnStudent.style.background = "#6366f1";
-        btnStudent.style.borderColor = "#6366f1";
-      }
-      if (btnTeacher) {
-        btnTeacher.className = "btn-secondary btn-sm";
-        btnTeacher.style.background = "";
-        btnTeacher.style.borderColor = "";
-      }
-    } else {
-      if (btnTeacher) {
-        btnTeacher.className = "btn-primary btn-sm";
-        btnTeacher.style.background = "#10b981";
-        btnTeacher.style.borderColor = "#10b981";
-      }
-      if (btnStudent) {
-        btnStudent.className = "btn-secondary btn-sm";
-        btnStudent.style.background = "";
-        btnStudent.style.borderColor = "";
-      }
-    }
-
-    this.renderAiQuizContent(mode);
-  },
-
-  renderAiQuizContent(mode = "student") {
-    const mount = document.getElementById("aiQuizRenderMount");
-    if (!mount || !this._currentAiQuizData) return;
-
-    const d = this._currentAiQuizData;
-    const isTeacher = mode === "teacher";
-    const questions = d.questions || [];
-    const tasks = d.practicalTasks || [];
-
-    mount.innerHTML = `
-      <div class="ai-quiz-print-sheet" style="font-family: 'Kantumruy Pro', 'Khmer OS Siemreap', sans-serif; line-height: 1.6; color: #1e293b;">
-        <!-- School Formal Header -->
-        <div style="border-bottom: 2px solid #0f172a; padding-bottom: 12px; margin-bottom: 18px; display: flex; justify-content: space-between; align-items: center;">
-          <div style="display: flex; align-items: center; gap: 12px;">
-            <img src="assets/images/logo.png" alt="Logo" style="width: 52px; height: 52px; object-fit: contain;" onerror="this.src='assets/images/logo.png'">
-            <div>
-              <div style="font-weight: 800; font-size: 1.05rem; color: #0f172a;">សាលា អន្តរជាតិ ធានស៊ីន</div>
-              <div style="font-size: 0.8rem; color: #64748b; font-weight: 600;">Tian Xin International School • TIS LAB COMPUTER</div>
-            </div>
-          </div>
-          <div style="text-align: right;">
-            <span class="badge" style="background: ${isTeacher ? '#10b981' : '#6366f1'}; color: #fff; font-size: 0.82rem; font-weight: 700; padding: 4px 12px; border-radius: 6px;">
-              ${isTeacher ? '🔑 សន្លឹកកិច្ចការគ្រូ & ចម្លើយផ្លូវការ' : '📄 ក្រដាសប្រឡង/លំហាត់សិស្ស'}
-            </span>
-            <div style="font-size: 0.76rem; color: #64748b; margin-top: 4px;">ពិន្ទុសរុប: <strong>${d.totalPoints || 100}</strong> • ពេល: <strong>${d.timeMinutes || 45} នាទី</strong></div>
-          </div>
-        </div>
-
-        <!-- Quiz Title & Info Box -->
-        <div style="text-align: center; margin-bottom: 18px;">
-          <h2 style="font-size: 1.35rem; font-weight: 900; margin: 0 0 6px 0; color: #0f172a;">
-            ${d.title || ('វិញ្ញាសា: ' + d.topic)}
-          </h2>
-          <div style="font-size: 0.84rem; color: #475569;">
-            កម្រិត: <strong>${d.gradeLevel || 'ទូទៅ'}</strong> • មុខវិជ្ជា: <strong>${d.subject || 'កុំព្យូទ័រ'}</strong> • បង្កើតដោយ: <strong>Gemini 3.8 Flash AI</strong>
-          </div>
-        </div>
-
-        <!-- Student Identification Header Line (For student sheet) -->
-        ${!isTeacher ? `
-          <div style="background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 8px; padding: 10px 14px; margin-bottom: 20px; font-size: 0.85rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
-            <div>ឈ្មោះសិស្ស: ....................................................</div>
-            <div>ភេទ: ............</div>
-            <div>វេន: ....................</div>
-            <div>កាលបរិច្ឆេទ: ....................</div>
-            <div style="border: 1.5px solid #0f172a; border-radius: 6px; padding: 4px 14px; font-weight: 800; background: #fff;">
-              ពិន្ទុ: _______ / 100
-            </div>
-          </div>
-        ` : `
-          <div style="background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 8px; padding: 10px 14px; margin-bottom: 20px; font-size: 0.84rem; color: #065f46;">
-            <strong><i class="fa-solid fa-circle-check"></i> ចំណាំសម្រាប់គ្រូ:</strong> សន្លឹកនេះមានបង្ហាញចម្លើយត្រឹមត្រូវ ការពន្យល់លម្អិត និងលក្ខណៈវិនិច្ឆ័យដាក់ពិន្ទុ (Rubric)។
-          </div>
-        `}
-
-        <!-- Part 1: Multiple Choice Questions -->
-        ${questions.length > 0 ? `
-          <div style="margin-bottom: 24px;">
-            <div style="font-size: 0.95rem; font-weight: 800; color: #1e293b; background: #f1f5f9; padding: 6px 12px; border-left: 4px solid #6366f1; border-radius: 4px; margin-bottom: 14px;">
-              ផ្នែកទី ១: សំណួរពហុជ្រើសរើស (សូមគូសរង្វង់ ឬធិកលើចម្លើយត្រឹមត្រូវតែមួយគត់)
-            </div>
-
-            <div style="display: flex; flex-direction: column; gap: 16px;">
-              ${questions.map((q, idx) => `
-                <div style="padding-left: 6px;">
-                  <div style="font-weight: 700; font-size: 0.92rem; color: #0f172a; margin-bottom: 8px;">
-                    សំណួរទី ${idx + 1}: ${q.question_kh} <span style="font-size: 0.78rem; font-weight: 600; color: #64748b;">(${q.points || 10} ពិន្ទុ)</span>
-                  </div>
-                  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 8px; margin-left: 12px;">
-                    ${(q.options || []).map((opt, optIdx) => {
-                      const isCorrect = isTeacher && (optIdx === q.correctIndex || opt.startsWith(q.correctOption));
-                      return `
-                        <div style="padding: 6px 12px; border-radius: 6px; font-size: 0.86rem; border: 1px solid ${isCorrect ? '#10b981' : '#e2e8f0'}; background: ${isCorrect ? '#ecfdf5' : '#fff'}; color: ${isCorrect ? '#065f46' : '#334155'}; font-weight: ${isCorrect ? '800' : '500'};">
-                          ${isCorrect ? '<i class="fa-solid fa-circle-check" style="color: #10b981; margin-right: 4px;"></i>' : '<span style="display: inline-block; width: 14px; height: 14px; border: 1.5px solid #94a3b8; border-radius: 50%; margin-right: 6px; vertical-align: middle;"></span>'}
-                          ${opt}
-                        </div>
-                      `;
-                    }).join("")}
-                  </div>
-                  ${isTeacher && q.explanation_kh ? `
-                    <div style="margin: 8px 0 0 12px; padding: 8px 12px; background: #f8fafc; border-left: 3px solid #10b981; border-radius: 4px; font-size: 0.8rem; color: #334155;">
-                      <strong style="color: #059669;">💡 ការពន្យល់ (Explanation):</strong> ${q.explanation_kh}
-                    </div>
-                  ` : ''}
-                </div>
-              `).join("")}
-            </div>
-          </div>
-        ` : ''}
-
-        <!-- Part 2: Hands-on Practical Lab Tasks -->
-        ${tasks.length > 0 ? `
-          <div style="margin-bottom: 20px;">
-            <div style="font-size: 0.95rem; font-weight: 800; color: #1e293b; background: #f1f5f9; padding: 6px 12px; border-left: 4px solid #10b981; border-radius: 4px; margin-bottom: 14px;">
-              ផ្នែកទី ២: លំហាត់អនុវត្តផ្ទាល់លើម៉ាស៊ីនកុំព្យូទ័រ (Computer Lab Practical Exam)
-            </div>
-
-            <div style="display: flex; flex-direction: column; gap: 16px;">
-              ${tasks.map((task, idx) => `
-                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 14px 18px;">
-                  <div style="font-weight: 800; font-size: 0.92rem; color: #0f172a; margin-bottom: 8px;">
-                    លំហាត់ទី ${idx + 1}: ${task.taskTitle_kh} <span style="font-size: 0.78rem; font-weight: 700; color: #059669;">(${task.points || 50} ពិន្ទុ)</span>
-                  </div>
-                  <div style="font-size: 0.85rem; color: #334155; margin-bottom: 10px;">
-                    <div style="font-weight: 700; margin-bottom: 4px; color: #475569;">ជំហានត្រូវអនុវត្ត៖</div>
-                    <ol style="margin: 0; padding-left: 20px;">
-                      ${(task.steps_kh || []).map(step => `<li style="margin-bottom: 4px;">${step}</li>`).join("")}
-                    </ol>
-                  </div>
-                  ${task.rubric_kh ? `
-                    <div style="font-size: 0.78rem; color: #64748b; background: #fff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 6px 10px;">
-                      <strong>🎯 លក្ខណៈវិនិច្ឆ័យដាក់ពិន្ទុ (Rubric):</strong> ${task.rubric_kh}
-                    </div>
-                  ` : ''}
-                </div>
-              `).join("")}
-            </div>
-          </div>
-        ` : ''}
-
-        ${isTeacher && d.teacherAdvice_kh ? `
-          <div style="margin-top: 18px; padding: 12px 16px; background: #fdf4ff; border: 1px solid #f0abfc; border-radius: 8px; font-size: 0.82rem; color: #86198f;">
-            <strong><i class="fa-solid fa-graduation-cap"></i> អនុសាសន៍គរុកោសល្យបន្ថែម:</strong> ${d.teacherAdvice_kh}
-          </div>
-        ` : ''}
-      </div>
-    `;
-  },
-
-  printAiQuizPaper() {
-    const mount = document.getElementById("aiQuizRenderMount");
-    if (!mount) return;
-
-    const printWin = window.open("", "_blank");
-    if (!printWin) {
-      if (typeof App !== "undefined") App.showToast("សូមអនុញ្ញាតបើក Pop-up លើ Browser ដើម្បី Print!", "warning");
-      return;
-    }
-
-    printWin.document.write(`
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <title>វិញ្ញាសា - សាលា អន្តរជាតិ ធានស៊ីន</title>
-        <meta charset="utf-8">
-        <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-        <style>
-          @page { size: A4 portrait; margin: 15mm; }
-          body { font-family: 'Kantumruy Pro', sans-serif; margin: 0; padding: 0; color: #0f172a; background: #fff; }
-          * { box-sizing: border-box; }
-        </style>
-      </head>
-      <body>
-        ${mount.innerHTML}
-        <script>
-          setTimeout(() => { window.print(); window.close(); }, 500);
-        <\/script>
-      </body>
-      </html>
-    `);
-    printWin.document.close();
-  },
-
-  copyAiQuizToClipboard() {
-    if (!this._currentAiQuizData) return;
-    const d = this._currentAiQuizData;
-    let txt = `=== ${d.title || d.topic} ===\n`;
-    txt += `សាលា អន្តរជាតិ ធានស៊ីន (Tian Xin International School)\n`;
-    txt += `កម្រិត: ${d.gradeLevel} | មុខវិជ្ជា: ${d.subject} | ពិន្ទុ: ${d.totalPoints}\n\n`;
-
-    if (d.questions && d.questions.length > 0) {
-      txt += `[ផ្នែកទី ១: សំណួរពហុជ្រើសរើស]\n`;
-      d.questions.forEach((q, i) => {
-        txt += `${i + 1}. ${q.question_kh} (${q.points} ពិន្ទុ)\n`;
-        (q.options || []).forEach(opt => { txt += `   ${opt}\n`; });
-        txt += `   -> ចម្លើយត្រឹមត្រូវ: ${q.correctOption} (${q.explanation_kh || ''})\n\n`;
-      });
-    }
-
-    if (d.practicalTasks && d.practicalTasks.length > 0) {
-      txt += `[ផ្នែកទី ២: លំហាត់អនុវត្តកុំព្យូទ័រ]\n`;
-      d.practicalTasks.forEach((t, i) => {
-        txt += `${i + 1}. ${t.taskTitle_kh} (${t.points} ពិន្ទុ)\n`;
-        (t.steps_kh || []).forEach(s => { txt += `   - ${s}\n`; });
-        txt += `   លក្ខណៈវិនិច្ឆ័យ: ${t.rubric_kh || ''}\n\n`;
-      });
-    }
-
-    navigator.clipboard.writeText(txt).then(() => {
-      if (typeof App !== "undefined") App.showToast("📋 បានចម្លងកម្រងសំណួរជាអត្ថបទរួចរាល់!", "success");
-    }).catch(() => {
-      if (typeof App !== "undefined") App.showToast("មិនអាចចម្លងបាន", "error");
-    });
-  },
-
-  saveAiQuizToLibrary() {
-    if (!this._currentAiQuizData) return;
-    try {
-      const saved = JSON.parse(localStorage.getItem("tis_saved_ai_quizzes") || "[]");
-      saved.unshift({
-        id: "QUIZ-" + Date.now(),
-        savedAt: new Date().toISOString(),
-        ...this._currentAiQuizData
-      });
-      localStorage.setItem("tis_saved_ai_quizzes", JSON.stringify(saved.slice(0, 30)));
-      if (typeof App !== "undefined") App.showToast("💾 បានរក្សាទុកក្នុងបណ្ណាល័យវិញ្ញាសាជោគជ័យ!", "success");
-    } catch (e) {
-      console.warn("Storage error:", e);
-    }
-  },
-
-  // ========================================================================
-  // 35. GEMINI AI STUDENT PERFORMANCE INSIGHT CONTROLLERS
-  // ========================================================================
-  _currentAiInsightData: null,
-
-  async openAiStudentInsightModal() {
-    this.open("aiStudentInsightModal");
-    await this.refreshAiStudentInsights();
-  },
-
-  async refreshAiStudentInsights() {
-    const execText = document.getElementById("aiInsightExecutiveText");
-    const recList = document.getElementById("aiInsightRecommendationsList");
-    const listMount = document.getElementById("aiInsightStudentsListMount");
-
-    if (execText) {
-      execText.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-purple-400"></i> កំពុងដំណើរការវិភាគវត្តមាន ពិន្ទុ និងនិន្នាការសិក្សាតាម Gemini AI...`;
-    }
-    if (listMount) {
-      listMount.innerHTML = `<div style="text-align: center; padding: 20px; color: #94a3b8;"><i class="fa-solid fa-spinner fa-spin"></i> កំពុងទាញទិន្នន័យសិស្ស...</div>`;
-    }
-
-    try {
-      if (typeof GeminiAIService === "undefined") {
-        throw new Error("GeminiAIService not loaded");
-      }
-
-      const data = await GeminiAIService.analyzeStudentPerformance();
-      this._currentAiInsightData = data;
-
-      // Update counters
-      const s = data.summary;
-      const elCrit = document.getElementById("aiInsightCriticalCount");
-      const elMod = document.getElementById("aiInsightModerateCount");
-      const elGood = document.getElementById("aiInsightGoodCount");
-      const elHealth = document.getElementById("aiInsightHealthScore");
-
-      if (elCrit) elCrit.textContent = `${s.highRiskCount} នាក់`;
-      if (elMod) elMod.textContent = `${s.moderateCount} នាក់`;
-      if (elGood) elGood.textContent = `${s.goodCount} នាក់`;
-      if (elHealth) elHealth.textContent = `${s.healthScore}%`;
-
-      // Update Executive Diagnosis
-      if (execText && data.insights) {
-        execText.innerHTML = `
-          <div style="font-size: 0.88rem; color: #f1f5f9; margin-bottom: 8px;">
-            ${data.insights.executiveAnalysis_kh || "ស្ថានភាពសិក្សាទូទៅមានភាពល្អប្រសើរ។"}
-          </div>
-          ${data.insights.primaryCauses_kh && data.insights.primaryCauses_kh.length > 0 ? `
-            <div style="font-size: 0.78rem; color: #cbd5e1; margin-top: 6px;">
-              <strong style="color: #f87171;">⚠️ មូលហេតុចម្បងដែលរកឃើញ៖</strong>
-              ${data.insights.primaryCauses_kh.map(c => `• ${c}`).join(" ")}
-            </div>
-          ` : ""}
-        `;
-      }
-
-      // Update Recommendations
-      if (recList && data.insights && data.insights.actionableRecommendations_kh) {
-        recList.innerHTML = data.insights.actionableRecommendations_kh.map(rec => `
-          <li style="margin-bottom: 4px;">${rec}</li>
-        `).join("");
-      }
-
-      // Render Student Cards
-      this.renderAiStudentInsightsList();
-    } catch (err) {
-      console.error("AI Insight Error:", err);
-      if (execText) {
-        execText.innerHTML = `<span style="color: #ef4444;"><i class="fa-solid fa-triangle-exclamation"></i> បរាជ័យក្នុងការព្យាករណ៍: ${err.message}</span>`;
-      }
-    }
-  },
-
-  renderAiStudentInsightsList() {
-    const mount = document.getElementById("aiInsightStudentsListMount");
-    if (!mount || !this._currentAiInsightData) return;
-
-    const list = this._currentAiInsightData.atRiskList || [];
-
-    if (list.length === 0) {
-      mount.innerHTML = `
-        <div style="text-align: center; padding: 30px; background: rgba(16, 185, 129, 0.08); border: 1.5px dashed rgba(16, 185, 129, 0.35); border-radius: 12px; color: #10b981;">
-          <i class="fa-solid fa-circle-check" style="font-size: 2.2rem; margin-bottom: 8px; display: block;"></i>
-          <div style="font-weight: 800; font-size: 1rem;">អស្ចារ្យណាស់! គ្មានសិស្សណាប្រឈមនឹងហានិភ័យបោះបង់ឡើយ</div>
-          <div style="font-size: 0.8rem; color: #94a3b8; margin-top: 4px;">សិស្សទាំងអស់ចូលរៀនទៀងទាត់ និងមានលទ្ធផលល្អក្នុងថ្នាក់កុំព្យូទ័រ TIS</div>
-        </div>
-      `;
-      return;
-    }
-
-    mount.innerHTML = list.map(item => {
-      const s = item.student;
-      const isCritical = item.riskLevel === "CRITICAL";
-      const cardBg = isCritical ? "rgba(239, 68, 68, 0.08)" : "rgba(245, 158, 11, 0.08)";
-      const borderCol = isCritical ? "rgba(239, 68, 68, 0.3)" : "rgba(245, 158, 11, 0.3)";
-      const badgeCol = isCritical ? "background: rgba(239, 68, 68, 0.2); color: #f87171;" : "background: rgba(245, 158, 11, 0.2); color: #fbbf24;";
-
-      return `
-        <div style="background: ${cardBg}; border: 1px solid ${borderCol}; border-radius: 12px; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
-          <!-- Left: Info -->
-          <div style="display: flex; align-items: center; gap: 12px; min-width: 250px;">
-            <img src="${s.Avatar || (s.Gender === 'ស្រី' ? 'assets/images/default-female.svg' : 'assets/images/default-male.svg')}" alt="${item.nameKh}" style="width: 44px; height: 44px; border-radius: 50%; object-fit: cover; border: 2px solid ${isCritical ? '#ef4444' : '#f59e0b'};" onerror="this.src='assets/images/default-male.svg'">
-            <div>
-              <div style="display: flex; align-items: center; gap: 8px;">
-                <span style="font-size: 0.92rem; font-weight: 800; color: #fff;">${item.nameKh}</span>
-                <span style="font-size: 0.74rem; color: #94a3b8;">(${item.id})</span>
-                <span class="badge" style="${badgeCol} font-size: 0.7rem; padding: 2px 7px; border-radius: 10px;">
-                  ${isCritical ? '🔴 ហានិភ័យខ្ពស់' : '🟡 ត្រូវតាមដាន'}
-                </span>
-              </div>
-              <div style="font-size: 0.78rem; color: #cbd5e1; margin-top: 2px;">
-                វេន: <strong>${item.shift}</strong> • វគ្គ: <strong>${item.course}</strong> • ទូរស័ព្ទ: <strong>${item.phone}</strong>
-              </div>
-              <div style="font-size: 0.76rem; color: #fca5a5; font-weight: 600; margin-top: 2px;">
-                <i class="fa-solid fa-triangle-exclamation"></i> ${item.reasons}
-              </div>
-            </div>
-          </div>
-
-          <!-- Right: Actions -->
-          <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-            <button type="button" class="btn-primary btn-sm" onclick="ModalsComponent.sendParentWarningTelegram('${item.id}', '${item.phone}', '${App.escapeHtml(item.nameKh)}', '${App.escapeHtml(item.reasons)}')" style="background: linear-gradient(135deg, #0284c7, #06b6d4); border: none; font-size: 0.78rem; padding: 6px 12px; border-radius: 8px; font-weight: 700;" title="ផ្ញើសាររំលឹកដោយក្តីបារម្ភទៅកាន់អាណាព្យាបាលតាម Telegram">
-              <i class="fa-brands fa-telegram"></i> ផ្ញើ Telegram ឪពុកម្តាយ
-            </button>
-            <a href="tel:${item.phone}" class="btn-secondary btn-sm" style="font-size: 0.78rem; padding: 6px 10px; border-radius: 8px; text-decoration: none; color: #38bdf8; border-color: rgba(56, 189, 248, 0.4);" title="ខលទាក់ទងឪពុកម្តាយ">
-              <i class="fa-solid fa-phone"></i> ខល
-            </a>
-            <button type="button" class="btn-secondary btn-sm" onclick="App.openStudentModal('${item.id}')" style="font-size: 0.78rem; padding: 6px 10px; border-radius: 8px;" title="មើលប្រវត្តិសិស្ស">
-              <i class="fa-solid fa-eye"></i> មើល
-            </button>
-          </div>
-        </div>
-      `;
-    }).join("");
-  },
-
-  sendParentWarningTelegram(studentId, phone, nameKh, reasons) {
-    const schoolPhone = "071 721 030 7";
-    const msg = `សូមគោរពជំរាបសួរអាណាព្យាបាលសិស្ស ${nameKh} (ID: ${studentId})!\n\nខ្ញុំជាគ្រូបន្ទុកថ្នាក់កុំព្យូទ័រនៃសាលា អន្តរជាតិ ធានស៊ីន (Tian Xin International School)។ សាលាមានការព្រួយបារម្ភអំពីការសិក្សារបស់កូន ដោយសារ៖ ${reasons}។\n\nដើម្បីកុំឱ្យកូនខកខានមេរៀនអនុវត្តកុំព្យូទ័រ សូមលោក/លោកស្រីមេត្តាទាក់ទងមកកាន់លេខ ${schoolPhone} ដើម្បីសាលាជួយរៀបចំម៉ោងបំប៉នជូនកូន។ សូមអរគុណ! 🙏`;
-
-    // Copy to clipboard
-    navigator.clipboard.writeText(msg).then(() => {
-      if (typeof App !== "undefined") {
-        App.showToast("💬 បានចម្លងសារ Telegram រួចរាល់! កំពុងបើក Telegram...", "success");
-      }
-    }).catch(() => {});
-
-    // Open Telegram Share
-    const tgUrl = `https://t.me/share/url?text=${encodeURIComponent(msg)}`;
-    window.open(tgUrl, "_blank");
-  },
-
-  printAiStudentInsightReport() {
-    if (!this._currentAiInsightData) return;
-    const d = this._currentAiInsightData;
-    const list = d.atRiskList || [];
-
-    const printWin = window.open("", "_blank");
-    if (!printWin) {
-      if (typeof App !== "undefined") App.showToast("សូមអនុញ្ញាត Pop-up ដើម្បី Print!", "warning");
-      return;
-    }
-
-    printWin.document.write(`
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <title>របាយការណ៍វិភាគសិស្សប្រឈមហានិភ័យ - TIS</title>
-        <meta charset="utf-8">
-        <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-        <style>
-          @page { size: A4 portrait; margin: 15mm; }
-          body { font-family: 'Kantumruy Pro', sans-serif; color: #0f172a; margin: 0; padding: 0; }
-          table { width: 100%; border-collapse: collapse; margin-top: 14px; }
-          th, td { border: 1px solid #cbd5e1; padding: 8px 10px; font-size: 0.84rem; text-align: left; }
-          th { background: #f1f5f9; font-weight: 800; }
-        </style>
-      </head>
-      <body>
-        <div style="border-bottom: 2px solid #0f172a; padding-bottom: 10px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center;">
-          <div>
-            <h2 style="margin: 0; font-size: 1.2rem;">សាលា អន្តរជាតិ ធានស៊ីន (Tian Xin International School)</h2>
-            <div style="font-size: 0.8rem; color: #64748b;">របាយការណ៍វិភាគសិស្សប្រឈមហានិភ័យ & អវត្តមាន (AI Early Warning Insight)</div>
-          </div>
-          <div style="text-align: right; font-size: 0.78rem; color: #64748b;">
-            កាលបរិច្ឆេទ: ${new Date().toLocaleDateString('km-KH')}
-          </div>
-        </div>
-
-        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; margin-bottom: 16px; font-size: 0.84rem;">
-          <strong>ការវិភាគសង្ខេបជារួម:</strong> ${d.insights?.executiveAnalysis_kh || 'គ្មាន'}
-        </div>
-
-        <table>
-          <thead>
-            <tr>
-              <th>ល.រ</th>
-              <th>អត្តលេខ</th>
-              <th>ឈ្មោះសិស្ស</th>
-              <th>ភេទ</th>
-              <th>វេនសិក្សា</th>
-              <th>អវត្តមាន</th>
-              <th>ពិន្ទុ</th>
-              <th>កម្រិតហានិភ័យ & មូលហេតុ</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${list.map((it, idx) => `
-              <tr>
-                <td>${idx + 1}</td>
-                <td><strong>${it.id}</strong></td>
-                <td><strong>${it.nameKh}</strong></td>
-                <td>${it.gender}</td>
-                <td>${it.shift}</td>
-                <td style="color: #ef4444; font-weight: 700;">${it.absentCount} ដង</td>
-                <td>${it.avgScore}</td>
-                <td>${it.reasons}</td>
-              </tr>
-            `).join("")}
-          </tbody>
-        </table>
-
-        <script>
-          setTimeout(() => { window.print(); window.close(); }, 500);
-        <\/script>
-      </body>
-      </html>
-    `);
-    printWin.document.close();
-  },
-
-  open(modalId) {
+ open(modalId) {
     const modal = document.getElementById(modalId);
     if (modal) {
       modal.classList.add("open");

@@ -8,297 +8,206 @@ const DashboardView = {
 
     return `
       <section id="view-dashboard" class="page-view active">
-        <!-- 1. 2026 Modern Hero Welcome Section with Ambient Glow Visual -->
-        <div class="card motion-fade-up" style="margin-bottom: 22px; padding: 26px 32px; background: linear-gradient(135deg, rgba(18, 12, 32, 0.95) 0%, rgba(29, 20, 48, 0.9) 55%, rgba(124, 58, 237, 0.22) 100%); border: 1px solid rgba(139, 92, 246, 0.3); border-radius: 22px; box-shadow: 0 20px 48px rgba(0, 0, 0, 0.5), 0 0 30px rgba(124, 58, 237, 0.16); position: relative; overflow: hidden; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px;">
-          <!-- Left Content -->
-          <div style="flex: 1; min-width: 320px; z-index: 2;">
-            <div style="display: inline-flex; align-items: center; gap: 8px; background: rgba(124, 58, 237, 0.14); border: 1px solid rgba(139, 92, 246, 0.35); padding: 5px 14px; border-radius: 20px; font-size: 0.78rem; color: #c084fc; font-weight: 700; margin-bottom: 12px;">
-              <span class="hud-pulse-dot"></span>
-              <span>Next-Gen Education Platform 2026 • TIS Lab Computer</span>
+        <!-- 1. Clean & Elegant Welcome Header -->
+        <div class="card motion-fade-up" style="margin-bottom: 20px; padding: 22px 28px; background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 16px; box-shadow: var(--shadow-sm); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+          <div>
+            <div style="font-size: 0.78rem; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">
+              <i class="fa-solid fa-graduation-cap"></i> សាលា អន្តរជាតិ ធានស៊ីន (TIS LAB COMPUTER)
             </div>
-            <h1 id="dashWelcomeTitle" style="font-size: 1.75rem; font-weight: 900; color: #ffffff; margin: 0 0 8px 0; letter-spacing: -0.2px; line-height: 1.25;">
-              Welcome back, <span id="dashTeacherName" style="color: #22d3ee; text-shadow: 0 0 20px rgba(6, 182, 212, 0.4);">${teacherName}</span> 👋
+            <h1 id="dashWelcomeTitle" style="font-size: 1.45rem; font-weight: 800; color: var(--text-main); margin: 0 0 6px 0; line-height: 1.3;">
+              សួស្តី, <span id="dashTeacherName" style="color: var(--primary);">${teacherName}</span> 👋
             </h1>
-            <p style="margin: 0 0 18px 0; font-size: 0.9rem; color: #cbd5e1; max-width: 620px; line-height: 1.6;">
-              ថ្ងៃនេះគឺ <strong id="dashLiveDateKh" style="color: #38bdf8;">--</strong> • ប្រព័ន្ធគ្រប់គ្រងសិស្ស ស្ថិតិសិក្សា បន្ទប់ពិសោធន៍កុំព្យូទ័រ និងការប្រឡងបញ្ចប់វគ្គដំណើរការរលូន ១០០%។
+            <p style="margin: 0; font-size: 0.86rem; color: var(--text-muted); line-height: 1.5;">
+              ថ្ងៃនេះគឺ <strong id="dashLiveDateKh" style="color: var(--text-main);">--</strong> • ប្រព័ន្ធគ្រប់គ្រងសិស្ស វត្តមាន និងការប្រឡងកុំព្យូទ័រ
             </p>
-            <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-              <button type="button" class="btn-primary" onclick="App.openAddStudentModal()" style="height: 42px; padding: 0 20px; font-size: 0.88rem; font-weight: 800; border-radius: 12px; background: linear-gradient(135deg, #7c3aed, #06b6d4); box-shadow: 0 4px 20px rgba(124, 58, 237, 0.45); border: none;">
-                <i class="fa-solid fa-user-plus"></i>
-                <span>+ ចុះឈ្មោះសិស្សថ្មី</span>
-              </button>
-              <button type="button" class="btn-secondary" onclick="App.switchTab('attendance')" style="height: 42px; padding: 0 16px; font-size: 0.88rem; font-weight: 700; border-radius: 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.12);">
-                <i class="fa-solid fa-calendar-check text-emerald-400"></i>
-                <span>កត់ត្រាវត្តមាន</span>
-              </button>
-              <button type="button" class="btn-secondary" onclick="ModalsComponent.openAiQuizGeneratorModal()" style="height: 42px; padding: 0 16px; font-size: 0.88rem; font-weight: 700; border-radius: 12px; background: linear-gradient(135deg, rgba(168, 85, 247, 0.2), rgba(6, 182, 212, 0.2)); border: 1px solid rgba(168, 85, 247, 0.45); color: #f3e8ff; box-shadow: 0 4px 14px rgba(168, 85, 247, 0.2);" title="បង្កើតកម្រងសំណួរពហុជ្រើសរើស និងលំហាត់កុំព្យូទ័រតាម Gemini AI">
-                <i class="fa-solid fa-brain" style="color: #c084fc;"></i>
-                <span>✨ AI បង្កើតកម្រងសំណួរ</span>
-              </button>
-              <button type="button" class="btn-secondary" onclick="ModalsComponent.openAiStudentInsightModal()" style="height: 42px; padding: 0 16px; font-size: 0.88rem; font-weight: 700; border-radius: 12px; background: linear-gradient(135deg, rgba(6, 182, 212, 0.2), rgba(16, 185, 129, 0.2)); border: 1px solid rgba(6, 182, 212, 0.45); color: #cffafe; box-shadow: 0 4px 14px rgba(6, 182, 212, 0.2);" title="វិភាគការសិក្សា ដំណឹងសិស្សអវត្តមាន និងពិន្ទុធ្លាក់ចុះ">
-                <i class="fa-solid fa-chart-line-up" style="color: #38bdf8;"></i>
-                <span>📊 AI វិភាគការសិក្សាសិស្ស</span>
-              </button>
-            </div>
           </div>
-
-          <!-- Right 3D Educational Technology Illustration (With Floating Animation) -->
-          <div class="motion-float" style="width: 210px; height: 140px; display: flex; align-items: center; justify-content: center; z-index: 2; position: relative;">
-            <svg viewBox="0 0 240 160" width="100%" height="100%" fill="none" xmlns="http://www.w3.org/2000/svg" style="filter: drop-shadow(0 12px 28px rgba(124, 58, 237, 0.35));">
-              <!-- Futuristic 3D Floating Monitor & Graduation Tech Elements -->
-              <defs>
-                <linearGradient id="glowGrad" x1="0" y1="0" x2="1" y2="1">
-                  <stop offset="0%" stop-color="#06b6d4"/>
-                  <stop offset="50%" stop-color="#7c3aed"/>
-                  <stop offset="100%" stop-color="#8b5cf6"/>
-                </linearGradient>
-                <linearGradient id="cubeFace1" x1="0" y1="0" x2="1" y2="1">
-                  <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.8"/>
-                  <stop offset="100%" stop-color="#0284c7" stop-opacity="0.9"/>
-                </linearGradient>
-                <linearGradient id="cubeFace2" x1="0" y1="0" x2="1" y2="1">
-                  <stop offset="0%" stop-color="#8b5cf6"/>
-                  <stop offset="100%" stop-color="#7c3aed"/>
-                </linearGradient>
-              </defs>
-              <!-- 3D Stand -->
-              <ellipse cx="120" cy="140" rx="60" ry="12" fill="url(#glowGrad)" opacity="0.3"/>
-              <!-- Floating Monitor Frame -->
-              <rect x="50" y="25" width="140" height="90" rx="14" fill="#0f172a" stroke="url(#glowGrad)" stroke-width="3"/>
-              <rect x="58" y="33" width="124" height="68" rx="8" fill="#060913"/>
-              <!-- Screen UI Elements inside 3D monitor -->
-              <circle cx="70" cy="45" r="4" fill="#10b981"/>
-              <circle cx="82" cy="45" r="4" fill="#f59e0b"/>
-              <circle cx="94" cy="45" r="4" fill="#ef4444"/>
-              <line x1="70" y1="60" x2="130" y2="60" stroke="#38bdf8" stroke-width="3" stroke-linecap="round"/>
-              <line x1="70" y1="72" x2="110" y2="72" stroke="#8b5cf6" stroke-width="2.5" stroke-linecap="round"/>
-              <line x1="70" y1="84" x2="145" y2="84" stroke="#10b981" stroke-width="2.5" stroke-linecap="round"/>
-              <!-- Floating 3D Graduation Cap Icon -->
-              <g transform="translate(155, 12)">
-                <path d="M25 5 L45 15 L25 25 L5 15 Z" fill="url(#cubeFace1)"/>
-                <path d="M12 20 L12 28 C12 34 38 34 38 28 L38 20" stroke="#38bdf8" stroke-width="2.5" fill="none"/>
-                <circle cx="25" cy="15" r="2.5" fill="#fde68a"/>
-                <path d="M25 15 L43 24 L43 32" stroke="#fde68a" stroke-width="2" stroke-linecap="round"/>
-              </g>
-              <!-- Floating 3D Holographic Cube -->
-              <g transform="translate(20, 75)">
-                <polygon points="18,2 34,10 18,18 2,10" fill="url(#cubeFace1)"/>
-                <polygon points="2,10 18,18 18,34 2,26" fill="url(#cubeFace2)"/>
-                <polygon points="34,10 18,18 18,34 34,26" fill="#1e1b4b" opacity="0.8"/>
-              </g>
-            </svg>
+          <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+            <button type="button" class="btn-primary" onclick="App.openAddStudentModal()" style="height: 38px; padding: 0 16px; font-size: 0.84rem; font-weight: 700; border-radius: 10px;">
+              <i class="fa-solid fa-user-plus"></i> + ចុះឈ្មោះសិស្ស
+            </button>
+            <button type="button" class="btn-secondary" onclick="App.switchTab('attendance')" style="height: 38px; padding: 0 14px; font-size: 0.84rem; font-weight: 600; border-radius: 10px;">
+              <i class="fa-solid fa-calendar-check"></i> កត់ត្រាវត្តមាន
+            </button>
           </div>
         </div>
 
-        <!-- 1.5 Smart EdTech 6-Core Suite Quick Launch Grid -->
-        <div class="card motion-fade-up" style="margin-bottom: 22px; padding: 20px 24px; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(56, 189, 248, 0.2); border-radius: 20px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);">
+        <!-- 1.5 Daily Quick Actions Hub (Clean & Simple) -->
+        <div class="card motion-fade-up" style="margin-bottom: 20px; padding: 18px 22px; background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 16px; box-shadow: var(--shadow-sm);">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px;">
-            <div style="display: flex; align-items: center; gap: 10px;">
-              <span style="display: inline-flex; width: 32px; height: 32px; border-radius: 10px; background: linear-gradient(135deg, #06b6d4, #7c3aed); align-items: center; justify-content: center; color: #fff; font-size: 0.95rem; box-shadow: 0 4px 12px rgba(6, 182, 212, 0.35);">
-                <i class="fa-solid fa-layer-group"></i>
-              </span>
-              <div>
-                <h3 style="margin: 0; font-size: 1.05rem; font-weight: 800; color: #ffffff;">⚡ មជ្ឈមណ្ឌលមុខងារឆ្លាតវៃ (Smart EdTech Suite 6.0)</h3>
-                <p style="margin: 0; font-size: 0.76rem; color: #94a3b8;">ប្រព័ន្ធប្រឡងសាកល្បង • ចុះឈ្មោះ Online • AI ពិនិត្យកិច្ចការ • AI Tutor • គំរូ Office • Auto ជូនដំណឹង</p>
-              </div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="font-size: 1rem; color: var(--primary);"><i class="fa-solid fa-bolt"></i></span>
+              <h3 style="margin: 0; font-size: 0.95rem; font-weight: 700; color: var(--text-main);">ផ្លូវកាត់មុខងាររហ័ស (Quick Actions)</h3>
             </div>
             <div style="display: flex; align-items: center; gap: 8px;">
-              <button type="button" class="btn btn-secondary btn-sm" onclick="PublicEnrollment.copyEnrollmentLink()" style="border: 1px solid rgba(6, 182, 212, 0.4); color: #38bdf8; background: rgba(6, 182, 212, 0.1); font-size: 0.78rem; font-weight: 700; border-radius: 10px;">
-                <i class="fa-solid fa-share-nodes"></i> Link ចុះឈ្មោះ (#enroll)
+              <button type="button" class="btn btn-secondary btn-sm" onclick="PublicEnrollment.copyEnrollmentLink()" style="font-size: 0.76rem; border-radius: 8px; padding: 5px 10px;">
+                <i class="fa-solid fa-link"></i> Link ចុះឈ្មោះ (#enroll)
+              </button>
+              <button type="button" class="btn btn-secondary btn-sm" onclick="ModalsComponent.openEndOfDayWrapUpModal()" style="font-size: 0.76rem; border-radius: 8px; padding: 5px 10px;">
+                <i class="fa-solid fa-moon"></i> បិទបញ្ជីចុងថ្ងៃ
               </button>
             </div>
           </div>
 
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px;">
-            <!-- 1. Mock Exam -->
-            <button type="button" onclick="MockExamEngine.openExamPicker()" style="display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 14px; color: #fff; text-align: left; cursor: pointer; transition: all 0.2s ease;">
-              <span style="font-size: 1.5rem;">⏱️</span>
-              <div>
-                <div style="font-weight: 800; font-size: 0.84rem; color: #fbbf24;">Mock Exam ៤៥ នាទី</div>
-                <div style="font-size: 0.7rem; color: #cbd5e1;">ប្រឡងសាកល្បងកំណត់ម៉ោង</div>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px;">
+            <!-- 1. Public Enrollment -->
+            <button type="button" onclick="PublicEnrollment.openPendingReviewModal()" style="display: flex; align-items: center; gap: 12px; padding: 11px 14px; background: var(--bg-surface-hover, rgba(255,255,255,0.03)); border: 1px solid var(--border-color); border-radius: 12px; color: var(--text-main); text-align: left; cursor: pointer; transition: all 0.15s ease;" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='var(--border-color)'">
+              <div style="width: 36px; height: 36px; border-radius: 8px; background: rgba(6, 182, 212, 0.12); color: #06b6d4; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0;">
+                <i class="fa-solid fa-globe"></i>
               </div>
-            </button>
-
-            <!-- 2. Public Enrollment -->
-            <button type="button" onclick="PublicEnrollment.openPendingReviewModal()" style="display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: rgba(6, 182, 212, 0.08); border: 1px solid rgba(6, 182, 212, 0.3); border-radius: 14px; color: #fff; text-align: left; cursor: pointer; transition: all 0.2s ease;">
-              <span style="font-size: 1.5rem;">🌐</span>
-              <div style="flex: 1;">
-                <div style="display: flex; align-items: center; justify-content: space-between;">
-                  <span style="font-weight: 800; font-size: 0.84rem; color: #38bdf8;">ចុះឈ្មោះ Online</span>
-                  <span style="background: #0891b2; color: #fff; font-size: 0.65rem; padding: 1px 6px; border-radius: 8px; font-weight: 800;">${(typeof PublicEnrollment !== 'undefined' ? PublicEnrollment.getPendingCount() : 0)}</span>
+              <div style="flex: 1; min-width: 0;">
+                <div style="display: flex; align-items: center; justify-content: space-between; gap: 4px;">
+                  <span style="font-weight: 700; font-size: 0.82rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">ចុះឈ្មោះ Online</span>
+                  <span style="background: #0891b2; color: #fff; font-size: 0.65rem; padding: 1px 6px; border-radius: 6px; font-weight: 700;">${(typeof PublicEnrollment !== 'undefined' ? PublicEnrollment.getPendingCount() : 0)}</span>
                 </div>
-                <div style="font-size: 0.7rem; color: #cbd5e1;">ផ្ទៀងផ្ទាត់ពាក្យសិស្សថ្មី</div>
+                <div style="font-size: 0.7rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">ផ្ទៀងផ្ទាត់ពាក្យថ្មី</div>
               </div>
             </button>
 
-            <!-- 3. AI Assignment Checker -->
-            <button type="button" onclick="AIAssignmentChecker.openModal()" style="display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 14px; color: #fff; text-align: left; cursor: pointer; transition: all 0.2s ease;">
-              <span style="font-size: 1.5rem;">📋</span>
-              <div>
-                <div style="font-weight: 800; font-size: 0.84rem; color: #34d399;">AI ពិនិត្យកិច្ចការ</div>
-                <div style="font-size: 0.7rem; color: #cbd5e1;">ដាក់ពិន្ទុ Word/Excel/PPT</div>
+            <!-- 2. Attendance Quick Launch -->
+            <button type="button" onclick="App.switchTab('attendance')" style="display: flex; align-items: center; gap: 12px; padding: 11px 14px; background: var(--bg-surface-hover, rgba(255,255,255,0.03)); border: 1px solid var(--border-color); border-radius: 12px; color: var(--text-main); text-align: left; cursor: pointer; transition: all 0.15s ease;" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='var(--border-color)'">
+              <div style="width: 36px; height: 36px; border-radius: 8px; background: rgba(16, 185, 129, 0.12); color: #10b981; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0;">
+                <i class="fa-solid fa-calendar-check"></i>
+              </div>
+              <div style="flex: 1; min-width: 0;">
+                <div style="font-weight: 700; font-size: 0.82rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">កត់ត្រាវត្តមាន</div>
+                <div style="font-size: 0.7rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Scan QR & Telegram</div>
               </div>
             </button>
 
-            <!-- 4. AI Tutor 24/7 -->
-            <button type="button" onclick="AITutor.openModal()" style="display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: rgba(168, 85, 247, 0.08); border: 1px solid rgba(168, 85, 247, 0.3); border-radius: 14px; color: #fff; text-align: left; cursor: pointer; transition: all 0.2s ease;">
-              <span style="font-size: 1.5rem;">💬</span>
-              <div>
-                <div style="font-weight: 800; font-size: 0.84rem; color: #c084fc;">AI Tutor ២៤/៧</div>
-                <div style="font-size: 0.7rem; color: #cbd5e1;">ឆ្លើយស្របតាមសៀវភៅពុម្ព</div>
+            <!-- 3. Exams & Scores -->
+            <button type="button" onclick="App.switchTab('exams')" style="display: flex; align-items: center; gap: 12px; padding: 11px 14px; background: var(--bg-surface-hover, rgba(255,255,255,0.03)); border: 1px solid var(--border-color); border-radius: 12px; color: var(--text-main); text-align: left; cursor: pointer; transition: all 0.15s ease;" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='var(--border-color)'">
+              <div style="width: 36px; height: 36px; border-radius: 8px; background: rgba(139, 92, 246, 0.12); color: #8b5cf6; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0;">
+                <i class="fa-solid fa-clipboard-check"></i>
+              </div>
+              <div style="flex: 1; min-width: 0;">
+                <div style="font-weight: 700; font-size: 0.82rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">ពិន្ទុ & ប្រឡង</div>
+                <div style="font-size: 0.7rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">បញ្ចូលពិន្ទុ ៤ វគ្គ</div>
               </div>
             </button>
 
-            <!-- 5. Office Templates -->
-            <button type="button" onclick="OfficeTemplates.openModal()" style="display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: rgba(59, 130, 246, 0.08); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 14px; color: #fff; text-align: left; cursor: pointer; transition: all 0.2s ease;">
-              <span style="font-size: 1.5rem;">📑</span>
-              <div>
-                <div style="font-weight: 800; font-size: 0.84rem; color: #60a5fa;">បណ្ណាល័យគំរូ Office</div>
-                <div style="font-size: 0.7rem; color: #cbd5e1;">ទាញយក Word, Excel, PPT</div>
+            <!-- 4. Student Receipt & Invoices -->
+            <button type="button" onclick="ModalsComponent.openStudentReceiptModal()" style="display: flex; align-items: center; gap: 12px; padding: 11px 14px; background: var(--bg-surface-hover, rgba(255,255,255,0.03)); border: 1px solid var(--border-color); border-radius: 12px; color: var(--text-main); text-align: left; cursor: pointer; transition: all 0.15s ease;" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='var(--border-color)'">
+              <div style="width: 36px; height: 36px; border-radius: 8px; background: rgba(245, 158, 11, 0.12); color: #f59e0b; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0;">
+                <i class="fa-solid fa-receipt"></i>
+              </div>
+              <div style="flex: 1; min-width: 0;">
+                <div style="font-weight: 700; font-size: 0.82rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">បង្កាន់ដៃបង់ប្រាក់</div>
+                <div style="font-size: 0.7rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">ចេញវិក្កយបត្រភ្លាមៗ</div>
+              </div>
+            </button>
+
+            <!-- 5. Timetable & Lab Map -->
+            <button type="button" onclick="App.switchTab('timetable')" style="display: flex; align-items: center; gap: 12px; padding: 11px 14px; background: var(--bg-surface-hover, rgba(255,255,255,0.03)); border: 1px solid var(--border-color); border-radius: 12px; color: var(--text-main); text-align: left; cursor: pointer; transition: all 0.15s ease;" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='var(--border-color)'">
+              <div style="width: 36px; height: 36px; border-radius: 8px; background: rgba(59, 130, 246, 0.12); color: #3b82f6; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0;">
+                <i class="fa-solid fa-desktop"></i>
+              </div>
+              <div style="flex: 1; min-width: 0;">
+                <div style="font-weight: 700; font-size: 0.82rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">កាលវិភាគ & Lab</div>
+                <div style="font-size: 0.7rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">៣ វេន & ១៦ ម៉ាស៊ីន</div>
               </div>
             </button>
 
             <!-- 6. Scheduled Announcements -->
-            <button type="button" onclick="ScheduledAnnouncements.openManageModal()" style="display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: rgba(244, 63, 94, 0.08); border: 1px solid rgba(244, 63, 94, 0.3); border-radius: 14px; color: #fff; text-align: left; cursor: pointer; transition: all 0.2s ease;">
-              <span style="font-size: 1.5rem;">⏰</span>
-              <div>
-                <div style="font-weight: 800; font-size: 0.84rem; color: #fb7185;">Auto ជូនដំណឹងដល់ថ្ងៃ</div>
-                <div style="font-size: 0.7rem; color: #cbd5e1;">Telegram & លើអេក្រង់សិស្ស</div>
+            <button type="button" onclick="ScheduledAnnouncements.openManageModal()" style="display: flex; align-items: center; gap: 12px; padding: 11px 14px; background: var(--bg-surface-hover, rgba(255,255,255,0.03)); border: 1px solid var(--border-color); border-radius: 12px; color: var(--text-main); text-align: left; cursor: pointer; transition: all 0.15s ease;" onmouseover="this.style.borderColor='var(--primary)'" onmouseout="this.style.borderColor='var(--border-color)'">
+              <div style="width: 36px; height: 36px; border-radius: 8px; background: rgba(244, 63, 94, 0.12); color: #f43f5e; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0;">
+                <i class="fa-solid fa-bullhorn"></i>
               </div>
-            </button>
-
-            <!-- 7. Live Quiz Battle (Kahoot Style) -->
-            <button type="button" onclick="LiveQuizArena.openModal()" style="display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: rgba(250, 204, 21, 0.08); border: 1px solid rgba(250, 204, 21, 0.35); border-radius: 14px; color: #fff; text-align: left; cursor: pointer; transition: all 0.2s ease;">
-              <span style="font-size: 1.5rem;">🏆</span>
-              <div>
-                <div style="font-weight: 800; font-size: 0.84rem; color: #facc15;">Live Quiz Show (Kahoot)</div>
-                <div style="font-size: 0.7rem; color: #cbd5e1;">ប្រកួតសំណួរលើអេក្រង់ធំ</div>
-              </div>
-            </button>
-
-            <!-- 8. AI Lesson Slides & Plan -->
-            <button type="button" onclick="AILessonSlides.openModal()" style="display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: rgba(168, 85, 247, 0.08); border: 1px solid rgba(168, 85, 247, 0.35); border-radius: 14px; color: #fff; text-align: left; cursor: pointer; transition: all 0.2s ease;">
-              <span style="font-size: 1.5rem;">📽️</span>
-              <div>
-                <div style="font-weight: 800; font-size: 0.84rem; color: #d8b4fe;">AI Slide & កិច្ចតែងការ</div>
-                <div style="font-size: 0.7rem; color: #cbd5e1;">ស្រង់ពីសៀវភៅ ១២០ ទំព័រ</div>
-              </div>
-            </button>
-
-            <!-- 9. Shortcut Key Trainer -->
-            <button type="button" onclick="ShortcutTrainer.openModal()" style="display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: rgba(6, 182, 212, 0.08); border: 1px solid rgba(6, 182, 212, 0.35); border-radius: 14px; color: #fff; text-align: left; cursor: pointer; transition: all 0.2s ease;">
-              <span style="font-size: 1.5rem;">⌨️</span>
-              <div>
-                <div style="font-weight: 800; font-size: 0.84rem; color: #22d3ee;">Shortcut Key Trainer</div>
-                <div style="font-size: 0.7rem; color: #cbd5e1;">ហ្វឹកហាត់លើក្តារចុចផ្ទាល់</div>
-              </div>
-            </button>
-
-            <!-- 10. Excel Formula Sandbox -->
-            <button type="button" onclick="ExcelSandbox.openModal()" style="display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.35); border-radius: 14px; color: #fff; text-align: left; cursor: pointer; transition: all 0.2s ease;">
-              <span style="font-size: 1.5rem;">📊</span>
-              <div>
-                <div style="font-weight: 800; font-size: 0.84rem; color: #34d399;">Excel Formula Sandbox</div>
-                <div style="font-size: 0.7rem; color: #cbd5e1;">រៀនវាយរូបមន្តផ្ទាល់លើ Web</div>
+              <div style="flex: 1; min-width: 0;">
+                <div style="font-weight: 700; font-size: 0.82rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Auto ជូនដំណឹង</div>
+                <div style="font-size: 0.7rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Telegram & អេក្រង់សិស្ស</div>
               </div>
             </button>
           </div>
         </div>
 
-        <!-- 2. Statistics Cards (5 Animated Futuristic Cards with Sparklines & % Trends) -->
-        <div class="kpi-grid" style="grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 16px; margin-bottom: 22px;">
+        <!-- 2. Statistics Cards (Simple & Clean) -->
+        <div class="kpi-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 20px;">
           <!-- Total Students Card -->
-          <div class="kpi-card motion-fade-up stagger-1" style="--card-accent: #7c3aed; --icon-bg: rgba(124, 58, 237, 0.16); --icon-color: #8b5cf6; border-radius: 20px; padding: 22px;">
+          <div class="kpi-card motion-fade-up" style="background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 14px; padding: 18px 20px;">
             <div class="kpi-info">
-              <span style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">សិស្សសរុប (Total Students)</span>
-              <div id="kpiTotal" class="kpi-number" style="font-size: 2.1rem; font-weight: 900; margin: 4px 0; color: #ffffff;">0</div>
-              <div style="display: flex; align-items: center; gap: 6px; font-size: 0.75rem;">
-                <span class="badge" style="background: rgba(16, 185, 129, 0.15); color: #34d399; font-weight: 800; padding: 2px 7px; border-radius: 6px;">
+              <span style="font-size: 0.78rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase;">សិស្សសរុប (Total)</span>
+              <div id="kpiTotal" class="kpi-number" style="font-size: 1.85rem; font-weight: 800; margin: 3px 0; color: var(--text-main);">0</div>
+              <div style="display: flex; align-items: center; gap: 6px; font-size: 0.74rem;">
+                <span class="badge" style="background: rgba(16, 185, 129, 0.12); color: #10b981; font-weight: 700; padding: 2px 6px; border-radius: 6px;">
                   <i class="fa-solid fa-arrow-trend-up"></i> +100%
                 </span>
                 <span id="kpiNewMonth" style="color: var(--text-muted);">ក្នុងខែនេះ</span>
               </div>
             </div>
-            <div class="kpi-icon-box" style="width: 48px; height: 48px; font-size: 1.25rem;">
+            <div class="kpi-icon-box" style="width: 42px; height: 42px; font-size: 1.15rem; background: rgba(124, 58, 237, 0.12); color: var(--primary); border-radius: 10px;">
               <i class="fa-solid fa-users"></i>
             </div>
           </div>
 
           <!-- Teachers / Instructors Card -->
-          <div class="kpi-card motion-fade-up stagger-2" style="--card-accent: #06b6d4; --icon-bg: rgba(6, 182, 212, 0.16); --icon-color: #06b6d4; border-radius: 20px; padding: 22px;">
+          <div class="kpi-card motion-fade-up" style="background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 14px; padding: 18px 20px;">
             <div class="kpi-info">
-              <span style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">គ្រូបង្រៀន (Teachers)</span>
-              <div id="kpiTeachersCount" class="kpi-number" style="font-size: 2.1rem; font-weight: 900; margin: 4px 0; color: #38bdf8;">2</div>
-              <div style="display: flex; align-items: center; gap: 6px; font-size: 0.75rem;">
-                <span class="badge" style="background: rgba(6, 182, 212, 0.15); color: #38bdf8; font-weight: 800; padding: 2px 7px; border-radius: 6px;">
+              <span style="font-size: 0.78rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase;">គ្រូបង្រៀន (Teachers)</span>
+              <div id="kpiTeachersCount" class="kpi-number" style="font-size: 1.85rem; font-weight: 800; margin: 3px 0; color: var(--text-main);">2</div>
+              <div style="display: flex; align-items: center; gap: 6px; font-size: 0.74rem;">
+                <span class="badge" style="background: rgba(6, 182, 212, 0.12); color: #06b6d4; font-weight: 700; padding: 2px 6px; border-radius: 6px;">
                   <i class="fa-solid fa-check"></i> ពេញម៉ោង
                 </span>
                 <span style="color: var(--text-muted);">គ្រូកុំព្យូទ័រជំនាញ</span>
               </div>
             </div>
-            <div class="kpi-icon-box" style="width: 48px; height: 48px; font-size: 1.25rem;">
+            <div class="kpi-icon-box" style="width: 42px; height: 42px; font-size: 1.15rem; background: rgba(6, 182, 212, 0.12); color: #06b6d4; border-radius: 10px;">
               <i class="fa-solid fa-chalkboard-user"></i>
             </div>
           </div>
 
           <!-- Computer Classes Card -->
-          <div class="kpi-card motion-fade-up stagger-3" style="--card-accent: #8b5cf6; --icon-bg: rgba(139, 92, 246, 0.16); --icon-color: #8b5cf6; border-radius: 20px; padding: 22px;">
+          <div class="kpi-card motion-fade-up" style="background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 14px; padding: 18px 20px;">
             <div class="kpi-info">
-              <span style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">ថ្នាក់កុំព្យូទ័រ (Classes)</span>
-              <div id="kpiClassesCount" class="kpi-number" style="font-size: 2.1rem; font-weight: 900; margin: 4px 0; color: #c084fc;">3</div>
-              <div style="display: flex; align-items: center; gap: 6px; font-size: 0.75rem;">
-                <span class="badge" style="background: rgba(139, 92, 246, 0.15); color: #c084fc; font-weight: 800; padding: 2px 7px; border-radius: 6px;">
+              <span style="font-size: 0.78rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase;">ថ្នាក់កុំព្យូទ័រ (Classes)</span>
+              <div id="kpiClassesCount" class="kpi-number" style="font-size: 1.85rem; font-weight: 800; margin: 3px 0; color: var(--text-main);">3</div>
+              <div style="display: flex; align-items: center; gap: 6px; font-size: 0.74rem;">
+                <span class="badge" style="background: rgba(139, 92, 246, 0.12); color: #8b5cf6; font-weight: 700; padding: 2px 6px; border-radius: 6px;">
                   3 វេនសិក្សា
                 </span>
                 <span style="color: var(--text-muted);">Lab 16 ម៉ាស៊ីន</span>
               </div>
             </div>
-            <div class="kpi-icon-box" style="width: 48px; height: 48px; font-size: 1.25rem;">
+            <div class="kpi-icon-box" style="width: 42px; height: 42px; font-size: 1.15rem; background: rgba(139, 92, 246, 0.12); color: #8b5cf6; border-radius: 10px;">
               <i class="fa-solid fa-school"></i>
             </div>
           </div>
 
           <!-- Attendance Rate Card -->
-          <div class="kpi-card motion-fade-up stagger-4" style="--card-accent: #10b981; --icon-bg: rgba(16, 185, 129, 0.16); --icon-color: #10b981; border-radius: 20px; padding: 22px;">
+          <div class="kpi-card motion-fade-up" style="background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 14px; padding: 18px 20px;">
             <div class="kpi-info">
-              <span style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">វត្តមានសរុប (Attendance)</span>
-              <div id="kpiAttendanceRate" class="kpi-number" style="font-size: 2.1rem; font-weight: 900; margin: 4px 0; color: #34d399;">--</div>
-              <div style="display: flex; align-items: center; gap: 6px; font-size: 0.75rem;">
-                <span class="badge" style="background: rgba(16, 185, 129, 0.15); color: #34d399; font-weight: 800; padding: 2px 7px; border-radius: 6px;">
+              <span style="font-size: 0.78rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase;">វត្តមានសរុប (Attendance)</span>
+              <div id="kpiAttendanceRate" class="kpi-number" style="font-size: 1.85rem; font-weight: 800; margin: 3px 0; color: var(--text-main);">--</div>
+              <div style="display: flex; align-items: center; gap: 6px; font-size: 0.74rem;">
+                <span class="badge" style="background: rgba(16, 185, 129, 0.12); color: #10b981; font-weight: 700; padding: 2px 6px; border-radius: 6px;">
                   <i class="fa-solid fa-circle-check"></i> ល្អប្រសើរ
                 </span>
                 <span style="color: var(--text-muted);">វត្តមានទៀងទាត់</span>
               </div>
             </div>
-            <div class="kpi-icon-box" style="width: 48px; height: 48px; font-size: 1.25rem;">
+            <div class="kpi-icon-box" style="width: 42px; height: 42px; font-size: 1.15rem; background: rgba(16, 185, 129, 0.12); color: #10b981; border-radius: 10px;">
               <i class="fa-solid fa-calendar-check"></i>
             </div>
           </div>
 
           <!-- Exam Pass Rate Card -->
-          <div class="kpi-card motion-fade-up stagger-5" style="--card-accent: #f59e0b; --icon-bg: rgba(245, 158, 11, 0.16); --icon-color: #f59e0b; border-radius: 20px; padding: 22px;">
+          <div class="kpi-card motion-fade-up" style="background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 14px; padding: 18px 20px;">
             <div class="kpi-info">
-              <span style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">អត្រាប្រឡងជាប់ (Pass Rate)</span>
-              <div id="kpiPassRate" class="kpi-number" style="font-size: 2.1rem; font-weight: 900; margin: 4px 0; color: #fbbf24;">--</div>
-              <div style="display: flex; align-items: center; gap: 6px; font-size: 0.75rem;">
-                <span class="badge" style="background: rgba(245, 158, 11, 0.15); color: #fbbf24; font-weight: 800; padding: 2px 7px; border-radius: 6px;">
+              <span style="font-size: 0.78rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase;">អត្រាប្រឡងជាប់ (Pass)</span>
+              <div id="kpiPassRate" class="kpi-number" style="font-size: 1.85rem; font-weight: 800; margin: 3px 0; color: var(--text-main);">--</div>
+              <div style="display: flex; align-items: center; gap: 6px; font-size: 0.74rem;">
+                <span class="badge" style="background: rgba(245, 158, 11, 0.12); color: #f59e0b; font-weight: 700; padding: 2px 6px; border-radius: 6px;">
                   និទ្ទេស A-C
                 </span>
                 <span style="color: var(--text-muted);">ប្រឡងបញ្ចប់វគ្គ</span>
               </div>
             </div>
-            <div class="kpi-icon-box" style="width: 48px; height: 48px; font-size: 1.25rem;">
+            <div class="kpi-icon-box" style="width: 42px; height: 42px; font-size: 1.15rem; background: rgba(245, 158, 11, 0.12); color: #f59e0b; border-radius: 10px;">
               <i class="fa-solid fa-award"></i>
             </div>
           </div>
         </div>
 
-        <!-- 3. All-in-One Anime AI Assistant Hero Studio (ម៉ីលីង AI) -->
-        ${typeof AnimeAIAssistant !== 'undefined' ? AnimeAIAssistant.renderHeroBanner() : `
-          <div class="card motion-fade-up" style="margin-bottom: 22px; padding: 22px 26px; background: linear-gradient(135deg, rgba(30, 27, 75, 0.85) 0%, rgba(15, 23, 42, 0.95) 100%); border: 1px solid rgba(168, 85, 247, 0.35); border-radius: 20px; box-shadow: 0 14px 36px rgba(0,0,0,0.4);">
-            <h3 style="color: #fff;">Gemini AI Studio</h3>
-          </div>
-        `}
 
         <!-- At-Risk Attendance Alert Banner Container -->
         <div id="dashAtRiskContainer"></div>
